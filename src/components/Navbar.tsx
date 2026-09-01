@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -55,35 +55,40 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-3">
-          <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm rounded-full">
+          <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold text-sm rounded-xl">
             Catalog Produse
           </Link>
           
           <div className="relative group cursor-pointer">
-            <div className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm flex items-center gap-2 rounded-full">
-              Parteneri B2B <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
+            <div className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold text-sm flex items-center gap-2 rounded-xl">
+              Parteneri B2B <ChevronDown size={14} className="group-hover:scale-125 group-hover:text-blue-500 group-hover:drop-shadow-md transition-all duration-300" />
             </div>
-            {/* Dropdown B2B */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-3xl shadow-2xl shadow-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 overflow-hidden z-50">
-              <div className="p-4 border-b border-slate-100">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Statut Partener</p>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3 text-sm text-yellow-600 font-medium p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
-                    <Award size={18} /> Cont Gold <span className="ml-auto text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-md">-10%</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-700 font-medium p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
-                    <Award size={18} className="text-slate-400" /> Cont Platinum <span className="ml-auto text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md">-15%</span>
+            {/* Dropdown B2B Wrapper (Hover Bridge) */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 transform group-hover:translate-y-0 translate-y-2 z-50">
+              {/* Visual Box */}
+              <div className="w-64 bg-slate-100/95 backdrop-blur-3xl backdrop-saturate-200 border border-slate-200/50 rounded-2xl shadow-xl shadow-slate-900/10 overflow-hidden">
+                <div className="p-4 border-b border-slate-200/50">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Statut Partener</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3 text-sm text-yellow-600 font-medium p-3 hover:bg-white/80 border border-transparent hover:border-slate-300/60 hover:shadow-sm rounded-xl transition-all cursor-pointer">
+                      <Award size={18} /> Cont Gold <span className="ml-auto text-xs bg-yellow-500/10 text-yellow-700 px-2 py-1 rounded-md">-10%</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-slate-700 font-medium p-3 hover:bg-white/80 border border-transparent hover:border-slate-300/60 hover:shadow-sm rounded-xl transition-all cursor-pointer">
+                      <Award size={18} className="text-slate-400" /> Cont Platinum <span className="ml-auto text-xs bg-slate-200/50 text-slate-600 px-2 py-1 rounded-md">-15%</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="p-4 bg-slate-50/80 hover:bg-blue-50 transition-colors cursor-pointer">
-                <Link href="/devino-partener" className="text-sm text-blue-600 font-bold flex items-center gap-2 justify-center">Află cum devii partener &rarr;</Link>
+                <div className="p-4 bg-slate-200/30 hover:bg-blue-50/50 transition-colors cursor-pointer group/link">
+                  <Link href="/devino-partener" className="text-sm text-blue-600 font-bold flex items-center gap-1.5 justify-center">
+                    Află cum devii partener <ArrowUpRight size={16} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
-          <Link href="/oferte-en-gros" className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 hover:text-emerald-800 hover:border-emerald-300 hover:from-emerald-100 hover:to-teal-100 hover:shadow-md hover:shadow-emerald-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm rounded-full">
-            <Package size={16} className="group-hover:scale-110 transition-transform" /> Pachete Vrac
+          <Link href="/oferte-en-gros" className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 hover:text-emerald-800 hover:border-emerald-300 hover:from-emerald-100 hover:to-teal-100 hover:shadow-md hover:shadow-emerald-900/5 transition-all font-semibold text-sm rounded-xl">
+            <Package size={16} className="group-hover:scale-110 transition-transform" /> Sisteme Complete
           </Link>
           
         </div>
@@ -95,16 +100,16 @@ export default function Navbar() {
             <input 
               type="text" 
               placeholder="Caută produse..." 
-              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100/50 focus:shadow-md transition-all w-60"
+              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100/50 focus:shadow-md transition-all w-60"
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-full text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold group">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold group">
               <User size={16} className="group-hover:scale-110 transition-transform" />
               <span className="text-xs uppercase tracking-wider">Cont B2B</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-full text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold relative group">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold relative group">
               <div className="relative">
                 <ShoppingCart size={16} className="group-hover:scale-110 transition-transform" />
                 <span className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
