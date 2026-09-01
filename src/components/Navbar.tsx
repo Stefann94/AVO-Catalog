@@ -96,11 +96,11 @@ export default function Navbar() {
         {/* Right Actions */}
         <div className="hidden lg:flex items-center gap-5">
           <div className="relative group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-700 transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Caută produse..." 
-              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100/50 focus:shadow-md transition-all w-60"
+              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:bg-slate-50/80 focus:shadow-inner transition-all w-64"
             />
           </div>
 
