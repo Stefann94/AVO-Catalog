@@ -1,0 +1,149 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
+
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
+      {/* Top Bar (Dark contrast) */}
+      <div className="bg-slate-900 border-b border-slate-800 py-2 hidden lg:block">
+        <div className="w-full px-6 lg:px-12 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+          <div className="flex items-center gap-6">
+            <a href="tel:+40721233544" className="flex items-center gap-2 hover:text-white transition-colors">
+              <Phone size={12} className="text-blue-400" /> +40.721.233.544
+            </a>
+            <a href="mailto:contact@avogrupinvest.ro" className="flex items-center gap-2 hover:text-white transition-colors">
+              <Mail size={12} className="text-blue-400" /> contact@avogrupinvest.ro
+            </a>
+          </div>
+          <div>
+            <Link href="/contact" className="flex items-center gap-2 hover:text-white transition-colors">
+              <MapPin size={12} className="text-blue-400" /> Formular Contact & Locații
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navbar (Enhanced Frosted Glass) */}
+      <div className="bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 py-3">
+        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center">
+          <Image 
+            src="/logo.png" 
+            alt="Avo Grup Invest Logo" 
+            width={400} 
+            height={48} 
+            className="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm"
+            priority
+          />
+        </Link>
+
+        {/* Desktop Menu */}
+        <div className="hidden lg:flex items-center gap-3">
+          <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm rounded-full">
+            Catalog Produse
+          </Link>
+          
+          <div className="relative group cursor-pointer">
+            <div className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm flex items-center gap-2 rounded-full">
+              Parteneri B2B <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
+            </div>
+            {/* Dropdown B2B */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-3xl shadow-2xl shadow-slate-200/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 overflow-hidden z-50">
+              <div className="p-4 border-b border-slate-100">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Statut Partener</p>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3 text-sm text-yellow-600 font-medium p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
+                    <Award size={18} /> Cont Gold <span className="ml-auto text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-md">-10%</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-slate-700 font-medium p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
+                    <Award size={18} className="text-slate-400" /> Cont Platinum <span className="ml-auto text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md">-15%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 bg-slate-50/80 hover:bg-blue-50 transition-colors cursor-pointer">
+                <Link href="/devino-partener" className="text-sm text-blue-600 font-bold flex items-center gap-2 justify-center">Află cum devii partener &rarr;</Link>
+              </div>
+            </div>
+          </div>
+
+          <Link href="/oferte-en-gros" className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 hover:text-emerald-800 hover:border-emerald-300 hover:from-emerald-100 hover:to-teal-100 hover:shadow-md hover:shadow-emerald-900/5 hover:-translate-y-0.5 transition-all font-semibold text-sm rounded-full">
+            <Package size={16} className="group-hover:scale-110 transition-transform" /> Pachete Vrac
+          </Link>
+          
+        </div>
+
+        {/* Right Actions */}
+        <div className="hidden lg:flex items-center gap-5">
+          <div className="relative group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
+            <input 
+              type="text" 
+              placeholder="Caută produse..." 
+              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100/50 focus:shadow-md transition-all w-60"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-full text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold group">
+              <User size={16} className="group-hover:scale-110 transition-transform" />
+              <span className="text-xs uppercase tracking-wider">Cont B2B</span>
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-full text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all font-semibold relative group">
+              <div className="relative">
+                <ShoppingCart size={16} className="group-hover:scale-110 transition-transform" />
+                <span className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
+              </div>
+              <span className="text-xs uppercase tracking-wider ml-1">Coș</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="lg:hidden text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+      </div>
+      
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 p-6 flex flex-col gap-4 shadow-xl">
+          <input 
+              type="text" 
+              placeholder="Caută produse..." 
+              className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 w-full"
+            />
+          <Link href="/catalog" className="text-slate-700 text-lg py-2 border-b border-slate-100">Catalog Produse</Link>
+          <Link href="/parteneri" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex justify-between items-center">
+            Parteneri B2B <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-md">Gold / Platinum</span>
+          </Link>
+          <Link href="/oferte-en-gros" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex items-center gap-2">
+             <Package size={18} className="text-emerald-600"/> Oferte Palet & En-Gros
+          </Link>
+          <Link href="/cont" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex items-center gap-2">
+            <User size={18} /> Contul Meu
+          </Link>
+        </div>
+      )}
+    </nav>
+  );
+}
