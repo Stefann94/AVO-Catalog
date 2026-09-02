@@ -68,3 +68,26 @@ export const GET_CATEGORY_PAGE_QUERY = `
     }
   }
 `;
+
+/**
+ * Perioada de valabilitate a catalogului curent.
+ *
+ * Câmpul `perioadaCatalog` nu face parte din WooGraphQL: e adăugat de extensia
+ * din `tools/wordpress/avo-perioada-catalog.php`, care citește meta scrisă de
+ * importator pe produse și îl expune o singură dată, la rădăcina schemei.
+ *
+ * Cât timp extensia nu e instalată, interogarea întoarce eroare „Cannot query
+ * field", `fetchGraphQL` răspunde `null`, iar pagina cade pe perioada de
+ * rezervă din cod. Motiv pentru care se cere separat, într-o interogare proprie:
+ * o eroare aici nu trebuie să dărâme și restul datelor din pagină.
+ */
+export const GET_PERIOADA_CATALOG_QUERY = `
+  query GetPerioadaCatalog {
+    perioadaCatalog {
+      eticheta
+      valabilDe
+      valabilPana
+      sursaCatalog
+    }
+  }
+`;

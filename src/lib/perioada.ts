@@ -1,37 +1,142 @@
+/**
+ * Perioada de valabilitate a catalogului.
+ *
+ * Sursa de adevăr e catalogul, nu ceasul serverului. Importatorul o extrage de
+ * pe coperta PDF-ului și o scrie pe fiecare produs ca meta `_perioada_eticheta`,
+ * `_valabil_de` și `_valabil_pana` (vezi tools/catalog-import/parse-catalog.js),
+ * de unde o citim prin GraphQL.
+ *
+ * Regula pe care o impune modulul ăsta: eticheta și intervalul vin ÎNTOTDEAUNA
+ * din aceeași sursă. Versiunea anterioară lua eticheta din catalog, dar calcula
+ * intervalul din `new Date()` — în octombrie pagina ar fi anunțat
+ * „Gama de produse Septembrie 2026" lângă „Prețuri valabile 01.10 – 31.10.2026",
+ * două afirmații care se contrazic sub ochii clientului.
+ *
+ * Din același motiv nu mai există o rezervă calculată din data curentă: a
+ * inventa luna de pe ceas, când prețurile afișate sunt din alt catalog, e o
+ * informație comercială falsă. Dacă nu știm perioada, nu o afirmăm.
+ */
+
 const LUNI = [
   "Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie",
   "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie",
 ] as const;
 
-/** "Septembrie 2026" din orice dată. */
-export function etichetaLuna(d: Date = new Date()): string {
-  return `${LUNI[d.getMonth()]} ${d.getFullYear()}`;
-}
+export type PerioadaCatalog = {
+  /** „Septembrie 2026". `null` când nu o putem afla — titlul rămâne fără lună. */
+  eticheta: string | null;
+  /** „01.09 – 30.09.2026". `null` ascunde ștampila cu prețuri valabile. */
+  interval: string | null;
+  /** De unde a venit valoarea. Util în dezvoltare ca să vezi dacă WooCommerce răspunde. */
+  sursa: "woocommerce" | "rezerva" | "necunoscuta";
+};
 
-/** "01.09 – 30.09.2026" — prima și ultima zi a lunii date. */
-export function intervalLuna(d: Date = new Date()): string {
-  const an = d.getFullYear();
-  const luna = d.getMonth();
-  const ultima = new Date(an, luna + 1, 0).getDate();
-  const ll = String(luna + 1).padStart(2, "0");
-  return `01.${ll} – ${ultima}.${ll}.${an}`;
-}
+type Zi = { zi: number; luna: number; an: number };
 
 /**
- * Eticheta afișată în titlu.
+ * „01.09.2026" → { zi: 1, luna: 9, an: 2026 }.
  *
- * Sursa de adevăr e perioada CATALOGULUI, nu ceasul serverului: importatorul o
- * extrage de pe copertă în meta `_perioada_eticheta`. Dacă am folosi doar data
- * curentă, în decembrie titlul ar anunța "Decembrie 2026" în timp ce prețurile
- * afișate ar fi încă din catalogul pe septembrie — adică o minciună comercială.
- *
- * Data calendaristică rămâne doar ca rezervă, până conectăm GraphQL-ul.
+ * Formatul e cel tipărit pe copertă și copiat ca atare de importator. Parsăm
+ * componentele manual, nu prin `new Date(text)`: constructorul interpretează
+ * șirurile ambiguu de la un motor la altul, iar cele ISO le citește în UTC,
+ * ceea ce poate muta ziua cu una în minus.
  */
-export function perioadaCatalog(dinCatalog?: string | null) {
-  const acum = new Date();
+function parseZi(text?: string | null): Zi | null {
+  const m = text?.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if (!m) return null;
+  const zi = Number(m[1]);
+  const luna = Number(m[2]);
+  const an = Number(m[3]);
+  if (luna < 1 || luna > 12 || zi < 1 || zi > 31) return null;
+  return { zi, luna, an };
+}
+
+/** „Septembrie 2026" → { luna: 9, an: 2026 }. Acceptă și scrierea fără diacritice. */
+function parseEticheta(text?: string | null): { luna: number; an: number } | null {
+  const t = text?.trim();
+  if (!t) return null;
+  const m = t.match(/^(\p{L}+)\s+(\d{4})$/u);
+  if (!m) return null;
+  const nume = m[1].toLowerCase();
+  const index = LUNI.findIndex((l) => l.toLowerCase() === nume);
+  return index === -1 ? null : { luna: index + 1, an: Number(m[2]) };
+}
+
+const doua = (n: number) => String(n).padStart(2, "0");
+
+/** Ultima zi a lunii. Ziua 0 din luna următoare, deci și anii bisecți ies corect. */
+const ultimaZi = (luna: number, an: number) => new Date(an, luna, 0).getDate();
+
+/**
+ * „01.09 – 30.09.2026".
+ *
+ * Anul apare o singură dată, la final, cât timp perioada nu trece dintr-un an
+ * în altul. Un catalog valabil 15.12.2026 – 15.01.2027 primește ambii ani,
+ * altfel prima dată ar părea din 2027.
+ */
+function formatInterval(de: Zi, pana: Zi): string {
+  const inceput =
+    de.an === pana.an
+      ? `${doua(de.zi)}.${doua(de.luna)}`
+      : `${doua(de.zi)}.${doua(de.luna)}.${de.an}`;
+  return `${inceput} – ${doua(pana.zi)}.${doua(pana.luna)}.${pana.an}`;
+}
+
+/** Datele brute, așa cum vin din meta produsului în WooCommerce. */
+export type PerioadaBruta = {
+  eticheta?: string | null;
+  valabilDe?: string | null;
+  valabilPana?: string | null;
+};
+
+/**
+ * Compune perioada afișată.
+ *
+ * `rezerva` e ultimul catalog cunoscut, scris în cod. Se folosește doar cât timp
+ * WooCommerce nu răspunde încă cu perioada — la primul import care aduce meta,
+ * valoarea din WooCommerce câștigă și rezerva devine inutilă.
+ */
+export function perioadaCatalog(
+  dinWoo?: PerioadaBruta | null,
+  rezerva?: PerioadaBruta | null
+): PerioadaCatalog {
+  const dinWooCompleta = compune(dinWoo);
+  if (dinWooCompleta) return { ...dinWooCompleta, sursa: "woocommerce" };
+
+  const dinRezerva = compune(rezerva);
+  if (dinRezerva) return { ...dinRezerva, sursa: "rezerva" };
+
+  return { eticheta: null, interval: null, sursa: "necunoscuta" };
+}
+
+function compune(sursa?: PerioadaBruta | null): Omit<PerioadaCatalog, "sursa"> | null {
+  if (!sursa) return null;
+
+  const de = parseZi(sursa.valabilDe);
+  const pana = parseZi(sursa.valabilPana);
+  const dinEticheta = parseEticheta(sursa.eticheta);
+
+  // Eticheta e preferată ca text, fiind exact cum e tipărită pe copertă. Dacă
+  // lipsește, o deducem din luna în care începe valabilitatea.
+  const eticheta =
+    sursa.eticheta?.trim() ||
+    (de ? `${LUNI[de.luna - 1]} ${de.an}` : null);
+
+  if (!eticheta) return null;
+
+  // Intervalul complet, când catalogul îl declară.
+  if (de && pana) return { eticheta, interval: formatInterval(de, pana) };
+
+  // Doar eticheta: presupunem luna calendaristică întreagă. E deducția pe care
+  // o face și cititorul când vede „Septembrie 2026" pe copertă.
+  const luna = dinEticheta ?? (de ? { luna: de.luna, an: de.an } : null);
+  if (!luna) return { eticheta, interval: null };
+
   return {
-    eticheta: dinCatalog?.trim() || etichetaLuna(acum),
-    interval: intervalLuna(acum),
-    dinCatalog: Boolean(dinCatalog?.trim()),
+    eticheta,
+    interval: formatInterval(
+      { zi: 1, luna: luna.luna, an: luna.an },
+      { zi: ultimaZi(luna.luna, luna.an), luna: luna.luna, an: luna.an }
+    ),
   };
 }

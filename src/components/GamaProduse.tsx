@@ -2,13 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, BadgePercent, BatteryCharging, Cpu, Sun, Wrench } from "lucide-react";
 import { perioadaCatalog } from "@/lib/perioada";
+import { fetchGraphQL } from "@/lib/graphql-client";
+import { GET_PERIOADA_CATALOG_QUERY } from "@/lib/queries";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
  *
- * Cifrele sunt calculate din cele 172 de produse importate (tools/catalog-import).
- * La trecerea pe GraphQL se înlocuiesc cu productCategories { count } + agregări
- * de preț, iar perioada vine din meta `_perioada_eticheta`; markup-ul rămâne.
+ * Perioada de valabilitate vine din WooCommerce: importatorul o scrie pe fiecare
+ * produs ca meta `_perioada_eticheta` / `_valabil_de` / `_valabil_pana`, iar
+ * extensia din tools/wordpress o expune prin GraphQL. Se actualizează singură la
+ * fiecare import lunar, fără atins codul.
+ *
+ * Cifrele pe categorie sunt încă din cele 172 de produse importate
+ * (tools/catalog-import). La trecerea lor pe GraphQL se înlocuiesc cu
+ * productCategories { count } + agregări de preț; markup-ul rămâne.
  *
  * "de la" apare DOAR unde e o ancoră onestă. La Sisteme de Montaj cel mai ieftin
  * produs e un suport de 1,87 € — inutil alături de "de la 54 €" — așa că acolo
@@ -87,11 +94,28 @@ const SECUNDARE = [
 
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
-// Când conectăm GraphQL, valoarea vine din meta `_perioada_eticheta`.
-const PERIOADA_DIN_CATALOG = "Septembrie 2026";
+/**
+ * Ultimul catalog încărcat manual, folosit doar cât timp WooCommerce nu
+ * răspunde încă cu perioada — adică până la instalarea extensiei PHP și primul
+ * import care aduce meta. După aceea valoarea din WooCommerce câștigă
+ * întotdeauna, iar constanta asta nu mai e citită niciodată.
+ *
+ * Dacă nici WooCommerce, nici rezerva nu dau o perioadă, titlul rămâne
+ * „Gama de produse", fără lună, iar ștampila cu prețuri valabile dispare. Mai
+ * bine fără informație decât cu o lună greșită lângă prețuri din alt catalog.
+ */
+const PERIOADA_REZERVA = {
+  eticheta: "Septembrie 2026",
+  valabilDe: "01.09.2026",
+  valabilPana: "30.09.2026",
+};
 
-export default function GamaProduse() {
-  const perioada = perioadaCatalog(PERIOADA_DIN_CATALOG);
+export default async function GamaProduse() {
+  // `optional`: câmpul vine dintr-o extensie care poate să nu fie încă
+  // instalată în WordPress. Absența lui e o stare prevăzută, cu rezervă, nu o
+  // eroare de build.
+  const date = await fetchGraphQL(GET_PERIOADA_CATALOG_QUERY, {}, { optional: true });
+  const perioada = perioadaCatalog(date?.perioadaCatalog, PERIOADA_REZERVA);
 
   return (
     <section className="relative bg-slate-50 py-16 sm:py-20 lg:py-28">
@@ -105,18 +129,20 @@ export default function GamaProduse() {
                 La un font geometric, strângerea literelor schimbă vizibil
                 desenul și titlurile par a fi din fonturi diferite. */}
             <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-slate-900 leading-tight sm:whitespace-nowrap">
-              Gama de produse {perioada.eticheta}
+              Gama de produse{perioada.eticheta ? ` ${perioada.eticheta}` : ""}
             </h2>
 
-            <div className="inline-flex items-center gap-2.5 sm:gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl bg-white ring-1 ring-slate-900/10 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                Prețuri valabile
-              </span>
-              <span aria-hidden className="h-4 w-px bg-slate-200" />
-              <span className="font-mono text-xs sm:text-[13px] font-semibold text-slate-900 tabular-nums whitespace-nowrap">
-                {perioada.interval}
-              </span>
-            </div>
+            {perioada.interval ? (
+              <div className="inline-flex items-center gap-2.5 sm:gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl bg-white ring-1 ring-slate-900/10 shadow-sm">
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Prețuri valabile
+                </span>
+                <span aria-hidden className="h-4 w-px bg-slate-200" />
+                <span className="font-mono text-xs sm:text-[13px] font-semibold text-slate-900 tabular-nums whitespace-nowrap">
+                  {perioada.interval}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div aria-hidden className="mt-5 sm:mt-7 h-px w-full bg-slate-900/[0.09]" />
