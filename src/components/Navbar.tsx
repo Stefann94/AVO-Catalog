@@ -36,7 +36,7 @@ export default function Navbar() {
           {/* Center: B2B Announcement */}
           <div className="hidden xl:flex flex-1 justify-center items-center">
             <Link href="/cerere-oferta" className="flex items-center hover:text-white transition-colors text-blue-400">
-              <span className="tracking-widest">PARTENERIAT B2B: PREȚURI SPECIALE PENTRU INSTALATORI ȘI REVÂNZĂTORI</span>
+              <span className="tracking-wider whitespace-nowrap">CONDIȚII COMERCIALE PREFERENȚIALE PENTRU COMPANII ȘI DISTRIBUITORI</span>
             </Link>
           </div>
 
@@ -52,15 +52,15 @@ export default function Navbar() {
 
       {/* Main Navbar (Enhanced Frosted Glass) */}
       <div className="bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 py-3">
-        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
+        <div className="w-full px-4 sm:px-6 lg:px-12 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center shrink min-w-0">
           <Image 
             src="/logo.png" 
             alt="Avo Grup Invest Logo" 
             width={400} 
             height={48} 
-            className="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm"
+            className="h-8 sm:h-12 md:h-14 w-auto max-w-full object-contain drop-shadow-sm"
             priority
           />
         </Link>
@@ -133,7 +133,7 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <button 
-          className="lg:hidden text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors"
+          className="lg:hidden shrink-0 text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors ml-auto"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -142,8 +142,12 @@ export default function Navbar() {
       </div>
       
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 p-6 flex flex-col gap-4 shadow-xl">
+      <div 
+        className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl overflow-hidden transition-all duration-300 ease-in-out origin-top ${
+          isMobileMenuOpen ? "max-h-[500px] opacity-100 border-b" : "max-h-0 opacity-0 border-transparent"
+        }`}
+      >
+        <div className="p-6 flex flex-col gap-4">
           <input 
               type="text" 
               placeholder="Caută produse..." 
@@ -160,7 +164,7 @@ export default function Navbar() {
             <User size={18} /> Contul Meu
           </Link>
         </div>
-      )}
+      </div>
     </nav>
   );
 }

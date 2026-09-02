@@ -92,14 +92,14 @@ export default function HeroSlider() {
       <div className="absolute inset-0 z-20 w-full max-w-[1800px] mx-auto px-6 lg:px-16 xl:px-24">
           
           {/* Top-Left Section: Vertically Centered Text & Buttons */}
-          <div className="flex flex-col justify-center h-full max-w-3xl pt-20">
-            <div className="flex flex-col">
+          <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left h-full max-w-3xl pt-20">
+            <div className="flex flex-col w-full">
               
               {/* Badge Area - Removed by request */}
               
               
               {/* Text Area - Strict fixed height to guarantee ZERO layout shift (SEO & UX) */}
-              <div className="h-[340px] sm:h-[300px] lg:h-[340px] flex flex-col justify-center gap-4">
+              <div className="h-[340px] sm:h-[300px] lg:h-[340px] flex flex-col justify-center items-center sm:items-start gap-4">
                 <h1 
                   key={`title-${activeIndex}`}
                   className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight animate-[fadeInUp_0.5s_ease-out_forwards]"
@@ -115,17 +115,17 @@ export default function HeroSlider() {
               </div>
 
               {/* Action Area (Buttons & Dots) */}
-              <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <Link href={slides[activeIndex].buttonLink} className="w-full sm:w-[280px] inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all">
+              <div className="flex flex-col sm:flex-row gap-4 mt-6 items-center sm:items-start w-full sm:w-auto px-2 sm:px-0">
+                <Link href={slides[activeIndex].buttonLink} className="w-full max-w-[280px] sm:w-[280px] sm:max-w-none inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all">
                   <span className="truncate">{slides[activeIndex].buttonText}</span>
                 </Link>
-                <Link href="/contact" className="w-full sm:w-[240px] inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
+                <Link href="/contact" className="w-full max-w-[280px] sm:w-[240px] sm:max-w-none inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
                   Contactează-ne
                 </Link>
               </div>
 
               {/* Dots Indicator */}
-              <div className="flex items-center gap-3 mt-8">
+              <div className="flex justify-center sm:justify-start items-center gap-3 mt-8">
                 {slides.map((_, index) => (
                   <button
                     key={index}
