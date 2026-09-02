@@ -95,16 +95,8 @@ export default function HeroSlider() {
           <div className="flex flex-col justify-center h-full max-w-3xl pt-20">
             <div className="flex flex-col">
               
-              {/* Badge Area - Fixed Height */}
-              <div className="h-[40px] mb-4">
-                <div 
-                  key={`badge-${activeIndex}`}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/40 border border-slate-600/50 backdrop-blur-md animate-[fadeInUp_0.5s_ease-out_forwards]"
-                >
-                  <Award size={14} className="text-blue-400" />
-                  <span className="text-xs font-semibold text-slate-200 tracking-wide uppercase">{slides[activeIndex].badge}</span>
-                </div>
-              </div>
+              {/* Badge Area - Removed by request */}
+              
               
               {/* Text Area - Strict fixed height to guarantee ZERO layout shift (SEO & UX) */}
               <div className="h-[340px] sm:h-[300px] lg:h-[340px] flex flex-col justify-center gap-4">
