@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scripturile de import rulează direct în Node, nu trec prin bundler-ul
+    // Next. Sunt CommonJS și folosesc `require()` legitim; regulile pentru
+    // codul TypeScript din `src` le raportau ca șase erori de lint care nu
+    // aveau ce să repare acolo.
+    "tools/**",
   ]),
 ]);
 

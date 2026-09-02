@@ -1,6 +1,20 @@
 const WP_GRAPHQL_URL = 'https://www.avogrupinvest.ro/graphql';
 
-export async function fetchGraphQL(query: string, variables = {}) {
+/**
+ * Endpoint-ul WordPress răspunde în ~4 secunde. Cu `cache: 'no-store'` fiecare
+ * vizitator ar aștepta atât, iar paginile n-ar putea fi randate static.
+ * Implicit revalidăm o dată pe oră; catalogul se schimbă lunar, deci e amplu.
+ *
+ * Pentru date care chiar trebuie proaspete, apelează cu `{ revalidate: 0 }`.
+ */
+const REVALIDARE_IMPLICITA = 3600;
+
+export async function fetchGraphQL(
+  query: string,
+  variables = {},
+  optiuni: { revalidate?: number } = {}
+) {
+  const revalidate = optiuni.revalidate ?? REVALIDARE_IMPLICITA;
   try {
     const res = await fetch(WP_GRAPHQL_URL, {
       method: 'POST',
@@ -11,8 +25,9 @@ export async function fetchGraphQL(query: string, variables = {}) {
         query,
         variables,
       }),
-      // Next.js Cache config
-      cache: 'no-store', 
+      ...(revalidate === 0
+        ? { cache: 'no-store' as const }
+        : { next: { revalidate } }),
     });
 
     if (!res.ok) {

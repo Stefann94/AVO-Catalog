@@ -37,3 +37,34 @@ export const GET_CATEGORIES_QUERY = `
     }
   }
 `;
+
+export const GET_CATEGORY_PAGE_QUERY = `
+  query GetCategoryPage($slug: ID!, $categorySlug: String!) {
+    productCategory(id: $slug, idType: SLUG) {
+      name
+      slug
+      description
+      count
+    }
+    products(first: 48, where: { category: $categorySlug }) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        name
+        slug
+        ... on SimpleProduct {
+          sku
+          price
+          stockStatus
+        }
+        image {
+          sourceUrl
+          altText
+        }
+      }
+    }
+  }
+`;

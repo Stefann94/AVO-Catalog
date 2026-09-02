@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BatteryCharging, Cpu, Sun, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgePercent, BatteryCharging, Cpu, Sun, Wrench } from "lucide-react";
 import { perioadaCatalog } from "@/lib/perioada";
 
 /**
@@ -15,9 +15,8 @@ import { perioadaCatalog } from "@/lib/perioada";
  * arătăm acoperirea, nu prețul.
  */
 
-// ATENȚIE — placeholder: toate cele trei randări conțin branduri INVENTATE
-// (SOLARA·X, VOLTAIC NEXUS, SOLARVOLT). `pozitie` decupează în afara zonelor cu
-// logo, dar sunt de înlocuit înainte de lansare.
+// Imaginile sunt 16:10, exact raportul cardului, deci `object-cover` le afișează
+// integral — nu e nevoie de `objectPosition`.
 type Categorie = {
   slug: string;
   nume: string;
@@ -29,7 +28,6 @@ type Categorie = {
   unitate?: string;
   icon: typeof Sun;
   imagine: string;
-  pozitie: string;
 };
 
 const CATEGORII: Categorie[] = [
@@ -43,8 +41,7 @@ const CATEGORII: Categorie[] = [
     deLa: 54,
     unitate: "panou",
     icon: Sun,
-    imagine: "/panel.jpg",
-    pozitie: "50% 26%",
+    imagine: "/cat-panouri.jpg",
   },
   {
     slug: "invertoare",
@@ -56,8 +53,7 @@ const CATEGORII: Categorie[] = [
     deLa: 355,
     unitate: "buc",
     icon: Cpu,
-    imagine: "/inverter.jpg",
-    pozitie: "52% 30%",
+    imagine: "/cat-invertoare.jpg",
   },
   {
     slug: "stocare-energie",
@@ -69,8 +65,7 @@ const CATEGORII: Categorie[] = [
     deLa: 395,
     unitate: "buc",
     icon: BatteryCharging,
-    imagine: "/battery.jpg",
-    pozitie: "70% 50%",
+    imagine: "/cat-stocare.jpg",
   },
   {
     slug: "sisteme-de-montaj",
@@ -79,8 +74,7 @@ const CATEGORII: Categorie[] = [
     interval: "Structuri și componente",
     descriere: "Acoperiș plat, țiglă, tablă trapezoidală · K2 Systems",
     icon: Wrench,
-    imagine: "/hero.jpg",
-    pozitie: "50% 46%",
+    imagine: "/cat-montaj.jpg",
   },
 ];
 
@@ -107,7 +101,10 @@ export default function GamaProduse() {
           {/* Ștampila trece lângă titlu abia de la xl: sub această lățime i-ar
               lăsa titlului ~574px, insuficient pentru un singur rând. */}
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
-            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-slate-900 tracking-[-0.03em] sm:tracking-[-0.035em] leading-[1.1] sm:whitespace-nowrap">
+            {/* Fără `tracking` negativ: aceeași spațiere ca titlul din hero.
+                La un font geometric, strângerea literelor schimbă vizibil
+                desenul și titlurile par a fi din fonturi diferite. */}
+            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-slate-900 leading-tight sm:whitespace-nowrap">
               Gama de produse {perioada.eticheta}
             </h2>
 
@@ -124,10 +121,37 @@ export default function GamaProduse() {
 
           <div aria-hidden className="mt-5 sm:mt-7 h-px w-full bg-slate-900/[0.09]" />
 
-          <p className="mt-5 sm:mt-7 max-w-2xl text-slate-500 text-[15px] sm:text-base lg:text-lg leading-relaxed">
-            172 de echipamente în stoc, de la panouri și invertoare la sisteme de montaj.
-            Prețuri de distribuitor pentru instalatori și revânzători, din 9 depozite naționale.
-          </p>
+          {/* Banner B2B — pragurile de mai jos sunt cele reale din catalog:
+              panourile au „< 3 paleți / > 4 paleți", restul „PREȚ/BUC /
+              COMANDĂ > 12 BUC", iar containerul se ofertează separat. */}
+          <Link
+            href="/cerere-oferta"
+            className="group mt-5 sm:mt-7 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 w-full rounded-xl bg-blue-50/70 ring-1 ring-blue-100 px-4 py-3.5 sm:px-5 transition-colors duration-300 hover:bg-blue-50 hover:ring-blue-200"
+          >
+            {/* Iconița stă lipită de text la orice lățime. Dacă ar fi frate
+                direct cu textul în `flex-col`, pe mobil ar rămâne singură pe
+                un rând deasupra, cu spațiu gol în dreapta ei. */}
+            <span className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+              <span className="flex items-center justify-center h-9 w-9 shrink-0 rounded-lg bg-white text-blue-600 ring-1 ring-blue-100">
+                <BadgePercent size={17} />
+              </span>
+
+              <span className="min-w-0">
+                <span className="block text-[13px] sm:text-sm font-bold text-slate-900 leading-snug">
+                  Condiții comerciale preferențiale pentru companii și distribuitori
+                </span>
+                <span className="mt-1 block text-[11px] sm:text-xs text-slate-500 leading-snug">
+                  Preț redus de la 4 paleți la panouri · de la 12 bucăți la invertoare și
+                  acumulatori · ofertă dedicată pentru comenzi container
+                </span>
+              </span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto pl-12 sm:pl-0 text-xs font-semibold text-blue-600">
+              Cere ofertă
+              <ArrowRight size={14} className="shrink-0" />
+            </span>
+          </Link>
         </div>
 
         {/* ── Categorii ──────────────────────────────────────── */}
@@ -148,7 +172,6 @@ export default function GamaProduse() {
                     alt=""
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 300px"
-                    style={{ objectPosition: c.pozitie }}
                     className="object-cover"
                   />
                   <div
@@ -167,7 +190,7 @@ export default function GamaProduse() {
 
                 {/* Conținut */}
                 <div className="flex flex-col flex-1 px-3 pt-4 pb-2">
-                  <h3 className="h-12 text-[17px] font-bold text-slate-900 leading-snug tracking-tight line-clamp-2">
+                  <h3 className="h-12 text-[17px] font-bold text-slate-900 leading-snug line-clamp-2">
                     {c.nume}
                   </h3>
 
@@ -188,7 +211,7 @@ export default function GamaProduse() {
                             de la
                           </div>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-[26px] font-extrabold text-slate-900 tabular-nums leading-none tracking-tight">
+                            <span className="text-[26px] font-extrabold text-slate-900 tabular-nums leading-none">
                               {eur(c.deLa)}
                             </span>
                             <span className="text-base font-bold text-slate-400">€</span>

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Zap, ShieldCheck, Leaf, Award } from "lucide-react";
 
 const slides = [
   {
@@ -154,7 +153,7 @@ export default function HeroSlider() {
                   className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-4"
                   style={{ animationDelay: `${0.3 + (idx * 0.1)}s` }}
                 >
-                  <div className="min-w-[64px] px-2 h-14 rounded-2xl flex items-center justify-center font-black text-lg shrink-0 text-white">
+                  <div className="min-w-[64px] px-2 h-14 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0 text-white">
                     {stat.value}
                   </div>
                   <div>

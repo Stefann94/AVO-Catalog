@@ -1,21 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  /*
+   * Aici era o stare `isScrolled`, actualizată de un ascultător de scroll
+   * care nu era folosit în niciun `className`. Rezultatul: la fiecare
+   * derulare peste pragul de 20px se declanșa un re-render al întregului
+   * navbar, fără nicio schimbare vizibilă. Aspectul rămâne identic.
+   */
 
   return (
     <nav className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
@@ -100,7 +98,7 @@ export default function Navbar() {
           </div>
 
           <Link href="/oferte-en-gros" className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 hover:text-emerald-800 hover:border-emerald-300 hover:from-emerald-100 hover:to-teal-100 hover:shadow-md hover:shadow-emerald-900/5 transition-all font-semibold text-sm rounded-xl">
-            <Package size={16} className="group-hover:scale-110 transition-transform" /> Sisteme Complete
+            <Package size={16} className="group-hover:scale-110 transition-transform" /> Sisteme Industriale
           </Link>
           
         </div>
