@@ -26,9 +26,9 @@ const slides = [
   {
     videoSrc: "/videos/solar.mp4",
     imageSrc: "/images/solar-system.png",
-    badge: "Calitate Garantată",
-    title: "Sisteme Fotovoltaice Complete",
-    subtitle: "Soluții integrate la cheie pentru eficiență energetică și independență maximă, la prețuri de importator.",
+    badge: "Parteneriat B2B",
+    title: "Oferte Exclusive Pentru Parteneri",
+    subtitle: "Beneficiați de prețuri preferențiale de importator, stocuri garantate și livrare prioritară.",
     buttonText: "Cere Ofertă B2B",
     buttonLink: "/cerere-oferta"
   }
@@ -50,119 +50,148 @@ export default function HeroSlider() {
       {slides.map((slide, index) => (
         <div 
           key={index} 
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out z-0 ${index === activeIndex ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
+            index === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+          }`}
         >
+          {/* Fallback color while loading */}
+          <div className="absolute inset-0 bg-slate-900"></div>
+          
           <video
             autoPlay
-            loop
             muted
+            loop
             playsInline
-            className="object-cover object-center w-full h-full"
-            src={slide.videoSrc}
-          />
+            className="w-full h-full object-cover opacity-60"
+          >
+            <source src={slide.videoSrc} type="video/mp4" />
+          </video>
         </div>
       ))}
 
-      {/* Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/60 to-transparent z-10" />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-slate-900/30 z-10" />
+      {/* Modern Gradient Overlays for better text readability */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent"></div>
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-900/40"></div>
 
-      {/* Content */}
-      <div className="relative z-20 w-full max-w-[1800px] mx-auto px-6 lg:px-16 xl:px-24 pt-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      {/* Content - Vertically Centered Text */}
+      <div className="absolute inset-0 z-20 w-full max-w-[1800px] mx-auto px-6 lg:px-16 xl:px-24">
           
-          {/* Left Column: Text */}
-          <div className="lg:col-span-7 max-w-2xl">
-            <div 
-              key={`badge-${activeIndex}`}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/40 border border-slate-600/50 backdrop-blur-md mb-6 animate-[fadeInUp_0.5s_ease-out_forwards]"
-            >
-              <Award size={14} className="text-blue-400" />
-              <span className="text-xs font-semibold text-slate-200 tracking-wide uppercase">{slides[activeIndex].badge}</span>
-            </div>
-            
-            <div className="min-h-[220px]">
-              <h1 
-                key={`title-${activeIndex}`}
-                className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 animate-[fadeInUp_0.5s_ease-out_forwards]"
-              >
-                {slides[activeIndex].title}
-              </h1>
-              <p 
-                key={`subtitle-${activeIndex}`}
-                className="text-lg md:text-xl text-slate-300 mb-10 font-light animate-[fadeInUp_0.5s_ease-out_0.2s_forwards] opacity-0"
-              >
-                {slides[activeIndex].subtitle}
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href={slides[activeIndex].buttonLink} className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95">
-                {slides[activeIndex].buttonText} <ArrowRight size={18} />
-              </Link>
-              <Link href="/contact" className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
-                Contactează-ne
-              </Link>
-            </div>
-
-            {/* Dots Indicator */}
-            <div className="flex items-center gap-3 mt-16">
-              {slides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
-                  className={`relative h-1.5 rounded-full overflow-hidden transition-all duration-500 bg-white/20 ${index === activeIndex ? "w-24" : "w-8 hover:bg-white/40"}`}
-                  aria-label={`Go to slide ${index + 1}`}
+          {/* Top-Left Section: Vertically Centered Text & Buttons */}
+          <div className="flex flex-col justify-center h-full max-w-3xl pt-20">
+            <div className="flex flex-col">
+              
+              {/* Badge Area - Fixed Height */}
+              <div className="h-[40px] mb-4">
+                <div 
+                  key={`badge-${activeIndex}`}
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/40 border border-slate-600/50 backdrop-blur-md animate-[fadeInUp_0.5s_ease-out_forwards]"
                 >
-                  {index === activeIndex && (
-                    <div 
-                      className="absolute top-0 left-0 h-full bg-blue-500" 
-                      style={{ animation: "fillProgress 8s linear forwards" }} 
-                    />
-                  )}
-                </button>
-              ))}
+                  <Award size={14} className="text-blue-400" />
+                  <span className="text-xs font-semibold text-slate-200 tracking-wide uppercase">{slides[activeIndex].badge}</span>
+                </div>
+              </div>
+              
+              {/* Text Area - Strict fixed height to guarantee ZERO layout shift (SEO & UX) */}
+              <div className="h-[340px] sm:h-[300px] lg:h-[340px] flex flex-col justify-center gap-4">
+                <h1 
+                  key={`title-${activeIndex}`}
+                  className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight animate-[fadeInUp_0.5s_ease-out_forwards]"
+                >
+                  {slides[activeIndex].title}
+                </h1>
+                <p 
+                  key={`subtitle-${activeIndex}`}
+                  className="text-lg md:text-xl text-slate-300 font-light animate-[fadeInUp_0.5s_ease-out_0.2s_forwards] opacity-0"
+                >
+                  {slides[activeIndex].subtitle}
+                </p>
+              </div>
+
+              {/* Action Area (Buttons & Dots) */}
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <Link href={slides[activeIndex].buttonLink} className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95">
+                  {slides[activeIndex].buttonText} <ArrowRight size={18} />
+                </Link>
+                <Link href="/contact" className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
+                  Contactează-ne
+                </Link>
+              </div>
+
+              {/* Dots Indicator */}
+              <div className="flex items-center gap-3 mt-8">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveIndex(index)}
+                    className="relative h-1.5 w-24 rounded-full overflow-hidden transition-all duration-500 bg-white/20 hover:bg-white/40"
+                    aria-label={`Go to slide ${index + 1}`}
+                  >
+                    {index === activeIndex && (
+                      <div 
+                        className="absolute top-0 left-0 h-full bg-blue-500" 
+                        style={{ animation: "fillProgress 8s linear forwards" }} 
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Right Column: Features Stack */}
-          <div className="hidden lg:flex flex-col gap-4 lg:col-span-4 lg:col-start-9">
+          {/* Bottom-Right Section: Features Horizontal Bar */}
+          <div className="absolute bottom-16 right-6 lg:right-10 xl:right-10 hidden xl:grid grid-cols-3 gap-4 w-full max-w-3xl">
             {/* Feature 1 */}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-5 rounded-3xl shadow-2xl flex items-center gap-4 hover:bg-slate-900/60 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-                <Zap size={24} />
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                <Zap size={20} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">Eficiență Maximă</h3>
-                <p className="text-sm text-slate-400">Echipamente cu randament dovedit.</p>
+                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Eficiență Maximă</h3>
+                <p className="text-xs text-slate-400 leading-snug">Randament dovedit.</p>
               </div>
             </div>
-
+            
             {/* Feature 2 */}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-5 rounded-3xl shadow-2xl flex items-center gap-4 hover:bg-slate-900/60 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.4s_forwards] opacity-0">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <ShieldCheck size={24} />
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.4s_forwards] opacity-0 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <ShieldCheck size={20} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">Garanție Premium</h3>
-                <p className="text-sm text-slate-400">Suport tehnic și garanție extinsă.</p>
+                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Garanție Premium</h3>
+                <p className="text-xs text-slate-400 leading-snug">Suport și garanție.</p>
               </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-5 rounded-3xl shadow-2xl flex items-center gap-4 hover:bg-slate-900/60 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.5s_forwards] opacity-0">
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
-                <Leaf size={24} />
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.5s_forwards] opacity-0 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                <Leaf size={20} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">Energie Verde</h3>
-                <p className="text-sm text-slate-400">Sustenabilitate la standarde înalte.</p>
+                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Energie Verde</h3>
+                <p className="text-xs text-slate-400 leading-snug">Sustenabilitate.</p>
               </div>
             </div>
           </div>
-
-        </div>
+          
       </div>
+
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fillProgress {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+      `}</style>
     </section>
   );
 }

@@ -8,57 +8,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-slate-50">
       <HeroSlider />
 
-      {/* Quick Categories Bar */}
-      <section className="relative z-30 -mt-12 max-w-[1400px] mx-auto px-6 lg:px-16 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          
-          {/* Quick Cat 1 */}
-          <Link href="/catalog?cat=panouri" className="group bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-2xl border border-blue-100/60 p-3 rounded-2xl shadow-xl shadow-blue-900/5 hover:from-blue-100/90 hover:to-cyan-100/90 transition-all flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
-              <Image src="/panel.jpg" alt="Panouri" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">Panouri Solare</h3>
-              <span className="text-xs text-slate-500 font-medium">Canadian & Aiko</span>
-            </div>
-          </Link>
 
-          {/* Quick Cat 2 */}
-          <Link href="/catalog?cat=invertoare" className="group bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-2xl border border-blue-100/60 p-3 rounded-2xl shadow-xl shadow-blue-900/5 hover:from-blue-100/90 hover:to-cyan-100/90 transition-all flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
-              <Image src="/inverter.jpg" alt="Invertoare" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">Invertoare</h3>
-              <span className="text-xs text-slate-500 font-medium">Deye & Growatt</span>
-            </div>
-          </Link>
-
-          {/* Quick Cat 3 */}
-          <Link href="/catalog?cat=stocare" className="group bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-2xl border border-blue-100/60 p-3 rounded-2xl shadow-xl shadow-blue-900/5 hover:from-blue-100/90 hover:to-cyan-100/90 transition-all flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0">
-              <Image src="/battery.jpg" alt="Acumulatori" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">Acumulatori</h3>
-              <span className="text-xs text-slate-500 font-medium">Stocare Energie</span>
-            </div>
-          </Link>
-
-          {/* Quick Cat 4 */}
-          <Link href="/catalog?cat=accesorii" className="group bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-2xl border border-blue-100/60 p-3 rounded-2xl shadow-xl shadow-blue-900/5 hover:from-blue-100/90 hover:to-cyan-100/90 transition-all flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-400 opacity-20"></div>
-               <span className="text-blue-600 font-bold text-lg">+</span>
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">Accesorii</h3>
-              <span className="text-xs text-slate-500 font-medium">Montaj & Cabluri</span>
-            </div>
-          </Link>
-
-        </div>
-      </section>
 
       {/* Categories Section */}
       <section className="py-24 px-6 lg:px-12 max-w-7xl mx-auto w-full">
