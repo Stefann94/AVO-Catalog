@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# sablonul fara secrete trebuie sa ramana in git, altfel nimeni nu stie ce variabile cere aplicatia
+!.env.example
 
 # vercel
 .vercel

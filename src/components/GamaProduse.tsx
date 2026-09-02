@@ -114,7 +114,10 @@ export default async function GamaProduse() {
   // `optional`: câmpul vine dintr-o extensie care poate să nu fie încă
   // instalată în WordPress. Absența lui e o stare prevăzută, cu rezervă, nu o
   // eroare de build.
-  const date = await fetchGraphQL(GET_PERIOADA_CATALOG_QUERY, {}, { optional: true });
+  const date = await fetchGraphQL(GET_PERIOADA_CATALOG_QUERY, {}, {
+    optional: true,
+    tags: ["perioada"],
+  });
   const perioada = perioadaCatalog(date?.perioadaCatalog, PERIOADA_REZERVA);
 
   return (

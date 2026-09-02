@@ -38,10 +38,11 @@ export default async function PaginaCategorie({
   const slug = categorie[categorie.length - 1];
   const cunoscuta = gasesteCategorie(slug);
 
-  const date = await fetchGraphQL(GET_CATEGORY_PAGE_QUERY, {
-    slug,
-    categorySlug: slug,
-  });
+  const date = await fetchGraphQL(
+    GET_CATEGORY_PAGE_QUERY,
+    { slug, categorySlug: slug },
+    { tags: ["produse"] }
+  );
 
   const dinWoo = date?.productCategory ?? null;
   const produse: Produs[] = date?.products?.nodes ?? [];

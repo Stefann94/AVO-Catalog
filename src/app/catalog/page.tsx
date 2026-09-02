@@ -29,8 +29,8 @@ type ProdusWoo = {
 export const revalidate = 3600;
 
 export default async function CatalogPage() {
-  const productsData = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY);
-  const categoriesData = await fetchGraphQL(GET_CATEGORIES_QUERY);
+  const productsData = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, {}, { tags: ['produse'] });
+  const categoriesData = await fetchGraphQL(GET_CATEGORIES_QUERY, {}, { tags: ['produse'] });
 
   const products: ProdusWoo[] = productsData?.products?.nodes || [];
   const categories: CategorieWoo[] = categoriesData?.productCategories?.nodes || [];

@@ -15,13 +15,27 @@ const WP_GRAPHQL_URL = 'https://www.avogrupinvest.ro/graphql';
  */
 const REVALIDARE_IMPLICITA = 3600;
 
+/**
+ * Eticheta pusă pe orice răspuns venit din WordPress.
+ *
+ * Ea e ce permite webhook-ului să golească exact datele venite de acolo, fără
+ * să atingă restul cache-ului. Fără etichete, singura opțiune ar fi să aștepți
+ * expirarea celor 3600 de secunde: un coleg schimbă un preț, dă refresh, nu
+ * vede nimic, schimbă din nou și te sună.
+ *
+ * Apelurile pot adăuga etichete mai fine (`produse`, `perioada`) ca să poată fi
+ * invalidate separat.
+ */
+export const ETICHETA_WP = 'wp';
+
 export async function fetchGraphQL(
   query: string,
   variables = {},
-  optiuni: { revalidate?: number; optional?: boolean } = {}
+  optiuni: { revalidate?: number; optional?: boolean; tags?: string[] } = {}
 ) {
   const revalidate = optiuni.revalidate ?? REVALIDARE_IMPLICITA;
   const optional = optiuni.optional ?? false;
+  const tags = [ETICHETA_WP, ...(optiuni.tags ?? [])];
   try {
     const res = await fetch(WP_GRAPHQL_URL, {
       method: 'POST',
@@ -34,7 +48,7 @@ export async function fetchGraphQL(
       }),
       ...(revalidate === 0
         ? { cache: 'no-store' as const }
-        : { next: { revalidate } }),
+        : { next: { revalidate, tags } }),
     });
 
     if (!res.ok) {
