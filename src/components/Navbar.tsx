@@ -22,7 +22,9 @@ export default function Navbar() {
       {/* Top Bar (Dark contrast) */}
       <div className="bg-slate-900 border-b border-slate-800 py-2 hidden lg:block">
         <div className="w-full px-6 lg:px-12 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-          <div className="flex items-center gap-6">
+          
+          {/* Left: Contact Info */}
+          <div className="flex items-center gap-6 flex-1">
             <a href="tel:+40721233544" className="flex items-center gap-2 hover:text-white transition-colors">
               <Phone size={12} className="text-blue-400" /> +40.721.233.544
             </a>
@@ -30,11 +32,21 @@ export default function Navbar() {
               <Mail size={12} className="text-blue-400" /> contact@avogrupinvest.ro
             </a>
           </div>
-          <div>
+
+          {/* Center: B2B Announcement */}
+          <div className="hidden xl:flex flex-1 justify-center items-center">
+            <Link href="/cerere-oferta" className="flex items-center hover:text-white transition-colors text-blue-400">
+              <span className="tracking-widest">PARTENERIAT B2B: PREȚURI SPECIALE PENTRU INSTALATORI ȘI REVÂNZĂTORI</span>
+            </Link>
+          </div>
+
+          {/* Right: Location/Contact Link */}
+          <div className="flex-1 flex justify-end">
             <Link href="/contact" className="flex items-center gap-2 hover:text-white transition-colors">
               <MapPin size={12} className="text-blue-400" /> Formular Contact & Locații
             </Link>
           </div>
+
         </div>
       </div>
 

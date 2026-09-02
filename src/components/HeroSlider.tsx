@@ -12,7 +12,12 @@ const slides = [
     title: "Distribuitor Autorizat Deye",
     subtitle: "Invertoare hibride și soluții de stocare de înaltă performanță pentru aplicații rezidențiale și industriale.",
     buttonText: "Vezi Produsele Deye",
-    buttonLink: "/catalog"
+    buttonLink: "/catalog",
+    stats: [
+      { value: "97.6%", label: "Eficiență", desc: "Randament maxim invertor.", accent: "bg-blue-500" },
+      { value: "10 Ani", label: "Garanție", desc: "Standard de la producător.", accent: "bg-emerald-500" },
+      { value: "IP65", label: "Protecție", desc: "Rezistență la praf și apă.", accent: "bg-cyan-500" }
+    ]
   },
   {
     videoSrc: "/videos/aiko.mp4",
@@ -21,7 +26,12 @@ const slides = [
     title: "Eficiență Redefinită: Aiko Solar",
     subtitle: "Tehnologia ABC (All Back Contact) pentru cel mai mare randament la nivel global. Putere maximă pe m².",
     buttonText: "Descoperă Aiko",
-    buttonLink: "/catalog"
+    buttonLink: "/catalog",
+    stats: [
+      { value: "23.8%", label: "Randament", desc: "Cel mai mare la nivel global.", accent: "bg-blue-500" },
+      { value: "15 Ani", label: "Garanție", desc: "Garanție directă produs Aiko.", accent: "bg-emerald-500" },
+      { value: "<0.35%", label: "Degradare", desc: "Scădere de putere anuală.", accent: "bg-cyan-500" }
+    ]
   },
   {
     videoSrc: "/videos/solar.mp4",
@@ -30,7 +40,12 @@ const slides = [
     title: "Oferte Exclusive Pentru Parteneri",
     subtitle: "Beneficiați de prețuri preferențiale de importator, stocuri garantate și livrare prioritară.",
     buttonText: "Cere Ofertă B2B",
-    buttonLink: "/cerere-oferta"
+    buttonLink: "/cerere-oferta",
+    stats: [
+      { value: "5000+", label: "Stocuri", desc: "Echipamente disponibile imediat.", accent: "bg-blue-500" },
+      { value: "24h", label: "Livrare", desc: "Din depozite naționale.", accent: "bg-emerald-500" },
+      { value: "B2B", label: "Prețuri", desc: "Condiții de importator direct.", accent: "bg-cyan-500" }
+    ]
   }
 ];
 
@@ -109,10 +124,10 @@ export default function HeroSlider() {
 
               {/* Action Area (Buttons & Dots) */}
               <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <Link href={slides[activeIndex].buttonLink} className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95">
-                  {slides[activeIndex].buttonText} <ArrowRight size={18} />
+                <Link href={slides[activeIndex].buttonLink} className="w-full sm:w-[280px] inline-flex justify-center items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all">
+                  <span className="truncate">{slides[activeIndex].buttonText}</span>
                 </Link>
-                <Link href="/contact" className="inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
+                <Link href="/contact" className="w-full sm:w-[240px] inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition-all hover:border-white/40">
                   Contactează-ne
                 </Link>
               </div>
@@ -140,38 +155,23 @@ export default function HeroSlider() {
 
           {/* Bottom-Right Section: Features Horizontal Bar */}
           <div className="absolute bottom-16 right-6 lg:right-10 xl:right-10 hidden xl:grid grid-cols-3 gap-4 w-full max-w-3xl">
-            {/* Feature 1 */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-                <Zap size={20} />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Eficiență Maximă</h3>
-                <p className="text-xs text-slate-400 leading-snug">Randament dovedit.</p>
-              </div>
-            </div>
-            
-            {/* Feature 2 */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.4s_forwards] opacity-0 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                <ShieldCheck size={20} />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Garanție Premium</h3>
-                <p className="text-xs text-slate-400 leading-snug">Suport și garanție.</p>
-              </div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.5s_forwards] opacity-0 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
-                <Leaf size={20} />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-sm mb-1 leading-tight">Energie Verde</h3>
-                <p className="text-xs text-slate-400 leading-snug">Sustenabilitate.</p>
-              </div>
-            </div>
+            {slides[activeIndex].stats.map((stat, idx) => {
+              return (
+                <div 
+                  key={`stat-${activeIndex}-${idx}`} 
+                  className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-4"
+                  style={{ animationDelay: `${0.3 + (idx * 0.1)}s` }}
+                >
+                  <div className="min-w-[64px] px-2 h-14 rounded-2xl flex items-center justify-center font-black text-lg shrink-0 text-white">
+                    {stat.value}
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold text-sm mb-1 leading-tight">{stat.label}</h3>
+                    <p className="text-xs text-slate-400 leading-snug">{stat.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
           
       </div>
