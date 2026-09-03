@@ -2,7 +2,7 @@ import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
-import { SUBCATEGORII_CUNOSCUTE, caleSubcategorie } from "@/lib/categorii";
+
 import BannerB2B from "./BannerB2B";
 
 /**
@@ -77,90 +77,76 @@ import imgMontaj from "../../public/cat-montaj.jpg";
    iar eticheta cerea un aspect mai pătrat, de plăcuță. Diferența e
    intenționată, nu o scăpare — orice alt element nou rămâne la 8px.
 
-   4. TREI NIVELURI ÎN CARD, fiecare cu un rol.
-      Ierarhia se face din greutate, dimensiune și închidere, în ordinea în
-      care se citește cardul:
+   4. CARDUL SPUNE TREI LUCRURI, NU ȘAPTE.
+      Ce categorie e, câte produse are, de la cât pornește. Atât. Restul se
+      află după clic, în pagina categoriei, unde e loc ca datele tehnice să
+      fie complete, nu tăiate la două rânduri.
 
-        1. titlu ......... 17px  bold (700)     gray-900   ancora de scanare
-        2. fișa tehnică .. 13px  medium (500)   gray-700   datele de decizie
-        3. ancoră ........ 28px  extrabold      avo-600    singura culoare
+        titlu ..... 16px bold (700)  gray-900   pe bandă de sticlă, peste poză
+        badge ..... 13px bold (700)  gray-900   colțul din dreapta-sus
+        preț ...... 19px extrabold   avo-600    în pastilă, jos-stânga
+        îndemn .... 13px semibold    alb        buton avo-600, închide cardul
 
-      Etichetele fișei, marcajul „DE LA" și unitatea „/ buc" stau în afara
-      scării: sunt marcaje, nu conținut. Toate la 10–11px, medium, gray-500 —
-      majusculele și spațierea le identifică deja ca etichete, deci bold-ul
-      peste ele era o a treia insistență pe același lucru.
+      CE A FOST ÎNAINTE, în ordine: o descriere în proză, un rând de sigle,
+      apoi o fișă tehnică de două rânduri. Toate au căzut.
 
-      NIVELUL 2 A FOST O DESCRIERE ÎN PROZĂ, apoi un rând de sigle. Ambele au
-      căzut, din motive diferite.
+      Proza scria „N-Type TOPCon · 14 modele bifaciale" sau „hibride, on-grid
+      și off-grid". Verificat în src/lib/categorii.ts, enumerările cu punct
+      median sugerau paritate acolo unde catalogul n-o are: „on-grid și
+      off-grid" acoperea 4, respectiv 2 produse din 35. Cine intra pe
+      promisiunea aceea găsea două SKU-uri — clic irosit.
 
-      Proza scria, de pildă, „N-Type TOPCon · 14 modele bifaciale". Problema
-      ei, verificată în src/lib/categorii.ts: enumerările cu punct median
-      sugerau paritate acolo unde catalogul n-o are. „Hibride, on-grid și
-      off-grid" acoperea 29 / 4 / 2 produse; „low și high voltage", 22 / 4;
-      „acoperiș plat, țiglă, tablă trapezoidală", 6 / 1 / 7. Cineva care intra
-      pe promisiunea „off-grid" sau „țiglă" găsea două, respectiv un singur
-      SKU — clic irosit, cea mai scumpă formă de dezamăgire într-un catalog.
-      În plus, jumătate din fapte nu decideau nimic: „LiFePO4" e implicit la
-      orice acumulator în 2026, iar raportul 14/28 modele bifaciale nu schimbă
-      nicio comandă.
+      Siglele rezolvau onestitatea, dar puneau trei imagini plus o pastilă
+      peste o fotografie care avea deja un badge.
 
-      Siglele rezolvau onestitatea, dar aduceau prea multă greutate vizuală
-      într-un card de 281px: trei imagini plus o pastilă, peste o fotografie
-      care are deja un badge. Cardul devenise aglomerat.
+      Fișa tehnică era corectă și onestă, dar era tot un al patrulea nivel de
+      informație într-un card de 281px lățime, iar cifrele ei nu decideau
+      clicul: nimeni nu alege între categorii după câte invertoare sunt
+      hibride. Datele n-au dispărut din proiect, doar din card.
 
-      FIȘA TEHNICĂ le înlocuiește pe amândouă. Două perechi etichetă/valoare,
-      cu exact aceleași cifre pe care le-ar fi comunicat proza — dar spuse
-      complet: nu „hibride, on-grid și off-grid", ci „29 din 35 hibride". E
-      forma în care informația chiar ajută la decizie, fiindcă arată unde e
-      adâncimea, nu doar ce există.
-
-      FIȘA S-A SCRIS O VREME ÎN MONO, cu valorile în gray-900 semibold. N-a
-      ținut. Într-un card de 281px, a doua familie de fonturi nu citește ca
-      precizie, ci ca o bucată lipită din alt document — iar greutatea de pe
-      valori le scotea înaintea titlului, adică fix pe dos față de ordinea în
-      care trebuie citit cardul. Aceeași concluzie ca prima oară când monoul
-      fusese scos din același loc.
-
-      Acum tot cardul stă pe fontul global, iar diferența dintre niveluri o fac
-      numai dimensiunea, greutatea și închiderea. Alinierea pe verticală între
-      carduri rămâne, fiindcă o dă coloana fixă de etichete, nu fontul.
+      BANDA DE STICLĂ de sub titlu folosește rețeta din navbar, literal:
+      `bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150`. Nu e un
+      degrade negru peste poză, cum se face de obicei — un degrade ar
+      întuneca fotografia exact în partea de jos, unde la trei din patru
+      poze stă subiectul.
 
    Contraste verificate (prag WCAG AA, text normal 4.5:1):
-     gray-900 #101828 pe alb ........ 17.75 ✓  (titlu card)
-     gray-700 #364153 pe alb ........ 10.30 ✓  (specificație tehnică)
-     gray-500 #6A7282 pe alb ......... 4.84 ✓  („DE LA", unitate, etichete)
+     gray-900 #101828 pe alb ........ 17.75 ✓  (titluri de secțiune)
+     gray-900 pe banda de sticlă ... 10.16 ✓  (titlu card, badge — vezi mai jos)
+     gray-500 #6A7282 pe alb ......... 4.84 ✓  („DE LA", eticheta pastilei)
      avo-600  #004A99 pe alb ......... 8.61 ✓  (preț, săgeți, buton principal)
-     alb pe avo-600 .................. 8.61 ✓  („Vezi catalogul complet")
+     alb pe avo-600 .................. 8.61 ✓  („Accesează", „Vezi catalogul")
      alb pe gray-900 #101828 ........ 17.75 ✓  (bannerul închis)
      avo-300 #92C1FF pe gray-900 ..... 9.54 ✓  (iconița de pe banner)
 
-   DE CE UNITATEA „/ buc" NU E gray-400. Ar fi treapta firească pentru un
-   element subordonat, dar gray-400 (#99A1AF) dă 2,60:1 pe alb — sub pragul
-   AA de 4,5:1, la un text de 11px. „/ buc" nu e decorativ: spune dacă
-   prețul e pe bucată sau pe panou, adică schimbă sensul cifrei de lângă el.
-   Subordonarea vine din dimensiune (11px față de 28px) și greutate (400
-   față de 800), care o obțin oricum, fără să sacrifice lizibilitatea.
-   Pentru orice text nou se aplică aceeași regulă: gray-500 e cea mai
-   deschisă treaptă admisă pe alb.
+   CUM IESE 10,16 PE BANDA DE STICLĂ. Cifra nu e o mostră luată dintr-o
+   captură, ci marginea de jos, calculată. `bg-slate-100/80` compune 80%
+   slate-100 (#F1F5F9) cu 20% din fotografia de dedesubt; cazul cel mai rău
+   e o fotografie complet neagră, care dă un fundal de rgb(193,196,199).
+   Titlul gray-900 pe el măsoară 10,16:1. La capătul celălalt, pe o
+   fotografie albă, banda devine chiar slate-100 și raportul urcă la 15,9:1.
+   Deci orice poză s-ar pune vreodată în carduri, titlul rămâne peste pragul
+   AA — nu depinde de norocul unei imagini.
+
+   PENTRU TEXT NOU, gray-500 e cea mai deschisă treaptă admisă pe alb.
+   gray-400 (#99A1AF) dă 2,60:1, sub pragul AA, oricât de secundar ar părea
+   elementul; subordonarea se obține din dimensiune și greutate, nu din
+   ștergerea contrastului.
    ══════════════════════════════════════════════════════════════════════════ */
 
-/** Un rând din fișa tehnică a cardului. */
-type Specificatie = { eticheta: string; valoare: string };
 
 type Categorie = {
   slug: string;
   nume: string;
   produse: number;
-  /** Exact două rânduri. Trei au făcut cardul greu, unul singur nu spune destul. */
-  specificatii: [Specificatie, Specificatie];
   deLa?: number;
   unitate?: string;
   /**
    * Ancora de jos pentru categoriile fără preț comparabil. Aceeași gramatică
-   * cu a prețului (etichetă + cifră mare + unitate mică), dar în gray-900:
-   * accentul albastru rămâne rezervat cifrelor pe care le compari între ele.
+   * cu a prețului (etichetă mică + cifră mare), dar cifra e a catalogului,
+   * nu un preț — vezi comentariul de la randare pentru de ce.
    */
-  statistica?: { eticheta: string; valoare: string; unitate: string };
+  statistica?: { eticheta: string; valoare: string };
   imagine: StaticImageData;
 };
 
@@ -192,10 +178,6 @@ const CATEGORII: Categorie[] = [
        împărțire. Numărul de branduri e cea mai utilă alternativă reală: spune
        că nu ești legat de un singur furnizor, ceea ce la panouri — unde
        disponibilitatea variază de la lună la lună — chiar contează. */
-    specificatii: [
-      { eticheta: "Putere", valoare: "410 – 770 Wp" },
-      { eticheta: "Branduri", valoare: "5" },
-    ],
     deLa: 54,
     unitate: "panou",
     imagine: imgPanouri,
@@ -204,10 +186,6 @@ const CATEGORII: Categorie[] = [
     slug: "invertoare",
     nume: "Invertoare",
     produse: 35,
-    specificatii: [
-      { eticheta: "Putere", valoare: "3,6 – 125 kW" },
-      { eticheta: "Hibride", valoare: "29 din 35" },
-    ],
     deLa: 355,
     unitate: "buc",
     imagine: imgInvertoare,
@@ -216,10 +194,6 @@ const CATEGORII: Categorie[] = [
     slug: "stocare-energie",
     nume: "Stocare Energie",
     produse: 39,
-    specificatii: [
-      { eticheta: "Capacitate", valoare: "4 – 241,5 kWh" },
-      { eticheta: "Low-voltage", valoare: "22 din 39" },
-    ],
     deLa: 395,
     unitate: "buc",
     imagine: imgStocare,
@@ -255,40 +229,10 @@ const CATEGORII: Categorie[] = [
        Al doilea rând răspunde la întrebarea care decide dacă mai cauți și în
        altă parte: vin și piesele mărunte, sau doar structura? Cine a comandat
        vreodată o structură fără cleme știe cât costă răspunsul greșit. */
-    specificatii: [
-      { eticheta: "Acoperiș", valoare: "Metalic, plat, țiglă" },
-      { eticheta: "Componente", valoare: "9 din 51" },
-    ],
-    statistica: { eticheta: "K2 Systems", valoare: "28", unitate: "din 51 produse" },
+    statistica: { eticheta: "K2 Systems", valoare: "28" },
     imagine: imgMontaj,
   },
 ];
-
-const SECUNDARE = [
-  { slug: "monitorizare-smart-devices", nume: "Monitorizare & Smart Devices", produse: 8 },
-  { slug: "statii-de-incarcare-auto", nume: "Stații de Încărcare Auto", produse: 4 },
-  { slug: "accesorii", nume: "Accesorii", produse: 4 },
-  { slug: "echipamente-conversie-comutare", nume: "Echipamente Conversie & Comutare", produse: 3 },
-];
-
-/**
- * Subcategoriile arătate sub carduri.
- *
- * Ordinea e după numărul de produse din catalog, fiindcă ăsta e singurul
- * criteriu pe care îl avem: nu există date de vânzări nicăieri în proiect.
- * „Popular" înseamnă aici „cu cel mai mult de ales", nu „cel mai cerut" —
- * K2 Systems iese prima pentru că șinele și clemele au multe coduri, nu
- * pentru că s-ar vinde cel mai mult. Când apar date reale de comenzi,
- * criteriul se schimbă aici, într-un singur loc.
- *
- * Se opresc la 8: sunt 19 subcategorii în total, iar afișate toate ar
- * deveni o listă, nu o bandă de acces rapid. Ultimele 11 au între 1 și 4
- * produse și se ajunge la ele din pagina categoriei-părinte.
- */
-const SUBCATEGORII_POPULARE = [...SUBCATEGORII_CUNOSCUTE]
-  .sort((a, b) => b.produse - a.produse)
-  .slice(0, 8);
-
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
 export default async function GamaProduse() {
@@ -370,7 +314,7 @@ export default async function GamaProduse() {
                 {/* `overflow-hidden` stă aici, nu doar pe card: fără el,
                     imaginea mărită la hover ar ieși peste colțurile rotunjite
                     ale ramei. */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   <Image
                     src={c.imagine}
                     alt=""
@@ -399,196 +343,96 @@ export default async function GamaProduse() {
                       `bg-white/70`, nu /60: peste cea mai închisă porțiune de
                       fotografie din cele patru, textul gray-900 dă 8,85:1, în
                       loc de 6,70:1. Ambele trec, dar imaginile se pot schimba. */}
-                  <span className="absolute top-3 right-3 inline-flex items-center h-8 px-3 rounded-md bg-white/70 backdrop-blur-lg backdrop-saturate-150 border border-white/40 text-[13px] font-bold text-gray-900">
+                  <span className="absolute top-3 right-3 inline-flex items-center h-8 px-3 rounded-md bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-white/40 text-[13px] font-bold text-gray-900">
                     {c.produse} produse
                   </span>
+                  {/* Banda cu titlul, așezată pe fotografie.
+
+                      Rețeta de sticlă e copiată literal din navbar —
+                      `bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150` —
+                      nu aproximată. Saturația în plus e ce face diferența
+                      dintre „sticlă" și „gri translucid": fără ea, culorile
+                      fotografiei de dedesubt ies spălăcite și banda pare o
+                      folie opacă.
+
+                      Nu e un degrade negru peste poză, cum se face de obicei.
+                      Un degrade ar întuneca fotografia tocmai în partea de jos,
+                      unde la trei din patru poze stă subiectul; sticla o lasă
+                      să se vadă întreagă, doar difuzată.
+
+                      Titlul rămâne pe două rânduri maximum, cu înălțime fixă,
+                      ca banda să aibă aceeași grosime pe toate cardurile —
+                      altfel marginea de sus a benzii ar sări de la un card la
+                      altul și grila și-ar pierde linia. */}
+                  <div className="absolute inset-x-0 bottom-0 bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 px-4 py-3">
+                    <h3 className="text-[16px] font-bold text-gray-900 leading-tight truncate">
+                      {c.nume}
+                    </h3>
+                  </div>
                 </div>
 
-                {/* Conținut */}
-                <div className="flex flex-col flex-1 p-5">
-                  {/* NIVEL 1 — titlul.
-                      Bold (700) și gray-900, aproape negru. E ancora după care
-                      se scanează grila: ochiul trebuie să prindă categoria
-                      înaintea oricărei cifre. Crescut de la 16px la 17px, cu
-                      `h-12` în loc de `h-11`, ca două rânduri să încapă în
-                      continuare fără să taie descendentele. */}
-                  <h3 className="h-12 text-[17px] font-bold text-gray-900 leading-snug line-clamp-2">
-                    {c.nume}
-                  </h3>
+                {/* Piciorul cardului: ancora de preț și îndemnul.
 
-                  {/* NIVEL 2 — fișa tehnică.
+                    Fișa tehnică din mijloc a dispărut. Cardul spune acum trei
+                    lucruri — ce categorie e, câte produse are, de la cât
+                    pornește — iar restul se află după clic. Detaliile tehnice
+                    nu decideau clicul; le acoperă pagina de categorie, unde e
+                    loc să fie complete, nu tăiate la două rânduri.
 
-                      Două perechi etichetă/valoare, aliniate pe o coloană
-                      comună de etichete. Muchia verticală pe care o creează
-                      coloana e ce transformă două rânduri de text într-un
-                      tabel: fără ea ar fi tot proză, doar scrisă mai scurt.
-
-                      Lățimea coloanei e 80px, măsurată pe cea mai lungă
-                      etichetă („Low-voltage"), plus rezervă. Fixă, nu `auto`,
-                      ca valorile să înceapă în același loc pe toate cele patru
-                      carduri — altfel fiecare card ar avea alt punct de
-                      pornire și grila și-ar pierde ordinea.
-
-                      NIMIC AICI NU E MONOSPAȚIAT. O a doua familie de fonturi
-                      într-un card de 281px nu citește ca precizie, ci ca o
-                      bucată lipită din alt document: cifrele ieșeau din
-                      tiparul cardului și trăgeau ochiul înaintea titlului.
-                      Aceeași concluzie ca data trecută, când monoul fusese
-                      scos din același loc. Alinierea pe verticală rămâne
-                      oricum, fiindcă o dă coloana de etichete, nu fontul. */}
-                  <dl className="mt-3 space-y-2">
-                    {c.specificatii.map((s) => (
-                      <div key={s.eticheta} className="flex items-baseline gap-3">
-                        {/* Eticheta e medium (500), nu bold. Majusculele și
-                            spațierea spun deja „etichetă"; bold-ul peste ele
-                            era a treia insistență pe același lucru și scotea
-                            rândul în față mai tare decât titlul. */}
-                        <dt className="w-20 shrink-0 text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500 leading-tight">
-                          {s.eticheta}
-                        </dt>
-                        {/* Valoarea e gray-700 medium, nu gray-900 semibold.
-                            Fișa e nivelul al doilea al cardului: trebuie să se
-                            citească limpede, nu să concureze titlul. */}
-                        <dd className="min-w-0 truncate text-[13px] font-medium text-gray-700 leading-tight">
-                          {s.valoare}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  {/* Linia interioară e mai deschisă decât conturul cardului
-                      (gray-100 față de gray-200), ca să separe fără să pară
-                      o a doua margine. */}
-                  <div className="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between gap-3 min-h-[56px]">
-                    <div className="min-w-0">
-                      {c.deLa ? (
-                        <>
-                          {/* MARCAJ TEHNIC — „DE LA".
-                              Bold (700) în loc de medium, cu spațiere de
-                              0,05em. Bold-ul la 10px nu îngroașă, ci
-                              densifică: eticheta citește ca marcaj de fișă
-                              tehnică, nu ca text mărunt uitat acolo. */}
-                          <div className="text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500 mb-1.5">
-                            de la
-                          </div>
-                          {/* `items-baseline`, nu `items-center`: „€" și
-                              „/ buc" stau pe linia de bază a cifrei. Centrate
-                              pe înălțimea ei ar pluti la mijlocul lui 28px și
-                              ar rupe rândul optic. */}
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-[28px] sm:text-[30px] font-extrabold text-avo-600 leading-none">
-                              {eur(c.deLa)}
-                            </span>
-                            <span className="text-base font-bold text-avo-600">€</span>
-                            {/* Unitatea: greutate normală, mai mică decât
-                                prețul. Subordonarea o dau dimensiunea și
-                                greutatea, nu o culoare prea deschisă — vezi
-                                nota despre gray-400 din capul fișierului. */}
-                            <span className="ml-1.5 text-[11px] font-normal text-gray-500 truncate">
-                              / {c.unitate}
-                            </span>
-                          </div>
-                        </>
-                      ) : c.statistica ? (
-                        /* Aceeași construcție ca prețul — etichetă de 10px,
-                           cifră mare, unitate mică pe linia de bază — dar în
-                           gray-900, nu în avo-600. Albastrul înseamnă „cifră
-                           pe care o compari cu alt furnizor"; asta e o măsură
-                           a catalogului, nu un preț, și n-are voie să pretindă
-                           altceva.
-
-                           Poziția e însă identică, iar asta e tot rostul:
-                           rândul de jos al grilei își păstrează linia de bază
-                           optică pe toate cele patru carduri. */
-                        <>
-                          <div className="text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500 mb-1.5">
-                            {c.statistica.eticheta}
-                          </div>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-[28px] sm:text-[30px] font-extrabold text-gray-900 leading-none">
-                              {c.statistica.valoare}
-                            </span>
-                            <span className="ml-1.5 text-[11px] font-normal text-gray-500 truncate">
-                              {c.statistica.unitate}
-                            </span>
-                          </div>
-                        </>
-                      ) : null}
-                    </div>
-
-                    {/* Săgeata de acțiune, mărită de la 16px la 24px: la
-                        dimensiunea veche citea ca ornament, nu ca îndemn.
-
-                        Se deplasează 2px dreapta-sus la hover, în direcția în
-                        care arată — mișcarea confirmă că duce undeva. Se
-                        deplasează doar pictograma, nu și pastila din spate:
-                        altfel s-ar muta tot blocul și ar părea că sare cardul.
-                        Pastila e cu 8px mai mare decât săgeata pe fiecare
-                        latură, deci cei 2px rămân bine în interior. */}
-                    <span
-                      aria-hidden
-                      className="flex items-center justify-center h-10 w-10 shrink-0 rounded-lg text-avo-600 transition-colors duration-200 group-hover:bg-avo-50"
-                    >
-                      <ArrowUpRight
-                        size={24}
-                        strokeWidth={2.25}
-                        className="transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                      />
+                    „Accesează" nu e un `<button>` și nici un `<a>`: tot cardul
+                    e deja un link, iar un element interactiv într-altul e
+                    invalid și încurcă cititoarele de ecran. E un `<span>`
+                    desenat ca buton, care reacționează la hover-ul cardului
+                    întreg — deci și la clic oriunde pe card, nu doar pe el. */}
+                <div className="flex items-stretch gap-2 p-3">
+                  {c.deLa ? (
+                    /* Prețul stă pe aceeași sticlă ca banda de sus. Aici
+                       fotografia nu mai e dedesubt, deci translucidul se
+                       citește ca un gri foarte deschis — exact rolul lui:
+                       să despartă cifra de albul cardului fără o a doua ramă. */
+                    <span className="inline-flex items-baseline gap-1 shrink-0 h-11 px-3.5 rounded-lg bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-slate-200/50">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        de la
+                      </span>
+                      <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                        {eur(c.deLa)}
+                      </span>
+                      <span className="text-[12px] font-bold text-avo-600">€</span>
+                      {/* Unitatea rămâne: „de la 54" fără ea nu spune dacă prețul
+                          e pe panou sau pe bucată, adică e o cifră fără sens. */}
+                      <span className="text-[10px] font-normal text-gray-500 whitespace-nowrap">/ {c.unitate}</span>
                     </span>
-                  </div>
+                  ) : c.statistica ? (
+                    /* Montajul n-are preț de comparat — cel mai ieftin produs e
+                       o clemă de 1,87 €, inutilă lângă „de la 54 €". Primește
+                       în schimb cifra care chiar diferențiază categoria, în
+                       aceeași pastilă și pe același loc, ca rândul de jos să
+                       păstreze o linie comună pe toate cele patru carduri. */
+                    <span className="inline-flex items-baseline gap-1 shrink-0 h-11 px-3.5 rounded-lg bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-slate-200/50">
+                      <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                        {c.statistica.valoare}
+                      </span>
+                      <span className="self-center text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
+                        {c.statistica.eticheta}
+                      </span>
+                    </span>
+                  ) : null}
+
+                  {/* Îndemnul ia toată lățimea rămasă, deci se termină exact la
+                      marginea cardului: „se închide cardul cu un buton". */}
+                  <span className="flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-avo-600 text-[13px] font-semibold text-white transition-colors duration-200 group-hover:bg-avo-700">
+                    Accesează
+                    <ArrowUpRight
+                      aria-hidden
+                      size={16}
+                      strokeWidth={2.5}
+                      className="shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </span>
                 </div>
               </Link>
             );
           })}
-        </div>
-
-        {/* ── Mergi direct la ────────────────────────────────
-            Două grupuri, în același bloc, fiindcă din perspectiva cuiva care
-            caută ceva anume sunt același lucru: o destinație îngustă. Că una e
-            subcategorie în WooCommerce și cealaltă categorie de nivel 1 e un
-            detaliu de implementare, nu un concept pentru vizitator. Sunt
-            despărțite doar de o etichetă, ca ierarhia să rămână citibilă.
-
-            Cele patru carduri de deasupra acoperă 153 din 172 de produse, dar
-            trimit în categorii mari. Aici sunt destinațiile precise: 137 de
-            produse stau în subcategorii care, până acum, n-aveau nicio cale
-            de acces din pagina de start. */}
-        <div className="mt-8 sm:mt-10">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
-            Subcategorii cu cele mai multe produse
-          </h3>
-          <div className="mt-3 flex flex-wrap gap-2.5">
-            {SUBCATEGORII_POPULARE.map((s) => (
-              <Link
-                key={s.slug}
-                href={caleSubcategorie(s)}
-                className="group inline-flex items-center gap-2.5 h-10 pl-4 pr-3 rounded-lg bg-white border border-gray-200 outline-1 outline-transparent text-[13px] font-semibold text-gray-700 transition-colors duration-200 hover:border-avo-600 hover:outline-avo-600 hover:text-avo-600"
-              >
-                {s.nume}
-                <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-md bg-gray-100 text-[11px] font-semibold text-gray-600 transition-colors duration-200 group-hover:bg-avo-50 group-hover:text-avo-600">
-                  {s.produse}
-                </span>
-              </Link>
-            ))}
-          </div>
-
-          <h3 className="mt-6 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-            Restul categoriilor
-          </h3>
-          <div className="mt-3 flex flex-wrap gap-2.5">
-            {SECUNDARE.map((s) => (
-              <Link
-                key={s.slug}
-                href={`/catalog/${s.slug}`}
-                className="group inline-flex items-center gap-2.5 h-10 pl-4 pr-3 rounded-lg bg-white border border-gray-200 outline-1 outline-transparent text-[13px] font-semibold text-gray-700 transition-colors duration-200 hover:border-avo-600 hover:outline-avo-600 hover:text-avo-600"
-              >
-                {s.nume}
-                <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-md bg-gray-100 text-[11px] font-semibold text-gray-600 transition-colors duration-200 group-hover:bg-avo-50 group-hover:text-avo-600">
-                  {s.produse}
-                </span>
-              </Link>
-            ))}
-          </div>
         </div>
 
         {/* ── Subsol ─────────────────────────────────────────── */}
