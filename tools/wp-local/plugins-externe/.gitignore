@@ -1,0 +1,4 @@
+# Arhive descarcate de configureaza.sh de la sursele lor oficiale.
+# Nu intra in git: sunt artefacte, nu cod al proiectului.
+*
+!.gitignore

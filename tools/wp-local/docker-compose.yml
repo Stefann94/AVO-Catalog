@@ -1,0 +1,102 @@
+# WordPress local pentru dezvoltare și testare.
+#
+# Există ca să nu mai trimitem nimic direct în producție netestat: plugin-ul din
+# tools/wordpress, importul CSV al catalogului și interogările GraphQL se probează
+# aici, pe o instalare de unică folosință.
+#
+# Pornire:   docker compose up -d
+# Oprire:    docker compose down            (păstrează datele)
+# Ștergere:  docker compose down -v         (șterge tot, o iei de la zero)
+#
+# WordPress: http://localhost:8090   ·   admin / admin
+# GraphQL:   http://localhost:8090/graphql
+#
+# Portul 8080 e ocupat de stack-ul proiectului SolarOne de pe acelasi calculator.
+# Mediile sunt tinute separat intentionat: sunt proiecte diferite, cu repo-uri
+# diferite, iar un `docker compose down -v` in unul nu trebuie sa-l darame pe celalalt.
+# Schimba portul cu variabila PORT_WP din fisierul .env de langa acest compose.
+
+name: avo-wp-local
+
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - date-db:/var/lib/mysql
+    # WordPress pornește mai repede decât MariaDB și ar da eroare de conexiune.
+    # `depends_on` singur așteaptă doar pornirea containerului, nu și baza gata
+    # de interogări — de aceea verificarea de mai jos.
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT_WP:-8090}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      # Erorile PHP se văd în loc să dispară într-un ecran alb — exact ce ne
+      # lipsea când am trimis plugin-ul în producție fără să-l fi rulat.
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', true);
+        define('SCRIPT_DEBUG', true);
+        define('GRAPHQL_DEBUG', true);
+    volumes:
+      - date-wp:/var/www/html
+      # Plugin-ul nostru, montat direct din repo. Modifici fișierul în editor și
+      # WordPress-ul local vede schimbarea imediat, fără reîncărcare de arhivă.
+      - ../wordpress:/var/www/html/wp-content/plugins/avo-legatura
+
+  # Rulează comenzi WP-CLI în aceeași instalare:
+  #   docker compose run --rm wpcli plugin list
+  wpcli:
+    image: wordpress:cli-php8.3
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      # Ruland ca www-data, WP-CLI nu are unde sa-si scrie cache-ul: incearca
+      # /.wp-cli/cache/ in radacina si esueaza cu "Permission denied", dupa care
+      # orice instalare de plugin dintr-un URL cade cu "A valid URL was not
+      # provided" - un mesaj care nu are nicio legatura cu cauza reala.
+      HOME: /tmp
+      WP_CLI_CACHE_DIR: /tmp/wp-cli-cache
+    volumes:
+      - date-wp:/var/www/html
+      - ../wordpress:/var/www/html/wp-content/plugins/avo-legatura
+      - ../catalog-import:/import:ro
+      # Plugin-uri care nu sunt pe wordpress.org, descarcate de scriptul de
+      # configurare direct de la sursa lor oficiala.
+      - ./plugins-externe:/plugins-externe:ro
+    # Containerul oficial de CLI rulează ca utilizatorul 33 (www-data), altfel
+    # fișierele scrise de el ar rămâne cu proprietar root și Apache n-ar putea
+    # să le citească.
+    user: "33:33"
+    entrypoint: ["wp"]
+    profiles: ["cli"]
+
+volumes:
+  date-db:
+  date-wp:
