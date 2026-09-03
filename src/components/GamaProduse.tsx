@@ -42,23 +42,29 @@ import imgMontaj from "../../public/cat-montaj.jpg";
    șablon generic, așa că orice adăugare ulterioară trebuie să le respecte.
 
    1. RAMPA NEUTRĂ E `gray`, NU `slate`.
-      Fundalul secțiunii (#F8F9FA), conturul cardurilor (#E5E7EB) și griul
-      tehnic (#6A7282) sunt exact `gray-50/200/500` din Tailwind v4. Restul
+      Fundalul secțiunii (#F8F9FA), conturul cardurilor (#D1D5DC) și griul
+      tehnic (#6A7282) sunt exact `gray-50/300/500` din Tailwind v4. Restul
       site-ului e pe `slate`; aici trecem pe `gray` fiindcă e un neutru curat,
-      fără tenta rece a lui slate, iar conturul de 1px devine astfel discret,
+      fără tenta rece a lui slate, iar conturul devine astfel neutru,
       nu albăstrui.
 
    2. CONTUR, NU UMBRĂ.
       Nicio clasă `shadow-*` în toată secțiunea. Adâncimea vine dintr-un
-      contur solid de 1px. Umbrele difuze mari sunt exact semnătura vizuală a
-      șabloanelor generice; un contur crisp citește ca desen tehnic, ceea ce
-      se potrivește cu ce vinde firma.
+      contur solid: 2px la carduri, 1px la restul. Umbrele difuze mari sunt
+      exact semnătura vizuală a șabloanelor generice; un contur crisp citește
+      ca desen tehnic, ceea ce se potrivește cu ce vinde firma.
 
    3. UN SINGUR ACCENT: `avo-600` (#004A99), pe hue-ul siglei.
-      Îl primesc numai elementele de decizie — prețul principal și săgeata de
-      acțiune — plus conturul cardului la hover. Nimic altceva. Secțiunea
-      avea albastru, emerald cu degrade, galben și cyan în concurență; niciunul
-      nu însemna nimic.
+      Îl primesc numai elementele de decizie. Secțiunea avea albastru, emerald
+      cu degrade, galben și cyan în concurență; niciunul nu însemna nimic.
+
+      În carduri, singurul lucru albastru în repaus e cifra de preț. Butonul
+      „Accesează" stă gri și se colorează abia la hover. Patru butoane albastru
+      plin, unul lângă altul, trăgeau privirea înaintea fotografiilor și a
+      cifrelor — adică înaintea lucrurilor după care se alege o categorie.
+      Culoarea plină e rezervată momentului în care butonul chiar e ținta
+      mouse-ului; până atunci conturul și fundalul gri spun destul că e
+      apăsabil.
 
       Nu e `blue-600` (#2563EB), albastrul implicit din Tailwind: acela bate în
       violet și e același cu al lui Apple și al oricărui SaaS. Dar nu e nici
@@ -84,8 +90,8 @@ import imgMontaj from "../../public/cat-montaj.jpg";
 
         titlu ..... 16px bold (700)  gray-900   pe bandă de sticlă, peste poză
         badge ..... 13px bold (700)  gray-900   colțul din dreapta-sus
-        preț ...... 19px extrabold   avo-600    în pastilă, jos-stânga
-        îndemn .... 13px semibold    alb        buton avo-600, închide cardul
+        preț ...... 17px extrabold   avo-600    în pastilă, jos-stânga
+        îndemn .... 13px semibold    gray-800   buton gri, albastru la hover
 
       CE A FOST ÎNAINTE, în ordine: o descriere în proză, un rând de sigle,
       apoi o fișă tehnică de două rânduri. Toate au căzut.
@@ -119,7 +125,8 @@ import imgMontaj from "../../public/cat-montaj.jpg";
      gray-900 pe sticlă .. 6.09 – 13.90 ✓  (titlu card, badge — vezi mai jos)
      gray-500 #6A7282 pe alb ......... 4.84 ✓  („DE LA", eticheta pastilei)
      avo-600  #004A99 pe alb ......... 8.61 ✓  (preț, săgeți, buton principal)
-     alb pe avo-600 .................. 8.61 ✓  („Accesează", „Vezi catalogul")
+     alb pe avo-600 .................. 8.61 ✓  („Accesează" la hover)
+     gray-800 pe gray-100 ........... 13.27 ✓  („Accesează" în repaus)
      alb pe gray-900 #101828 ........ 17.75 ✓  (bannerul închis)
      avo-300 #92C1FF pe gray-900 ..... 9.54 ✓  (iconița de pe banner)
 
@@ -315,7 +322,7 @@ export default async function GamaProduse() {
                */
               <article
                 key={c.slug}
-                className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
+                className="flex flex-col overflow-hidden rounded-lg border-2 border-gray-300 bg-white"
               >
                 {/* Fotografia, cu titlul așezat pe ea.
                     `group/foto` limitează zoom-ul la hover-ul acestei zone, nu
@@ -388,7 +395,7 @@ export default async function GamaProduse() {
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                           de la
                         </span>
-                        <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                        <span className="text-[17px] font-extrabold text-avo-600 leading-none">
                           {eur(c.deLa)}
                         </span>
                         <span className="text-[12px] font-bold text-avo-600">€</span>
@@ -408,7 +415,7 @@ export default async function GamaProduse() {
                        păstreze o linie comună pe toate cele patru carduri. */
                     <div className="flex shrink-0 items-center justify-center h-11 px-3 rounded-lg bg-gray-50 border border-gray-200">
                       <span className="flex items-baseline gap-1.5">
-                        <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                        <span className="text-[17px] font-extrabold text-avo-600 leading-none">
                           {c.statistica.valoare}
                         </span>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
@@ -424,7 +431,7 @@ export default async function GamaProduse() {
                       nu al cardului. */}
                   <Link
                     href={cale}
-                    className="group/buton flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-avo-600 text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-avo-700"
+                    className="group/buton flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-gray-100 border border-gray-200 text-[13px] font-semibold text-gray-800 transition-colors duration-200 hover:bg-avo-600 hover:border-avo-600 hover:text-white"
                   >
                     Accesează
                     <ArrowUpRight
