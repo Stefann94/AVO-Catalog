@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, PackageSearch } from "lucide-react";
 import { fetchGraphQL } from "@/lib/graphql-client";
 import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
-import { CATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
+import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
 
 /**
  * Pagina de categorie, rută catch-all ca să acopere și ierarhia pe două
@@ -26,7 +26,13 @@ type Produs = {
 };
 
 export async function generateStaticParams() {
-  return CATEGORII_CUNOSCUTE.map((c) => ({ categorie: [c.slug] }));
+  return [
+    ...CATEGORII_CUNOSCUTE.map((c) => ({ categorie: [c.slug] })),
+    // Și cele două niveluri: /catalog/invertoare/hibride-trifazate. Fără ele
+    // subcategoriile s-ar randa la cerere, deci prima vizită ar aștepta
+    // răspunsul WordPress-ului, care vine în ~4 secunde.
+    ...SUBCATEGORII_CUNOSCUTE.map((s) => ({ categorie: [s.parinte, s.slug] })),
+  ];
 }
 
 export default async function PaginaCategorie({
