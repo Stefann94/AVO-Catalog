@@ -121,7 +121,7 @@ import imgMontaj from "../../public/cat-montaj.jpg";
       care trebuie citit cardul. Aceeași concluzie ca prima oară când monoul
       fusese scos din același loc.
 
-      Acum tot cardul stă pe DM Sans, iar diferența dintre niveluri o fac
+      Acum tot cardul stă pe fontul global, iar diferența dintre niveluri o fac
       numai dimensiunea, greutatea și închiderea. Alinierea pe verticală între
       carduri rămâne, fiindcă o dă coloana fixă de etichete, nu fontul.
 
@@ -316,7 +316,7 @@ export default async function GamaProduse() {
               Gama de produse{perioada.eticheta ? ` ${perioada.eticheta}` : ""}
             </h2>
 
-            {/* Ștampila e o dată tehnică, dar rămâne în DM Sans, ca tot
+            {/* Ștampila e o dată tehnică, dar rămâne pe fontul global, ca tot
                 restul secțiunii. Fără umbră: contur de 1px. */}
             {perioada.interval ? (
               <div className="inline-flex items-center gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-4 rounded-lg bg-white border border-gray-200">
