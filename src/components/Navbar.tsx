@@ -53,12 +53,15 @@ export default function Navbar() {
         <div className="w-full px-4 sm:px-6 lg:px-12 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center shrink min-w-0">
-          <Image 
-            src="/logo.png" 
-            alt="Avo Grup Invest Logo" 
-            width={400} 
-            height={48} 
-            className="h-8 sm:h-12 md:h-14 w-auto max-w-full object-contain drop-shadow-sm"
+          {/* Dimensiunile sunt cele reale ale fisierului (1899x320). next/image
+              le foloseste ca sa rezerve locul inainte de descarcare; daca nu
+              corespund, latimea randata iese gresita si bara sare la incarcare. */}
+          <Image
+            src="/logo.png"
+            alt="Avo Grup Invest"
+            width={1899}
+            height={320}
+            className="h-9 sm:h-10 md:h-11 xl:h-12 w-auto max-w-full object-contain"
             priority
           />
         </Link>

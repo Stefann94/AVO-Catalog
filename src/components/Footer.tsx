@@ -97,9 +97,9 @@ export default function Footer() {
             <Image
               src="/logo.png"
               alt={FIRMA.nume}
-              width={400}
-              height={49}
-              className="h-9 w-auto object-contain object-left mb-5"
+              width={1899}
+              height={320}
+              className="h-10 w-auto object-contain object-left mb-5"
             />
             <p className="text-sm text-slate-500 leading-relaxed max-w-sm mb-6">
               Distribuitor de echipamente fotovoltaice pentru instalatori și revânzători.
