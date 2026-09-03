@@ -24,16 +24,16 @@ export default function Navbar() {
           {/* Left: Contact Info */}
           <div className="flex items-center gap-6 flex-1">
             <a href="tel:+40721233544" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Phone size={12} className="text-blue-400" /> +40.721.233.544
+              <Phone size={12} className="text-avo-400" /> +40.721.233.544
             </a>
             <a href="mailto:contact@avogrupinvest.ro" className="flex items-center gap-2 hover:text-white transition-colors">
-              <Mail size={12} className="text-blue-400" /> contact@avogrupinvest.ro
+              <Mail size={12} className="text-avo-400" /> contact@avogrupinvest.ro
             </a>
           </div>
 
           {/* Center: B2B Announcement */}
           <div className="hidden xl:flex flex-1 justify-center items-center">
-            <Link href="/cerere-oferta" className="flex items-center hover:text-white transition-colors text-blue-400">
+            <Link href="/cerere-oferta" className="flex items-center hover:text-white transition-colors text-avo-400">
               <span className="tracking-wider whitespace-nowrap">CONDIȚII COMERCIALE PREFERENȚIALE PENTRU COMPANII ȘI DISTRIBUITORI</span>
             </Link>
           </div>
@@ -41,7 +41,7 @@ export default function Navbar() {
           {/* Right: Location/Contact Link */}
           <div className="flex-1 flex justify-end">
             <Link href="/contact" className="flex items-center gap-2 hover:text-white transition-colors">
-              <MapPin size={12} className="text-blue-400" /> Formular Contact & Locații
+              <MapPin size={12} className="text-avo-400" /> Formular Contact & Locații
             </Link>
           </div>
 
@@ -65,13 +65,13 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-3">
-          <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold text-sm rounded-xl">
+          <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 transition-all font-semibold text-sm rounded-xl">
             Catalog Produse
           </Link>
           
           <div className="relative group cursor-pointer">
-            <div className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold text-sm flex items-center gap-2 rounded-xl">
-              Parteneri B2B <ChevronDown size={14} className="group-hover:scale-125 group-hover:text-blue-500 group-hover:drop-shadow-md transition-all duration-300" />
+            <div className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 transition-all font-semibold text-sm flex items-center gap-2 rounded-xl">
+              Parteneri B2B <ChevronDown size={14} className="group-hover:scale-125 group-hover:text-avo-500 group-hover:drop-shadow-md transition-all duration-300" />
             </div>
             {/* Dropdown B2B Wrapper (Hover Bridge) */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 pt-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 transform group-hover:translate-y-0 translate-y-2 z-50">
@@ -88,8 +88,8 @@ export default function Navbar() {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 bg-slate-200/30 hover:bg-blue-50/50 transition-colors cursor-pointer group/link">
-                  <Link href="/devino-partener" className="text-sm text-blue-600 font-bold flex items-center gap-1.5 justify-center">
+                <div className="p-4 bg-slate-200/30 hover:bg-avo-50/50 transition-colors cursor-pointer group/link">
+                  <Link href="/devino-partener" className="text-sm text-avo-600 font-bold flex items-center gap-1.5 justify-center">
                     Află cum devii partener <ArrowUpRight size={16} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                   </Link>
                 </div>
@@ -115,14 +115,14 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold group">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 transition-all font-semibold group">
               <User size={16} className="group-hover:scale-110 transition-transform" />
               <span className="text-xs uppercase tracking-wider">Cont B2B</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white hover:shadow-md hover:shadow-blue-900/5 transition-all font-semibold relative group">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100/60 border border-slate-200/60 rounded-xl text-slate-600 hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 transition-all font-semibold relative group">
               <div className="relative">
                 <ShoppingCart size={16} className="group-hover:scale-110 transition-transform" />
-                <span className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
+                <span className="absolute -top-2.5 -right-2.5 bg-avo-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
               </div>
               <span className="text-xs uppercase tracking-wider ml-1">Coș</span>
             </button>
@@ -149,11 +149,11 @@ export default function Navbar() {
           <input 
               type="text" 
               placeholder="Caută produse..." 
-              className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 w-full"
+              className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg px-4 py-3 focus:outline-none focus:border-avo-600 w-full"
             />
           <Link href="/catalog" className="text-slate-700 text-lg py-2 border-b border-slate-100">Catalog Produse</Link>
           <Link href="/parteneri" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex justify-between items-center">
-            Parteneri B2B <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-md">Gold / Platinum</span>
+            Parteneri B2B <span className="text-xs bg-avo-50 text-avo-600 px-2 py-1 rounded-md">Gold / Platinum</span>
           </Link>
           <Link href="/oferte-en-gros" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex items-center gap-2">
              <Package size={18} className="text-emerald-600"/> Oferte Palet & En-Gros

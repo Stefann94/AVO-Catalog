@@ -5,6 +5,55 @@
   --foreground: #171717;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   Albastrul de brand
+   ──────────────────────────────────────────────────────────────────────────
+   Toată scara stă pe hue-ul 255,8° din OKLCH — unghiul măsurat din albastrul
+   siglei (public/logo.png, #1A59A5). Nu e albastrul implicit al lui Tailwind
+   (`blue-600`, #2563EB): acela e la 264°, bate în violet și e același cu al
+   lui Apple, Bootstrap și al oricărui SaaS. De-acolo venea senzația că
+   interfața e a framework-ului, nu a firmei.
+
+   DE CE NU E SIGLA EXACT LA 600. Sigla e mai deschisă (L=0,468) decât are
+   nevoie o cifră de preț pe alb. Treapta 600 coboară la L=0,420, ca prețul
+   să aibă greutate. Albastrul literal al siglei cade acum între 500 și 600 —
+   rămâne referința de hue, nu valoarea de interfață.
+
+   DE CE CROMATICA E ȚINUTĂ SUS. Versiunea anterioară pierdea saturație pe
+   măsură ce se închidea (C scădea de la 0,138 la 600 până la 0,082 la 900).
+   Efectul: treptele închise nu arătau „albastru mai închis", ci „albastru mai
+   gri", apropiindu-se de negrul titlurilor. Aici fiecare treaptă ia cromatica
+   maximă din gamutul sRGB la luminozitatea ei, plafonată la 0,16 ca treptele
+   deschise să nu devină fluorescente.
+
+   PRAGUL CARE CONTEAZĂ. Titlul cardului, titlul secțiunii și fundalul
+   bannerului sunt toate #101828. Prețul stă direct sub titlu, deci accentul
+   trebuie să rămână distinct de negrul acela, altfel nu mai citește ca
+   accent, ci ca text întunecat. Distanța perceptuală avo-600 ↔ #101828 e
+   ΔEok 23,7 — confortabil.
+
+   Contraste verificate (prag WCAG AA text normal 4,5:1):
+     avo-600 pe alb ........... 8,61 ✓   preț, săgeți
+     alb pe avo-600 ........... 8,61 ✓   buton principal
+     avo-700 pe alb .......... 10,93 ✓   hover buton
+     avo-300 pe #101828 ....... 9,54 ✓   iconița de pe banner
+     avo-400 pe #0F172A ....... 6,32 ✓   bara de contact din navbar
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  --color-avo-50: #f0f6ff;
+  --color-avo-100: #deecff;
+  --color-avo-200: #bfdbff;
+  --color-avo-300: #92c1ff;
+  --color-avo-400: #519bfb;
+  --color-avo-500: #2a75d1;
+  --color-avo-600: #004a99;
+  --color-avo-700: #003b7d;
+  --color-avo-800: #002d64;
+  --color-avo-900: #00214f;
+  --color-avo-950: #00153b;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
