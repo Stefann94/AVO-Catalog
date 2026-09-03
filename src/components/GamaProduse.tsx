@@ -1,6 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 
 import BannerB2B from "./BannerB2B";
@@ -322,7 +322,7 @@ export default async function GamaProduse() {
                */
               <article
                 key={c.slug}
-                className="flex flex-col overflow-hidden rounded-lg border-2 border-gray-300 bg-white"
+                className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
               >
                 {/* Fotografia, cu titlul așezat pe ea.
                     `group/foto` limitează zoom-ul la hover-ul acestei zone, nu
@@ -383,63 +383,36 @@ export default async function GamaProduse() {
                 </Link>
 
                 {/* Piciorul cardului: ancora de preț și îndemnul. */}
-                <div className="flex items-stretch gap-2 p-3">
+                <div className="flex items-end justify-between gap-2 p-4">
                   {c.deLa ? (
-                    /* Pastila e un flex centrat pe ambele axe, iar cifra cu
-                       eticheta stau într-un rând separat, aliniat pe linia de
-                       bază. Fără nivelul ăsta intermediar, `items-baseline` ar
-                       lipi conținutul de marginea de sus a casetei: alinierea
-                       la linia de bază nu centrează pe verticală. */
-                    <div className="flex shrink-0 items-center justify-center h-11 px-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <div className="flex shrink-0 flex-col justify-end">
+                      <span className="text-[12px] font-medium text-gray-500 mb-0.5">De la</span>
                       <span className="flex items-baseline gap-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                          de la
-                        </span>
-                        <span className="text-[17px] font-extrabold text-avo-600 leading-none">
+                        <span className="text-[22px] font-extrabold text-gray-900 leading-none">
                           {eur(c.deLa)}
                         </span>
-                        <span className="text-[12px] font-bold text-avo-600">€</span>
-                        {/* Unitatea rămâne: „de la 54" fără ea nu spune dacă
-                            prețul e pe panou sau pe bucată, adică e o cifră
-                            fără sens. */}
-                        <span className="text-[10px] font-normal text-gray-500 whitespace-nowrap">
+                        <span className="text-[16px] font-bold text-gray-900">€</span>
+                        <span className="text-[12px] font-medium text-gray-500 whitespace-nowrap">
                           / {c.unitate}
                         </span>
                       </span>
                     </div>
                   ) : c.statistica ? (
-                    /* Montajul n-are preț de comparat — cel mai ieftin produs e
-                       o clemă de 1,87 €, inutilă lângă „de la 54 €". Primește
-                       în schimb cifra care chiar diferențiază categoria, în
-                       aceeași casetă și pe același loc, ca rândul de jos să
-                       păstreze o linie comună pe toate cele patru carduri. */
-                    <div className="flex shrink-0 items-center justify-center h-11 px-3 rounded-lg bg-gray-50 border border-gray-200">
-                      <span className="flex items-baseline gap-1.5">
-                        <span className="text-[17px] font-extrabold text-avo-600 leading-none">
+                    <div className="flex shrink-0 flex-col justify-end">
+                      <span className="text-[12px] font-medium text-gray-500 mb-0.5">{c.statistica.eticheta}</span>
+                      <span className="flex items-baseline gap-1">
+                        <span className="text-[22px] font-extrabold text-gray-900 leading-none">
                           {c.statistica.valoare}
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
-                          {c.statistica.eticheta}
                         </span>
                       </span>
                     </div>
                   ) : null}
 
-                  {/* Îndemnul ia toată lățimea rămasă, deci se termină exact la
-                      marginea cardului: „se închide cardul cu un buton".
-                      `group/buton` ține săgeata legată de hover-ul butonului,
-                      nu al cardului. */}
                   <Link
                     href={cale}
-                    className="group/buton flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-gray-100 border border-gray-200 text-[13px] font-semibold text-gray-800 transition-colors duration-200 hover:bg-avo-600 hover:border-avo-600 hover:text-white"
+                    className="flex items-center justify-center h-10 px-5 rounded-full bg-avo-600 text-[14px] font-semibold text-white transition-colors duration-200 hover:bg-blue-600"
                   >
                     Accesează
-                    <ArrowUpRight
-                      aria-hidden
-                      size={16}
-                      strokeWidth={2.5}
-                      className="shrink-0 transition-transform duration-300 ease-out group-hover/buton:translate-x-0.5 group-hover/buton:-translate-y-0.5"
-                    />
                   </Link>
                 </div>
               </article>
