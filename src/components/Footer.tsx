@@ -1,11 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone, Truck } from "lucide-react";
-// Varianta albă a siglei. Cea de brand e bleumarin (#11294E) și pe fundalul
-// închis al footer-ului (#0F172A) practic dispare — sunt la o distanță
-// perceptuală prea mică. Silueta albă e și tratamentul folosit deja în banda
-// de branduri de sub hero, deci footer-ul nu introduce un limbaj nou.
-import logoAlb from "../../public/logo-alb.png";
+/**
+ * Sigla de brand, în culorile ei, nu silueta albă.
+ *
+ * DE CE STĂ PE O PLĂCUȚĂ ALBĂ. Sigla e bleumarin — măsurat pe fișier,
+ * #172A4A și #192E52 acoperă 84% din pixelii opaci, plus un accent roșu
+ * #982239 — deci luminanța ei e L=0,028. Pe orice fundal întunecat se stinge,
+ * și nu contează ce fel de întunecat:
+ *
+ *   pe slate-900 (varianta veche) ....... 1,23:1
+ *   pe gray-800 (fundalul de acum) ...... 1,09:1
+ *   pe gray-700 ......................... 1,31:1
+ *
+ * Ca sigla color să atingă măcar 3:1 — pragul WCAG pentru elemente negrafice —
+ * fundalul ar trebui să fie pe la #777777, adică gri MEDIU. Un footer acolo ar
+ * fi spălăcit și ar rupe legătura cu hero-ul și navbar-ul, care sunt închise.
+ *
+ * Plăcuța albă rezolvă amândouă cerințele deodată: footer-ul rămâne închis,
+ * iar sigla stă pe suprafața pentru care a fost desenată și ajunge la 13,52:1.
+ * E și tratamentul obișnuit pentru o siglă întunecată pe subsol închis.
+ *
+ * Alternativele, dacă plăcuța nu convine: footer deschis (dar atunci pagina nu
+ * mai începe și nu se mai termină la fel), sau întoarcerea la silueta albă din
+ * public/logo-alb.png, care rămâne în proiect.
+ */
+import logo from "../../public/logo.png";
 
 /**
  * Datele firmei.
@@ -94,40 +114,56 @@ export default function Footer() {
 
   return (
     /*
-     * Footer-ul poartă aceeași culoare cu bara subțire de contact din capul
-     * paginii: `slate-900`. Pagina începe și se termină la fel, iar tot ce e
-     * catalog stă între ele, pe deschis.
+     * Corpul footer-ului e pe `gray-800` (#1E2939) — gri închis, din aceeași
+     * rampă `gray` pe care o folosește secțiunea „Gama de produse". Era
+     * `slate-900`, ales atunci ca să rimeze cu bara de contact din capul
+     * paginii.
      *
-     * Paleta de text e cea din bara aceea, nu una inventată aici: `slate-400`
-     * pentru rândurile obișnuite, alb la hover, `avo-400` pentru iconițe.
-     * Datele de contact urcă la `slate-300`, fiindcă sunt informația pentru
-     * care se derulează până aici.
+     * Bara legală de dedesubt rămâne neatinsă, pe `slate-950`. Diferența de
+     * închidere dintre cele două e acum mai mare decât înainte, ceea ce
+     * ajută: subsolul citește ca două trepte distincte, nu ca un bloc.
      *
-     * Contraste măsurate în pagină, nu estimate (pragul AA e 4,5:1):
-     *   titluri de coloană, alb .......... 17,83 ✓
-     *   date de contact, slate-300 ....... 12,00 ✓
-     *   linkuri și paragraf, slate-400 .... 6,78 ✓
-     *   iconițe, avo-400 .................. 6,31 ✓
-     *   text legal pe slate-950 ........... 7,66 ✓
-     *   ANPC / SAL / SOL pe slate-950 .... 13,56 ✓
+     * Paleta de text e neschimbată: `slate-400` pentru rândurile obișnuite,
+     * alb la hover, `avo-400` pentru iconițe, `slate-300` pentru datele de
+     * contact — informația pentru care se derulează până aici.
      *
-     * `slate-500` nu apare nicăieri: pe fundalul ăsta dă 3,80:1, adică trece
-     * doar pragul de 3:1 al elementelor negrafice, nu și pe cel pentru text.
+     * Contraste RECALCULATE pe fundalul nou, nu moștenite (pragul AA e 4,5:1):
+     *   titluri de coloană, alb .......... 14,67 ✓
+     *   date de contact, slate-300 ........ 9,87 ✓
+     *   linkuri și paragraf, slate-400 .... 5,58 ✓
+     *   iconițe, avo-400 .................. 5,19 ✓
+     *   sigla color pe plăcuța albă ...... 13,52 ✓
+     *   text legal pe slate-950 ........... 7,66 ✓  (bara e neschimbată)
+     *   ANPC / SAL / SOL pe slate-950 .... 13,56 ✓  (idem)
      *
-     * `hover:text-blue-600` de dinainte era albastrul implicit al lui Tailwind,
-     * rămas din prima versiune; pe închis abia se distinge de fundal.
+     * Toate scad față de `slate-900`, fiindcă fundalul s-a deschis, dar toate
+     * rămân peste prag. `slate-500` continuă să nu apară nicăieri: aici ar da
+     * 3,04:1, adică sub pragul pentru text.
      */
-    <footer className="bg-slate-900 border-t border-slate-800">
+    <footer className="bg-gray-800 border-t border-gray-700">
       {/* ── Corpul footer-ului ─────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Identitate + contact */}
           <div className="lg:col-span-4">
-            <Image
-              src={logoAlb}
-              alt={FIRMA.nume}
-              className="h-10 w-auto object-contain object-left mb-5"
-            />
+            {/* `inline-flex`, nu `block`: plăcuța se strânge pe lățimea siglei
+                în loc să se întindă pe toată coloana. Rază 12px, ca tot restul
+                proiectului. Padding-ul e vizual echilibrat, nu egal — 16px pe
+                laterale și 12px sus/jos: sigla e un logotip lat, iar spațiul
+                egal ar face plăcuța să pară prea înaltă. */}
+            {/* Învelișul e `flex`, ca plăcuța să nu stea într-o cutie de linie:
+                un `inline-flex` singur ar fi așezat pe linia de bază și ar
+                trage sub el spațiul pentru descendente, adică un gol de câțiva
+                pixeli care n-are nicio treabă cu `mb-5`. */}
+            <div className="mb-5 flex">
+              <span className="inline-flex items-center rounded-xl bg-white px-4 py-3">
+                <Image
+                  src={logo}
+                  alt={FIRMA.nume}
+                  className="h-9 w-auto object-contain"
+                />
+              </span>
+            </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm mb-6">
               Distribuitor de echipamente fotovoltaice pentru instalatori și revânzători.
               Panouri, invertoare, sisteme de stocare și structuri de montaj, la prețuri
