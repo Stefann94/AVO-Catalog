@@ -17,6 +17,10 @@
  * informație comercială falsă. Dacă nu știm perioada, nu o afirmăm.
  */
 
+import { cache } from "react";
+import { fetchGraphQL } from "./graphql-client";
+import { GET_PERIOADA_CATALOG_QUERY } from "./queries";
+
 const LUNI = [
   "Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie",
   "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie",
@@ -140,3 +144,39 @@ function compune(sursa?: PerioadaBruta | null): Omit<PerioadaCatalog, "sursa"> |
     ),
   };
 }
+
+/**
+ * Ultimul catalog încărcat manual, folosit doar cât timp WooCommerce nu
+ * răspunde încă cu perioada — adică până la instalarea extensiei PHP și primul
+ * import care aduce meta. După aceea valoarea din WooCommerce câștigă
+ * întotdeauna, iar constanta asta nu mai e citită niciodată.
+ *
+ * Dacă nici WooCommerce, nici rezerva nu dau o perioadă, titlurile rămân fără
+ * lună, iar ștampilele cu prețuri valabile dispar. Mai bine fără informație
+ * decât cu o lună greșită lângă prețuri din alt catalog.
+ */
+const REZERVA: PerioadaBruta = {
+  eticheta: "Septembrie 2026",
+  valabilDe: "01.09.2026",
+  valabilPana: "30.09.2026",
+};
+
+/**
+ * Perioada catalogului, citită o singură dată pe randare.
+ *
+ * O cer două componente din pagina de start — banda de sub hero și „Gama de
+ * produse". Fără `cache`, ar pleca două cereri: Next reunește automat doar
+ * apelurile `fetch` de tip GET, iar interogarea noastră GraphQL e POST
+ * (verificat în node_modules/next/dist/docs — memoizarea e explicit legată de
+ * GET). Documentația trimite la `cache` din React exact pentru cazul ăsta.
+ *
+ * `optional: true` fiindcă `perioadaCatalog` vine dintr-o extensie WordPress
+ * care poate lipsi. Absența ei e o stare prevăzută, cu rezervă, nu o eroare.
+ */
+export const incarcaPerioadaCatalog = cache(async (): Promise<PerioadaCatalog> => {
+  const date = await fetchGraphQL(GET_PERIOADA_CATALOG_QUERY, {}, {
+    optional: true,
+    tags: ["perioada"],
+  });
+  return perioadaCatalog(date?.perioadaCatalog, REZERVA);
+});

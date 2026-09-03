@@ -1,9 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { perioadaCatalog } from "@/lib/perioada";
-import { fetchGraphQL } from "@/lib/graphql-client";
-import { GET_PERIOADA_CATALOG_QUERY } from "@/lib/queries";
+import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { SUBCATEGORII_CUNOSCUTE, caleSubcategorie } from "@/lib/categorii";
 import BannerB2B from "./BannerB2B";
 
@@ -190,31 +188,15 @@ const SUBCATEGORII_POPULARE = [...SUBCATEGORII_CUNOSCUTE]
 
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
-/**
- * Ultimul catalog încărcat manual, folosit doar cât timp WooCommerce nu
- * răspunde încă cu perioada — adică până la instalarea extensiei PHP și primul
- * import care aduce meta. După aceea valoarea din WooCommerce câștigă
- * întotdeauna, iar constanta asta nu mai e citită niciodată.
- *
- * Dacă nici WooCommerce, nici rezerva nu dau o perioadă, titlul rămâne
- * „Gama de produse", fără lună, iar ștampila cu prețuri valabile dispare. Mai
- * bine fără informație decât cu o lună greșită lângă prețuri din alt catalog.
- */
-const PERIOADA_REZERVA = {
-  eticheta: "Septembrie 2026",
-  valabilDe: "01.09.2026",
-  valabilPana: "30.09.2026",
-};
-
 export default async function GamaProduse() {
-  // `optional`: câmpul vine dintr-o extensie care poate să nu fie încă
-  // instalată în WordPress. Absența lui e o stare prevăzută, cu rezervă, nu o
-  // eroare de build.
-  const date = await fetchGraphQL(GET_PERIOADA_CATALOG_QUERY, {}, {
-    optional: true,
-    tags: ["perioada"],
-  });
-  const perioada = perioadaCatalog(date?.perioadaCatalog, PERIOADA_REZERVA);
+  /**
+   * Perioada vine din încărcătorul comun din lib/perioada, nu dintr-un apel
+   * propriu. Banda de sub hero cere aceeași valoare, iar interogarea e POST —
+   * pe care Next nu o reunește automat, memoizarea lui fiind doar pentru GET.
+   * `cache` din React face ca ambele componente să împartă o singură cerere,
+   * iar rezerva scrisă în cod există într-un singur loc.
+   */
+  const perioada = await incarcaPerioadaCatalog();
 
   return (
     <section className="bg-[#F8F9FA] py-16 sm:py-20 lg:py-28">
