@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone, Truck } from "lucide-react";
+// Varianta albă a siglei. Cea de brand e bleumarin (#11294E) și pe fundalul
+// închis al footer-ului (#0F172A) practic dispare — sunt la o distanță
+// perceptuală prea mică. Silueta albă e și tratamentul folosit deja în banda
+// de branduri de sub hero, deci footer-ul nu introduce un limbaj nou.
+import logoAlb from "../../public/logo-alb.png";
 
 /**
  * Datele firmei.
@@ -88,20 +93,42 @@ export default function Footer() {
   const anul = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-slate-900/10">
+    /*
+     * Footer-ul poartă aceeași culoare cu bara subțire de contact din capul
+     * paginii: `slate-900`. Pagina începe și se termină la fel, iar tot ce e
+     * catalog stă între ele, pe deschis.
+     *
+     * Paleta de text e cea din bara aceea, nu una inventată aici: `slate-400`
+     * pentru rândurile obișnuite, alb la hover, `avo-400` pentru iconițe.
+     * Datele de contact urcă la `slate-300`, fiindcă sunt informația pentru
+     * care se derulează până aici.
+     *
+     * Contraste măsurate în pagină, nu estimate (pragul AA e 4,5:1):
+     *   titluri de coloană, alb .......... 17,83 ✓
+     *   date de contact, slate-300 ....... 12,00 ✓
+     *   linkuri și paragraf, slate-400 .... 6,78 ✓
+     *   iconițe, avo-400 .................. 6,31 ✓
+     *   text legal pe slate-950 ........... 7,66 ✓
+     *   ANPC / SAL / SOL pe slate-950 .... 13,56 ✓
+     *
+     * `slate-500` nu apare nicăieri: pe fundalul ăsta dă 3,80:1, adică trece
+     * doar pragul de 3:1 al elementelor negrafice, nu și pe cel pentru text.
+     *
+     * `hover:text-blue-600` de dinainte era albastrul implicit al lui Tailwind,
+     * rămas din prima versiune; pe închis abia se distinge de fundal.
+     */
+    <footer className="bg-slate-900 border-t border-slate-800">
       {/* ── Corpul footer-ului ─────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Identitate + contact */}
           <div className="lg:col-span-4">
             <Image
-              src="/logo.png"
+              src={logoAlb}
               alt={FIRMA.nume}
-              width={1899}
-              height={320}
               className="h-10 w-auto object-contain object-left mb-5"
             />
-            <p className="text-sm text-slate-500 leading-relaxed max-w-sm mb-6">
+            <p className="text-sm text-slate-400 leading-relaxed max-w-sm mb-6">
               Distribuitor de echipamente fotovoltaice pentru instalatori și revânzători.
               Panouri, invertoare, sisteme de stocare și structuri de montaj, la prețuri
               de distribuitor.
@@ -113,36 +140,36 @@ export default function Footer() {
                   href={FIRMA.harta}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-start gap-3 text-slate-600 transition-colors hover:text-blue-600"
+                  className="group flex items-start gap-3 text-slate-300 transition-colors hover:text-white"
                 >
-                  <MapPin size={16} className="mt-0.5 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+                  <MapPin size={16} className="mt-0.5 shrink-0 text-avo-400 transition-colors group-hover:text-white" />
                   <span>{FIRMA.adresa}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={`tel:${FIRMA.telefonHref}`}
-                  className="group flex items-center gap-3 text-slate-600 transition-colors hover:text-blue-600"
+                  className="group flex items-center gap-3 text-slate-300 transition-colors hover:text-white"
                 >
-                  <Phone size={16} className="shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+                  <Phone size={16} className="shrink-0 text-avo-400 transition-colors group-hover:text-white" />
                   <span className="font-medium tabular-nums">{FIRMA.telefon}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${FIRMA.email}`}
-                  className="group flex items-center gap-3 text-slate-600 transition-colors hover:text-blue-600"
+                  className="group flex items-center gap-3 text-slate-300 transition-colors hover:text-white"
                 >
-                  <Mail size={16} className="shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+                  <Mail size={16} className="shrink-0 text-avo-400 transition-colors group-hover:text-white" />
                   <span className="break-all">{FIRMA.email}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${FIRMA.emailTransport}`}
-                  className="group flex items-center gap-3 text-slate-600 transition-colors hover:text-blue-600"
+                  className="group flex items-center gap-3 text-slate-300 transition-colors hover:text-white"
                 >
-                  <Truck size={16} className="shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+                  <Truck size={16} className="shrink-0 text-avo-400 transition-colors group-hover:text-white" />
                   <span className="break-all">
                     {FIRMA.emailTransport}
                     <span className="block text-xs text-slate-400">Logistică și transport</span>
@@ -154,7 +181,7 @@ export default function Footer() {
 
           {/* Catalog */}
           <nav className="lg:col-span-4" aria-labelledby="footer-catalog">
-            <h2 id="footer-catalog" className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-900 mb-5">
+            <h2 id="footer-catalog" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Catalog
             </h2>
             <ul className="space-y-2.5 text-sm">
@@ -162,7 +189,7 @@ export default function Footer() {
                 <li key={c.slug}>
                   <Link
                     href={`/catalog/${c.slug}`}
-                    className="text-slate-600 transition-colors hover:text-blue-600"
+                    className="text-slate-400 transition-colors hover:text-white"
                   >
                     {c.nume}
                   </Link>
@@ -173,13 +200,13 @@ export default function Footer() {
 
           {/* Companie */}
           <nav className="lg:col-span-2" aria-labelledby="footer-companie">
-            <h2 id="footer-companie" className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-900 mb-5">
+            <h2 id="footer-companie" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Companie
             </h2>
             <ul className="space-y-2.5 text-sm">
               {COMPANIE.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-slate-600 transition-colors hover:text-blue-600">
+                  <Link href={l.href} className="text-slate-400 transition-colors hover:text-white">
                     {l.nume}
                   </Link>
                 </li>
@@ -189,13 +216,13 @@ export default function Footer() {
 
           {/* Informații */}
           <nav className="lg:col-span-2" aria-labelledby="footer-info">
-            <h2 id="footer-info" className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-900 mb-5">
+            <h2 id="footer-info" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Informații
             </h2>
             <ul className="space-y-2.5 text-sm">
               {INFORMATII.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-slate-600 transition-colors hover:text-blue-600">
+                  <Link href={l.href} className="text-slate-400 transition-colors hover:text-white">
                     {l.nume}
                   </Link>
                 </li>
@@ -206,7 +233,7 @@ export default function Footer() {
       </div>
 
       {/* ── Bara legală ────────────────────────────────────── */}
-      <div className="border-t border-slate-900/10 bg-slate-50">
+      <div className="border-t border-slate-800 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <p className="text-xs text-slate-400 leading-relaxed">
             © {anul} {FIRMA.nume}. Toate drepturile rezervate.
@@ -222,14 +249,14 @@ export default function Footer() {
             <span className="text-slate-400">Protecția consumatorului:</span>
             {CONSUMATOR.map((c, i) => (
               <span key={c.href} className="flex items-center gap-3">
-                {i > 0 ? <span aria-hidden className="h-3 w-px bg-slate-300" /> : null}
+                {i > 0 ? <span aria-hidden className="h-3 w-px bg-white/20" /> : null}
                 <a
                   href={c.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   title={c.titlu}
                   aria-label={c.titlu}
-                  className="font-semibold text-slate-500 transition-colors hover:text-blue-600"
+                  className="font-semibold text-slate-300 transition-colors hover:text-white"
                 >
                   {c.eticheta}
                 </a>
