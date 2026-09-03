@@ -320,7 +320,7 @@ export default async function GamaProduse() {
                 restul secțiunii. Fără umbră: contur de 1px. */}
             {perioada.interval ? (
               <div className="inline-flex items-center gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-4 rounded-lg bg-white border border-gray-200">
-                <span className="text-[10px] font-medium uppercase tracking-[0.06em] text-gray-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                   Prețuri valabile
                 </span>
                 <span aria-hidden className="h-4 w-px bg-gray-200" />
