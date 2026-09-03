@@ -59,7 +59,7 @@ export default function HeroSlider() {
   }, []);
 
   return (
-    <section className="relative h-[90vh] w-full flex items-center justify-center overflow-hidden bg-slate-900">
+    <section className="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden bg-slate-900">
       {/* Videos */}
       {slides.map((slide, index) => (
         <div 

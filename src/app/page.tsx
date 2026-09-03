@@ -1,4 +1,5 @@
 import HeroSlider from "@/components/HeroSlider";
+import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
 
 /**
@@ -17,7 +18,24 @@ export const revalidate = 3600;
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      <HeroSlider />
+      {/*
+        Hero-ul și plinta lui ocupă împreună exact un ecran, la prima
+        deschidere și la reîncărcare.
+
+        Unitatea e `svh`, nu `vh`. Pe telefon `100vh` înseamnă înălțimea
+        ferestrei FĂRĂ barele browserului, deci la prima randare — când bara
+        de adrese e vizibilă — banda ar cădea sub marginea de jos, exact ce
+        trebuie evitat. `svh` e înălțimea cu barele vizibile, adică starea de
+        la prima interacțiune. `dvh` s-ar recalcula în timp ce derulezi și ar
+        face pagina să tresară sub deget.
+
+        Hero-ul primește `flex-1`, banda `shrink-0`: banda își cere înălțimea
+        ei, hero-ul ia tot restul, pe orice ecran.
+      */}
+      <div className="flex h-[100svh] flex-col">
+        <HeroSlider />
+        <BandaBranduri />
+      </div>
 
       {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
       <GamaProduse />

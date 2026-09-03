@@ -93,3 +93,32 @@ body {
   to { width: 100%; }
 }
 
+
+/*
+ * Banda de branduri din plinta hero-ului.
+ *
+ * Pista conține lista de sigle de două ori; deplasarea cu exact 50% aduce al
+ * doilea set fix în poziția de start a primului, deci reluarea nu se vede.
+ *
+ * Se animă `transform`, nu `left` sau `margin`: e singura proprietate pe care
+ * browserul o rezolvă pe compozitor, fără să recalculeze așezarea la fiecare
+ * cadru. Contează, fiindcă banda se mișcă permanent peste un hero cu video.
+ */
+@keyframes defilareBranduri {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/*
+ * Cu „reduce motion" activat în sistem, banda stă. Butonul de pauză rămâne
+ * funcțional, dar nu mai e nevoie să-l apese nimeni.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[defilareBranduri_var\(--durata\)_linear_infinite\] {
+    animation: none !important;
+  }
+}
