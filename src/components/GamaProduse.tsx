@@ -104,29 +104,45 @@ import imgMontaj from "../../public/cat-montaj.jpg";
       clicul: nimeni nu alege între categorii după câte invertoare sunt
       hibride. Datele n-au dispărut din proiect, doar din card.
 
-      BANDA DE STICLĂ de sub titlu folosește rețeta din navbar, literal:
-      `bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150`. Nu e un
-      degrade negru peste poză, cum se face de obicei — un degrade ar
-      întuneca fotografia exact în partea de jos, unde la trei din patru
+      BANDA DE STICLĂ e `bg-white/45 backdrop-blur-2xl backdrop-saturate-200`.
+      Alb, nu gri: la 45% fotografia chiar se vede prin ea, iar banda citește
+      ca sticlă mată, nu ca o plăcuță lipită peste poză. A fost o vreme
+      `slate-100/80`, rețeta din navbar — corectă acolo, dar aici ieșea un
+      dreptunghi gri opac care ascundea poza.
+
+      Nu e nici un degrade negru peste poză, cum se face de obicei: un degrade
+      ar întuneca fotografia exact în partea de jos, unde la trei din patru
       poze stă subiectul.
 
    Contraste verificate (prag WCAG AA, text normal 4.5:1):
      gray-900 #101828 pe alb ........ 17.75 ✓  (titluri de secțiune)
-     gray-900 pe banda de sticlă ... 10.16 ✓  (titlu card, badge — vezi mai jos)
+     gray-900 pe sticlă .. 6.09 – 13.90 ✓  (titlu card, badge — vezi mai jos)
      gray-500 #6A7282 pe alb ......... 4.84 ✓  („DE LA", eticheta pastilei)
      avo-600  #004A99 pe alb ......... 8.61 ✓  (preț, săgeți, buton principal)
      alb pe avo-600 .................. 8.61 ✓  („Accesează", „Vezi catalogul")
      alb pe gray-900 #101828 ........ 17.75 ✓  (bannerul închis)
      avo-300 #92C1FF pe gray-900 ..... 9.54 ✓  (iconița de pe banner)
 
-   CUM IESE 10,16 PE BANDA DE STICLĂ. Cifra nu e o mostră luată dintr-o
-   captură, ci marginea de jos, calculată. `bg-slate-100/80` compune 80%
-   slate-100 (#F1F5F9) cu 20% din fotografia de dedesubt; cazul cel mai rău
-   e o fotografie complet neagră, care dă un fundal de rgb(193,196,199).
-   Titlul gray-900 pe el măsoară 10,16:1. La capătul celălalt, pe o
-   fotografie albă, banda devine chiar slate-100 și raportul urcă la 15,9:1.
-   Deci orice poză s-ar pune vreodată în carduri, titlul rămâne peste pragul
-   AA — nu depinde de norocul unei imagini.
+   CUM SE MĂSOARĂ CONTRASTUL PE STICLĂ. Nu se poate calcula din culoarea
+   scrisă în clasă: fundalul real e compunerea dintre alb la 45% și fotografia
+   de dedesubt, iar aceea diferă de la card la card. Așa că e citit din pagina
+   randată — captură a grilei, apoi eșantion de pixeli din banda fiecărui card,
+   într-o zonă în care nu ajunge textul, și raportul calculat față de gray-900.
+
+   Rezultate pe cele patru fotografii de acum:
+     titlu pe bandă .... Panouri 6,60 · Invertoare 13,90 · Stocare 10,18 ·
+                         Montaj 6,40
+     badge ............. Panouri 7,75 · Invertoare 12,32 · Stocare 11,24 ·
+                         Montaj 6,09
+
+   Cel mai slab caz e 6,09:1, la 36% peste pragul AA. Marja nu e generoasă din
+   întâmplare: `backdrop-blur-2xl` mediază fundalul pe o rază de zeci de
+   pixeli, deci sub bandă nu ajung pixelii negri izolați din poză, ci media
+   zonei. Fără blur, aceleași 45% ar cădea sub prag pe orice porțiune închisă.
+
+   LA SCHIMBAREA UNEI FOTOGRAFII se remăsoară. O poză mult mai închisă în
+   treimea de jos poate coborî raportul; atunci se urcă opacitatea benzii, nu
+   se închide culoarea textului.
 
    PENTRU TEXT NOU, gray-500 e cea mai deschisă treaptă admisă pe alb.
    gray-400 (#99A1AF) dă 2,60:1, sub pragul AA, oricât de secundar ar părea
@@ -276,45 +292,40 @@ export default async function GamaProduse() {
           </div>
 
           <div aria-hidden className="mt-5 sm:mt-7 h-px w-full bg-gray-200" />
-
-          <BannerB2B />
         </div>
 
         {/* ── Categorii ──────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
           {CATEGORII.map((c) => {
+            const cale = `/catalog/${c.slug}`;
             return (
-              <Link
+              /*
+               * Cardul nu mai e un singur link peste tot.
+               *
+               * Zonele care duc undeva sunt două și se văd ca atare: fotografia
+               * (cu titlul pe ea) și butonul. Restul — pastila de preț, marginile —
+               * nu reacționează la mouse și nu se poate da clic pe ele.
+               *
+               * Motivul e că un card întreg făcut link promite ceva ce nu se vede:
+               * cursorul devine mână peste o cifră de preț, care nu e o acțiune.
+               * Cu două ținte clare, ce e apăsabil arată apăsabil.
+               *
+               * Conturul cardului nu mai are stare de hover, tocmai fiindcă
+               * hover-ul nu mai aparține cardului, ci celor două zone din el.
+               */
+              <article
                 key={c.slug}
-                href={`/catalog/${c.slug}`}
-                /* Conturul e singurul lucru care se schimbă la hover: de la
-                   gri de 1px la albastru de brand de 2px.
-
-                   Al doilea pixel vine dintr-un `outline`, nu dintr-un
-                   `border-2`. Motivul e că `border` intră în cutia
-                   elementului: la 1px → 2px, zona de conținut s-ar strânge cu
-                   2px, imaginea s-ar redimensiona și tot textul ar sări un
-                   pixel la fiecare trecere a mouse-ului peste card. `outline`
-                   se desenează în afara cutiei și nu influențează deloc
-                   așezarea.
-
-                   Outline-ul e prezent mereu, la 1px transparent, iar la hover
-                   doar își schimbă culoarea. Dacă i-aș anima lățimea de la 0 la
-                   1px, marginea ar „crește" sacadat; așa se schimbă doar
-                   culoarea, lin, în aceeași tranziție cu border-ul.
-
-                   Nu `ring`, care e box-shadow deghizat: secțiunea n-are nicio
-                   umbră, iar regula rămâne curată. */
-                className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 outline-1 outline-transparent bg-white transition-colors duration-200 hover:border-avo-600 hover:outline-avo-600"
+                className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
               >
-                {/* Imaginea merge până la marginea cardului, nu plutește într-o
-                    ramă interioară: cu un card de 12px rază și 12px padding,
-                    raza interioară corectă geometric ar fi 0, iar o poză cu
-                    colțuri drepte într-o ramă rotunjită se vede prost. */}
-                {/* `overflow-hidden` stă aici, nu doar pe card: fără el,
-                    imaginea mărită la hover ar ieși peste colțurile rotunjite
-                    ale ramei. */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                {/* Fotografia, cu titlul așezat pe ea.
+                    `group/foto` limitează zoom-ul la hover-ul acestei zone, nu
+                    al cardului: numele explicit e necesar fiindcă butonul de
+                    dedesubt are propriul grup, iar un `group` fără nume le-ar
+                    amesteca. */}
+                <Link
+                  href={cale}
+                  className="group/foto relative block aspect-[4/3] overflow-hidden bg-gray-100"
+                >
                   <Image
                     src={c.imagine}
                     alt=""
@@ -327,113 +338,116 @@ export default async function GamaProduse() {
                     placeholder="blur"
                     /* Tranziția stă pe element, nu pe starea de hover, ca
                        ieșirea din zoom să fie la fel de lină ca intrarea.
-                       `ease-out` pornește repede și frânează la final —
-                       senzația de mișcare condusă, nu de animație mecanică.
                        Se animă `transform`, singura proprietate pe care
                        browserul o rezolvă pe compozitor, fără redesenare. */
-                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                    className="object-cover transition-transform duration-300 ease-out group-hover/foto:scale-105"
                   />
 
-                  {/* Sticlă mată, ca barele din navbar: alb semi-transparent,
-                      blur puternic în spate și un plus de saturație, care e
-                      ce face diferența dintre „sticlă" și „alb translucid".
-                      Conturul alb foarte fin desenează muchia peste zonele
-                      întunecate ale fotografiei.
-
-                      `bg-white/70`, nu /60: peste cea mai închisă porțiune de
-                      fotografie din cele patru, textul gray-900 dă 8,85:1, în
-                      loc de 6,70:1. Ambele trec, dar imaginile se pot schimba. */}
-                  <span className="absolute top-3 right-3 inline-flex items-center h-8 px-3 rounded-md bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-white/40 text-[13px] font-bold text-gray-900">
+                  {/* Badge-ul stă pe aceeași sticlă ca banda de jos: două rețete
+                      diferite pe aceeași fotografie s-ar vedea ca o scăpare. */}
+                  <span className="absolute top-3 right-3 inline-flex items-center h-7 px-2.5 rounded-md bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border border-white/50 text-[12px] font-bold text-gray-900">
                     {c.produse} produse
                   </span>
-                  {/* Banda cu titlul, așezată pe fotografie.
 
-                      Rețeta de sticlă e copiată literal din navbar —
-                      `bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150` —
-                      nu aproximată. Saturația în plus e ce face diferența
-                      dintre „sticlă" și „gri translucid": fără ea, culorile
-                      fotografiei de dedesubt ies spălăcite și banda pare o
-                      folie opacă.
+                  {/* Banda cu titlul.
 
-                      Nu e un degrade negru peste poză, cum se face de obicei.
-                      Un degrade ar întuneca fotografia tocmai în partea de jos,
-                      unde la trei din patru poze stă subiectul; sticla o lasă
-                      să se vadă întreagă, doar difuzată.
+                      `bg-white/45`, nu un gri: la 45% fotografia se vede prin
+                      ea, iar banda citește ca sticlă mată, nu ca o plăcuță
+                      opacă lipită peste poză.
 
-                      Titlul rămâne pe două rânduri maximum, cu înălțime fixă,
-                      ca banda să aibă aceeași grosime pe toate cardurile —
-                      altfel marginea de sus a benzii ar sări de la un card la
-                      altul și grila și-ar pierde linia. */}
-                  <div className="absolute inset-x-0 bottom-0 bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 px-4 py-3">
-                    <h3 className="text-[16px] font-bold text-gray-900 leading-tight truncate">
+                      Blur-ul mare nu e ornament, el face lizibilitatea posibilă.
+                      Neclarizarea mediază fundalul pe o rază de zeci de pixeli,
+                      deci sub bandă nu mai ajung pixelii negri izolați din poză,
+                      ci media zonei. Fără el, un contrast calculat pe medie ar
+                      fi o minciună; cu el, media chiar e ce se vede.
+
+                      `backdrop-saturate-200` e ce desparte „sticla" de „albul
+                      translucid": fără saturație în plus, culorile de dedesubt
+                      ies spălăcite și efectul se pierde.
+
+                      Titlul e centrat și banda e subțire — o singură linie de
+                      text, `truncate` în loc de două rânduri, ca grosimea benzii
+                      să fie identică pe toate cardurile. */}
+                  <div className="absolute inset-x-0 bottom-0 bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border-t border-white/50 px-3 py-2">
+                    <h3 className="text-center text-[15px] font-bold text-gray-900 leading-tight truncate">
                       {c.nume}
                     </h3>
                   </div>
-                </div>
+                </Link>
 
-                {/* Piciorul cardului: ancora de preț și îndemnul.
-
-                    Fișa tehnică din mijloc a dispărut. Cardul spune acum trei
-                    lucruri — ce categorie e, câte produse are, de la cât
-                    pornește — iar restul se află după clic. Detaliile tehnice
-                    nu decideau clicul; le acoperă pagina de categorie, unde e
-                    loc să fie complete, nu tăiate la două rânduri.
-
-                    „Accesează" nu e un `<button>` și nici un `<a>`: tot cardul
-                    e deja un link, iar un element interactiv într-altul e
-                    invalid și încurcă cititoarele de ecran. E un `<span>`
-                    desenat ca buton, care reacționează la hover-ul cardului
-                    întreg — deci și la clic oriunde pe card, nu doar pe el. */}
+                {/* Piciorul cardului: ancora de preț și îndemnul. */}
                 <div className="flex items-stretch gap-2 p-3">
                   {c.deLa ? (
-                    /* Prețul stă pe aceeași sticlă ca banda de sus. Aici
-                       fotografia nu mai e dedesubt, deci translucidul se
-                       citește ca un gri foarte deschis — exact rolul lui:
-                       să despartă cifra de albul cardului fără o a doua ramă. */
-                    <span className="inline-flex items-baseline gap-1 shrink-0 h-11 px-3.5 rounded-lg bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-slate-200/50">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        de la
+                    /* Pastila e un flex centrat pe ambele axe, iar cifra cu
+                       eticheta stau într-un rând separat, aliniat pe linia de
+                       bază. Fără nivelul ăsta intermediar, `items-baseline` ar
+                       lipi conținutul de marginea de sus a casetei: alinierea
+                       la linia de bază nu centrează pe verticală. */
+                    <div className="flex shrink-0 items-center justify-center h-11 px-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <span className="flex items-baseline gap-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                          de la
+                        </span>
+                        <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                          {eur(c.deLa)}
+                        </span>
+                        <span className="text-[12px] font-bold text-avo-600">€</span>
+                        {/* Unitatea rămâne: „de la 54" fără ea nu spune dacă
+                            prețul e pe panou sau pe bucată, adică e o cifră
+                            fără sens. */}
+                        <span className="text-[10px] font-normal text-gray-500 whitespace-nowrap">
+                          / {c.unitate}
+                        </span>
                       </span>
-                      <span className="text-[19px] font-extrabold text-avo-600 leading-none">
-                        {eur(c.deLa)}
-                      </span>
-                      <span className="text-[12px] font-bold text-avo-600">€</span>
-                      {/* Unitatea rămâne: „de la 54" fără ea nu spune dacă prețul
-                          e pe panou sau pe bucată, adică e o cifră fără sens. */}
-                      <span className="text-[10px] font-normal text-gray-500 whitespace-nowrap">/ {c.unitate}</span>
-                    </span>
+                    </div>
                   ) : c.statistica ? (
                     /* Montajul n-are preț de comparat — cel mai ieftin produs e
                        o clemă de 1,87 €, inutilă lângă „de la 54 €". Primește
                        în schimb cifra care chiar diferențiază categoria, în
-                       aceeași pastilă și pe același loc, ca rândul de jos să
+                       aceeași casetă și pe același loc, ca rândul de jos să
                        păstreze o linie comună pe toate cele patru carduri. */
-                    <span className="inline-flex items-baseline gap-1 shrink-0 h-11 px-3.5 rounded-lg bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border border-slate-200/50">
-                      <span className="text-[19px] font-extrabold text-avo-600 leading-none">
-                        {c.statistica.valoare}
+                    <div className="flex shrink-0 items-center justify-center h-11 px-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="text-[19px] font-extrabold text-avo-600 leading-none">
+                          {c.statistica.valoare}
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
+                          {c.statistica.eticheta}
+                        </span>
                       </span>
-                      <span className="self-center text-[10px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap">
-                        {c.statistica.eticheta}
-                      </span>
-                    </span>
+                    </div>
                   ) : null}
 
                   {/* Îndemnul ia toată lățimea rămasă, deci se termină exact la
-                      marginea cardului: „se închide cardul cu un buton". */}
-                  <span className="flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-avo-600 text-[13px] font-semibold text-white transition-colors duration-200 group-hover:bg-avo-700">
+                      marginea cardului: „se închide cardul cu un buton".
+                      `group/buton` ține săgeata legată de hover-ul butonului,
+                      nu al cardului. */}
+                  <Link
+                    href={cale}
+                    className="group/buton flex flex-1 min-w-0 items-center justify-center gap-1.5 h-11 px-3 rounded-lg bg-avo-600 text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-avo-700"
+                  >
                     Accesează
                     <ArrowUpRight
                       aria-hidden
                       size={16}
                       strokeWidth={2.5}
-                      className="shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      className="shrink-0 transition-transform duration-300 ease-out group-hover/buton:translate-x-0.5 group-hover/buton:-translate-y-0.5"
                     />
-                  </span>
+                  </Link>
                 </div>
-              </Link>
+              </article>
             );
           })}
         </div>
+
+        {/* Bannerul B2B stă sub carduri, nu deasupra lor.
+
+            Deasupra, se așeza între titlul secțiunii și gama de produse și
+            întrerupea exact drumul pentru care există secțiunea: titlu →
+            categorii. Sub carduri, ajunge după ce omul a văzut ce se vinde,
+            adică fix momentul în care întrebarea „și eu ce preț am?" apare
+            singură. */}
+        <BannerB2B />
 
         {/* ── Subsol ─────────────────────────────────────────── */}
         <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
