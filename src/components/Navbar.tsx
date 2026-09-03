@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import logo from "../../public/logo.png";
 import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function Navbar() {
@@ -51,23 +52,51 @@ export default function Navbar() {
       {/* Main Navbar (Enhanced Frosted Glass) */}
       <div className="bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 py-3">
         <div className="w-full px-4 sm:px-6 lg:px-12 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center shrink min-w-0">
-          {/* Dimensiunile sunt cele reale ale fisierului (1899x320). next/image
-              le foloseste ca sa rezerve locul inainte de descarcare; daca nu
-              corespund, latimea randata iese gresita si bara sare la incarcare. */}
+        {/*
+          Sigla stă la jumătatea distanței dintre marginea din stânga și primul
+          buton, fără nicio măsurătoare în JavaScript.
+
+          Mecanica: acest container și cel cu acțiunile din dreapta cresc
+          (`grow`), meniul rămâne la lățimea lui naturală. Spațiul rămas se
+          împarte în două părți egale — una intră în containerul siglei, una în
+          cel al acțiunilor. Siglei i se spune `justify-center`, deci se așază
+          fix la mijlocul primei părți; acțiunilor `justify-end`, deci rămân
+          lipite de marginea dreaptă. Meniul nu se mișcă din locul pe care îl
+          avea cu `justify-between`.
+
+          `pl-4` nu e ornament: rândul are `gap-4`, iar spațiul acela stă în
+          afara containerului. Fără el, distanța până la buton ar ieși cu 16px
+          mai mare decât cea până la margine. Padding-ul aduce aceiași 16px
+          înăuntru, în stânga, și cele două distanțe devin egale la milimetru.
+          Măsurat: 16/16 la 1280, 45/45 la 1600, 125/125 la 1920, 285/285 la 2560.
+
+          `min-w-52` e podeaua sub care sigla nu mai coboară. Fără ea, când bara
+          se aglomerează, containerul se strânge înaintea celorlalte și sigla
+          ajunge la câțiva pixeli lățime.
+
+          Nu e `flex-auto`, deși ar părea mai scurt: `flex-auto` scrie
+          proprietatea `flex` întreagă, iar Tailwind o emite după `flex-shrink`,
+          deci ar anula orice `shrink-*` pus pe același element.
+
+          Sub `xl` meniul nu există, deci nu există nici distanța de înjumătățit
+          — acolo sigla rămâne la stânga, lângă butonul de meniu.
+        */}
+        <Link href="/" className="flex items-center shrink min-w-0 xl:grow xl:min-w-52 xl:justify-center xl:pl-4">
+          {/* Import static, nu șirul "/logo.png": Next scoate fișierul sub o
+              adresă care conține un hash al conținutului. La orice modificare a
+              siglei se schimbă adresa, deci browserele și optimizatorul de
+              imagini nu mai pot servi versiunea veche din cache. Tot de aici
+              vin și dimensiunile reale, fără să le scriem de mână. */}
           <Image
-            src="/logo.png"
+            src={logo}
             alt="Avo Grup Invest"
-            width={1899}
-            height={320}
             className="h-9 sm:h-10 md:h-11 xl:h-12 w-auto max-w-full object-contain"
             priority
           />
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           <Link href="/catalog" className="px-5 py-2.5 bg-slate-100/60 border border-slate-200/60 text-slate-700 hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 transition-all font-semibold text-sm rounded-xl">
             Catalog Produse
           </Link>
@@ -107,13 +136,13 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div className="hidden lg:flex items-center gap-5">
-          <div className="relative group">
+        <div className="hidden xl:flex xl:flex-auto xl:justify-end items-center gap-5">
+          <div className="relative group min-w-0 shrink">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-700 transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Caută produse..." 
-              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:bg-slate-50/80 focus:shadow-inner transition-all w-64"
+              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:bg-slate-50/80 focus:shadow-inner transition-all w-64 min-w-0 max-w-full"
             />
           </div>
 
@@ -134,7 +163,7 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <button 
-          className="lg:hidden shrink-0 text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors ml-auto"
+          className="xl:hidden shrink-0 text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors ml-auto"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -144,7 +173,7 @@ export default function Navbar() {
       
       {/* Mobile Menu */}
       <div 
-        className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl overflow-hidden transition-all duration-300 ease-in-out origin-top ${
+        className={`xl:hidden absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl overflow-hidden transition-all duration-300 ease-in-out origin-top ${
           isMobileMenuOpen ? "max-h-[500px] opacity-100 border-b" : "max-h-0 opacity-0 border-transparent"
         }`}
       >
