@@ -312,6 +312,10 @@ export const GET_PRODUS_QUERY = `
       slug
       description
       shortDescription
+      image {
+        sourceUrl
+        altText
+      }
       ... on SimpleProduct {
         sku
         price(format: RAW)

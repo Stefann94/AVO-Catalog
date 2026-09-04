@@ -41,7 +41,18 @@ export type Produs = {
   pretContainer?: string;
   disponibilitate?: string;
   sursaCatalog?: string;
-  /** Cifra care ține locul fotografiei. Vezi lib/spec.ts. */
+  /**
+   * Fotografia de produs, dacă e încărcată în WooCommerce.
+   *
+   * Nu vine din catalog: PDF-ul lunar n-are imagini, iar CSV-ul de import nici
+   * nu are coloana `Images`. Tocmai de-aia poza pusă în biblioteca media
+   * SUPRAVIEȚUIEȘTE reimportului lunar — importatorul nu atinge câmpul.
+   *
+   * Rămâne opțională la nesfârșit: acoperirea se face produs cu produs, iar
+   * fișa are ce afișa și fără ea (vezi `cifra`).
+   */
+  imagine?: { url: string; alt?: string };
+  /** Cifra care ține locul fotografiei, când nu există `imagine`. Vezi lib/spec.ts. */
   cifra?: CifraTitlu;
   /**
    * Ce se scrie mare când nu există cifră. `mono` cere fontul cu cifre de
@@ -99,6 +110,7 @@ type NodProdus = {
   shortDescription?: string | null;
   stockStatus?: string | null;
   featured?: boolean | null;
+  image?: { sourceUrl?: string | null; altText?: string | null } | null;
   attributes?: {
     nodes?: {
       name?: string | null;
@@ -234,6 +246,14 @@ function mapeaza(nod: NodProdus): Produs | null {
     pretContainer: dc?.pretContainer?.trim() || undefined,
     disponibilitate: atribute.find((a) => a.nume === "pa_disponibilitate")?.valoare,
     sursaCatalog: dc?.sursaCatalog?.trim() || undefined,
+    /**
+     * `altText` gol nu devine șir vid, ci `undefined`: în WooCommerce câmpul e
+     * aproape mereu necompletat, iar un `alt=""` explicit e altceva decât
+     * lipsa lui. Componenta decide ce scrie în locul lui.
+     */
+    imagine: nod.image?.sourceUrl
+      ? { url: nod.image.sourceUrl, alt: nod.image.altText?.trim() || undefined }
+      : undefined,
     cifra: cifraDeTitlu(atribute, dc?.capacitateKwh),
     ancora: ancoraVizuala(
       nod.sku?.trim() || "",
