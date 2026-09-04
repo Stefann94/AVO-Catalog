@@ -188,9 +188,27 @@ export default async function GamaProduse() {
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
             {/* Fără `tracking` negativ: aceeași spațiere ca titlul din hero.
                 La un font geometric, strângerea literelor schimbă vizibil
-                desenul și titlurile par a fi din fonturi diferite. */}
-            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-gray-900 leading-tight sm:whitespace-nowrap">
-              Gama de produse{perioada.eticheta ? ` ${perioada.eticheta}` : ""}
+                desenul și titlurile par a fi din fonturi diferite.
+
+                TITLUL NU MAI POARTĂ LUNA. Era „Gama de produse Septembrie
+                2026", iar perioada apărea de două ori pe același rând — și în
+                titlu, și în ștampila de alături. Categoriile nu se schimbă
+                lunar; prețurile da, iar ștampila e a lor. La „Ofertele lunii"
+                luna rămâne în titlu, fiindcă acolo chiar înseamnă ceva.
+
+                DE CE NU „CELE MAI POPULARE CATEGORII". Ar fi fost o afirmație
+                nesusținută: magazinul n-a avut nicio comandă, `totalSales` e
+                null pe toate produsele, iar ordonarea după popularitate
+                întoarce de fapt ordinea implicită. Titlul spune în schimb ceva
+                verificabil — cele patru categorii chiar acoperă un sistem
+                întreg, de la modul până la structura care îl ține pe acoperiș.
+
+                `text-balance` în loc de `whitespace-nowrap`: titlul e acum prea
+                lung ca să încapă pe un rând lângă ștampilă, iar echilibrarea
+                împarte cuvintele între rânduri în loc să lase unul singur
+                atârnând jos. */}
+            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-gray-900 leading-tight text-balance">
+              Tot ce-ți trebuie, de la panouri la montaj
             </h2>
 
             {/* Ștampila e o dată tehnică, dar rămâne pe fontul global, ca tot
