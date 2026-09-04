@@ -2,6 +2,7 @@ import HeroSlider from "@/components/HeroSlider";
 import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
 import OferteleLunii from "@/components/OferteleLunii";
+import ConditiiB2B from "@/components/ConditiiB2B";
 
 /**
  * Pagina e prerandată static, iar perioada catalogului vine acum din WooCommerce.
@@ -44,6 +45,16 @@ export default function Home() {
       {/* Ofertele lunii — produsele de pe coperta catalogului, sub gama de
           produse: întâi „ce acoperim", apoi „ce e bun luna asta". */}
       <OferteleLunii />
+
+      {/* Condițiile B2B — ultima secțiune înainte de footer, și ultima din
+          ordinea firească a paginii: întâi „ce acoperim", apoi „ce e bun luna
+          asta", abia apoi „în ce condiții cumperi".
+
+          Vine după prețuri, nu înaintea lor, fiindcă răspunde la o întrebare
+          pe care cineva și-o pune DUPĂ ce a văzut o cifră: „ăsta e prețul meu
+          sau se mai mișcă?". Pusă deasupra, ar explica reduceri la prețuri pe
+          care vizitatorul nu le-a văzut încă. */}
+      <ConditiiB2B />
     </div>
   );
 }
