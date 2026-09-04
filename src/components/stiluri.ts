@@ -86,10 +86,20 @@ export const BUTON_PLIN =
  * (`flex flex-col`, `overflow-hidden`, padding) rămâne la fiecare card,
  * fiindcă diferă de la un tip la altul.
  */
+/**
+ * Suprafața în repaus, fără reacție la mouse.
+ *
+ * Există separat fiindcă nu orice cutie albă din site e apăsabilă: fișa de
+ * produs are panouri de date, paginile de catalog au stări goale. Toate trebuie
+ * să arate ca aceeași familie de suprafețe, dar un contur care se colorează la
+ * hover pe ceva ce nu duce nicăieri e o promisiune falsă.
+ */
+export const SUPRAFATA = "rounded-xl border border-gray-200 bg-white shadow-sm";
+
 export const CARD =
-  "rounded-xl border border-gray-200 bg-white shadow-sm " +
-  "transition-[border-color,box-shadow] duration-200 " +
-  "hover:border-avo-600 hover:ring-1 hover:ring-avo-600";
+  SUPRAFATA +
+  " transition-[border-color,box-shadow] duration-200" +
+  " hover:border-avo-600 hover:ring-1 hover:ring-avo-600";
 
 /**
  * Dimensiunea unui titlu de secțiune, calculată din lungimea lui.

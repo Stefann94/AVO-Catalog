@@ -44,3 +44,6 @@ next-env.d.ts
 
 # arhiva plugin-ului WordPress, generata din fisierul .php din acelasi folder
 tools/wordpress/*.zip
+
+# jurnalul serverului de dezvoltare
+.dev.log

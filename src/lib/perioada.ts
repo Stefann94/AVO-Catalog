@@ -31,6 +31,15 @@ export type PerioadaCatalog = {
   eticheta: string | null;
   /** „01.09 – 30.09.2026". `null` ascunde ștampila cu prețuri valabile. */
   interval: string | null;
+  /**
+   * Ultima zi de valabilitate, „30.09.2026".
+   *
+   * Se cere separat de `interval` fiindcă răspunde la altă întrebare. Pe fișa
+   * de produs, lângă preț, contează până CÂND ține prețul, nu din când — cine e
+   * pe pagină azi știe deja că a început. Un interval întreg acolo ar cere
+   * cititorului să scoată singur data care îl interesează.
+   */
+  pana: string | null;
   /** De unde a venit valoarea. Util în dezvoltare ca să vezi dacă WooCommerce răspunde. */
   sursa: "woocommerce" | "rezerva" | "necunoscuta";
 };
@@ -110,7 +119,7 @@ export function perioadaCatalog(
   const dinRezerva = compune(rezerva);
   if (dinRezerva) return { ...dinRezerva, sursa: "rezerva" };
 
-  return { eticheta: null, interval: null, sursa: "necunoscuta" };
+  return { eticheta: null, interval: null, pana: null, sursa: "necunoscuta" };
 }
 
 function compune(sursa?: PerioadaBruta | null): Omit<PerioadaCatalog, "sursa"> | null {
@@ -129,21 +138,25 @@ function compune(sursa?: PerioadaBruta | null): Omit<PerioadaCatalog, "sursa"> |
   if (!eticheta) return null;
 
   // Intervalul complet, când catalogul îl declară.
-  if (de && pana) return { eticheta, interval: formatInterval(de, pana) };
+  if (de && pana) {
+    return { eticheta, interval: formatInterval(de, pana), pana: ziLunga(pana) };
+  }
 
   // Doar eticheta: presupunem luna calendaristică întreagă. E deducția pe care
   // o face și cititorul când vede „Septembrie 2026" pe copertă.
   const luna = dinEticheta ?? (de ? { luna: de.luna, an: de.an } : null);
-  if (!luna) return { eticheta, interval: null };
+  if (!luna) return { eticheta, interval: null, pana: null };
 
+  const ultima = { zi: ultimaZi(luna.luna, luna.an), luna: luna.luna, an: luna.an };
   return {
     eticheta,
-    interval: formatInterval(
-      { zi: 1, luna: luna.luna, an: luna.an },
-      { zi: ultimaZi(luna.luna, luna.an), luna: luna.luna, an: luna.an }
-    ),
+    interval: formatInterval({ zi: 1, luna: luna.luna, an: luna.an }, ultima),
+    pana: ziLunga(ultima),
   };
 }
+
+/** „30.09.2026" — data completă, cu an, pentru afirmații de sine stătătoare. */
+const ziLunga = (z: Zi) => `${doua(z.zi)}.${doua(z.luna)}.${z.an}`;
 
 /**
  * Ultimul catalog încărcat manual, folosit doar cât timp WooCommerce nu

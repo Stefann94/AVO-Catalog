@@ -266,3 +266,184 @@ export const GET_PERIOADA_CATALOG_QUERY = `
     }
   }
 `;
+
+/**
+ * Fișa unui produs.
+ *
+ * `featured` e ce alimentează badge-ul „Ofertă specială": importatorul îl pune
+ * citind pagina de oferte de pe coperta catalogului, deci nu trebuie bifat de
+ * nimeni. `productTags` sunt statuturile puse de mână în WooCommerce, care
+ * supraviețuiesc reimportului lunar fiindcă importatorul nu scrie coloana lor.
+ *
+ * `description` și `shortDescription` sunt goale pe tot catalogul — PDF-ul e o
+ * listă de prețuri, nu o fișă tehnică. Se cer oricând vor fi completate; pagina
+ * le afișează doar dacă există.
+ *
+ * `attributes` stă în fragment pe `SimpleProduct`: pe interfața `Product` nu
+ * există. `terms` cere la rândul lui `GlobalProductAttribute` — atributele din
+ * import sunt globale, iar `options` ar da slug-uri, nu etichete.
+ */
+export const GET_PRODUS_QUERY = `
+  query GetProdus($slug: ID!) {
+    product(id: $slug, idType: SLUG) {
+      name
+      slug
+      description
+      shortDescription
+      ... on SimpleProduct {
+        sku
+        price(format: RAW)
+        stockStatus
+        featured
+        attributes {
+          nodes {
+            name
+            ... on GlobalProductAttribute {
+              label
+              terms(first: 1) {
+                nodes {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+      productCategories(first: 3) {
+        nodes {
+          name
+          slug
+          parent {
+            node {
+              name
+              slug
+            }
+          }
+        }
+      }
+      productTags(first: 6) {
+        nodes {
+          name
+          slug
+        }
+      }
+      dateCatalog {
+        pretVolum
+        pragVolum
+        unitatePret
+        pretContainer
+        capacitateKwh
+        sursaCatalog
+      }
+    }
+  }
+`;
+
+/**
+ * Slug-urile tuturor produselor, pentru prerandare.
+ *
+ * SE CERE ÎN PAGINI, nu dintr-o dată. WPGraphQL plafonează orice conexiune la
+ * 100 de noduri, indiferent ce ceri: un `first: 200` întoarce tot 100, tăcut.
+ * Prima încercare a prerandat exact 100 din cele 172 de produse, iar celelalte
+ * 72 ar fi ajuns să se randeze la cerere — prima vizită pe ele ar fi așteptat
+ * răspunsul WordPress-ului.
+ *
+ * `after` continuă de unde s-a oprit; bucla din lib/produs.ts se oprește când
+ * `hasNextPage` devine fals.
+ */
+export const GET_SLUGURI_PRODUSE_QUERY = `
+  query GetSluguriProduse($after: String) {
+    products(first: 100, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        slug
+      }
+    }
+  }
+`;
+
+/**
+ * TOATE produsele, cu tot ce-i trebuie fișei, în pagini de 50.
+ *
+ * ─── DE CE NU UNA PE PAGINĂ ───────────────────────────────────────────────
+ *
+ * Prima versiune cerea fiecare produs separat, la randarea fișei lui. La build
+ * asta însemna 172 de cereri, pornite de 9 lucrători în paralel, în câteva
+ * zeci de secunde. Găzduirea WordPress a cedat: zeci de răspunsuri 500, iar
+ * fișele afectate au ajuns scrise în build ca pagini de 404 — 88 din 172 la o
+ * rulare. Produse reale, dispărute de pe site până la următorul deploy.
+ *
+ * Reîncercările singure n-au rezolvat, fiindcă serverul nu pica o clipă, ci
+ * rămânea saturat cât ținea build-ul. Soluția e să nu-l mai saturăm.
+ *
+ * Aduse odată și ținute într-o hartă (vezi lib/produs.ts), cele 172 de produse
+ * costă 4 cereri per lucrător în loc de 172 în total.
+ *
+ * `first: 50`, nu 100: interogarea cere atribute, categorii, etichete și meta
+ * pentru fiecare produs, iar la 100 răspunsul devine destul de greu încât să
+ * fie el însuși un motiv de 500.
+ */
+export const GET_PRODUSE_TOATE_QUERY = `
+  query GetProduseToate($after: String) {
+    products(first: 50, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        name
+        slug
+        description
+        shortDescription
+        ... on SimpleProduct {
+          sku
+          price(format: RAW)
+          stockStatus
+          featured
+          attributes {
+            nodes {
+              name
+              ... on GlobalProductAttribute {
+                label
+                terms(first: 1) {
+                  nodes {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+        productCategories(first: 3) {
+          nodes {
+            name
+            slug
+            parent {
+              node {
+                name
+                slug
+              }
+            }
+          }
+        }
+        productTags(first: 6) {
+          nodes {
+            name
+            slug
+          }
+        }
+        dateCatalog {
+          pretVolum
+          pragVolum
+          unitatePret
+          pretContainer
+          capacitateKwh
+          sursaCatalog
+        }
+      }
+    }
+  }
+`;
