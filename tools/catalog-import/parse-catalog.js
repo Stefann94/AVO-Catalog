@@ -293,8 +293,27 @@ for (const p of produse) {
   if (!p.laCerere && !(p.pret1 > 0)) erori.push(`Preț lipsă la "${p.nume}"`);
 }
 
+/**
+ * FĂRĂ BOM. Fișierul începe direct cu "SKU", nu cu marcajul EF BB BF.
+ *
+ * Aici era un BOM, pus ca Excel să deschidă fișierul ca UTF-8 și să arate
+ * corect diacriticele. Costa mai mult decât aducea: importatorul WooCommerce
+ * citește primul antet împreună cu marcajul, adică `<BOM>SKU` în loc de `SKU`,
+ * nu-l recunoaște și pune coloana pe „Do not import".
+ *
+ * Efectul, verificat pe importul din septembrie: toate cele 172 de produse au
+ * intrat corect — nume, prețuri, categorii, atribute, meta — dar TOATE fără
+ * SKU. Iar SKU-ul e cheia după care importatorul potrivește produsele la
+ * reimportul de luna viitoare; fără el, al doilea import n-ar actualiza nimic,
+ * ar crea încă 172 de produse noi.
+ *
+ * Ce pierdem: dublu-clic pe fișier în Excel arată diacriticele greșit. Fișierul
+ * rămâne UTF-8 valid — în Excel se deschide prin Date → Din text/CSV, alegând
+ * codificarea UTF-8. E un inconvenient de câteva secunde, o dată pe lună,
+ * pentru un fișier care oricum se duce în WooCommerce, nu în Excel.
+ */
 const outCsv = path.join(outDir, 'solar-one-woocommerce.csv');
-fs.writeFileSync(outCsv, '﻿' + csv(produse), 'utf8');
+fs.writeFileSync(outCsv, csv(produse), 'utf8');
 
 // ---- raport ----
 const peCat = {};
