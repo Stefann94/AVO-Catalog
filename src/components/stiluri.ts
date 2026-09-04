@@ -52,3 +52,41 @@ export const BUTON_PLIN =
   "transition-colors duration-200 " +
   "hover:bg-avo-700 active:bg-avo-800 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
+
+/**
+ * Cardul — o singură suprafață, folosită de toate tipurile din site.
+ *
+ * Erau patru rețete pentru același obiect: cardurile de categorie și de ofertă
+ * pe `gray` cu 12px, cele de produs din catalog pe `slate` cu 16px, unele cu
+ * `border`, altele cu `ring`, iar hover-ul diferea la fiecare — umbră mică,
+ * mare, sau contur mai închis.
+ *
+ * ─── HOVER-UL ─────────────────────────────────────────────────────────────
+ *
+ * Conturul se colorează în avo-600 și se îngroașă de la 1px la 2px. Atât.
+ * Nicio umbră, nicio ridicare, nicio scalare — aceeași regulă ca la butoane:
+ * la hover se schimbă doar culoarea, obiectul nu se mișcă.
+ *
+ * Îngroșarea vine dintr-un `ring`, nu din `border-2`. Diferența contează:
+ * `border-2` ar modifica lățimea chenarului, deci conținutul cardului s-ar
+ * deplasa cu un pixel la fiecare trecere a mouse-ului. `ring` e desenat ca
+ * umbră, în afara cutiei, deci nu intră în calculul așezării — cardul rămâne
+ * nemișcat, iar ochiul vede tot 2px de albastru.
+ *
+ * Tranziția e declarată pe proprietăți anume, nu `transition-all`: dacă cineva
+ * adaugă mai târziu o clasă care mișcă ceva, tranziția n-o va anima.
+ *
+ * Contrast: avo-600 #004A99 pe alb dă 8,61 — cu mult peste pragul de 3:1 cerut
+ * pentru elemente negrafice. Conturul se vede și de către cine distinge greu
+ * culorile, fiindcă se și îngroașă, nu doar își schimbă nuanța.
+ *
+ * ─── CE NU CONȚINE ────────────────────────────────────────────────────────
+ *
+ * Doar suprafața: colț, chenar, fundal, hover. Așezarea dinăuntru
+ * (`flex flex-col`, `overflow-hidden`, padding) rămâne la fiecare card,
+ * fiindcă diferă de la un tip la altul.
+ */
+export const CARD =
+  "rounded-xl border border-gray-200 bg-white shadow-sm " +
+  "transition-[border-color,box-shadow] duration-200 " +
+  "hover:border-avo-600 hover:ring-1 hover:ring-avo-600";

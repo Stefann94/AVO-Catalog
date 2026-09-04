@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, PackageSearch } from "lucide-react";
+import { CARD } from "@/components/stiluri";
 import { fetchGraphQL } from "@/lib/graphql-client";
 import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
 import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
@@ -113,7 +114,7 @@ export default async function PaginaCategorie({
                 <Link
                   key={p.id}
                   href={`/catalog/produs/${p.slug}`}
-                  className="group flex flex-col rounded-2xl bg-white p-3 ring-1 ring-slate-900/[0.08] shadow-sm transition-all duration-300 hover:ring-slate-900/20 hover:shadow-lg"
+                  className={`${CARD} group flex flex-col p-3`}
                 >
                   <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.image?.sourceUrl ? (

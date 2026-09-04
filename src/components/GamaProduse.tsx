@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
-import { BUTON_PLIN } from "./butoane";
+import { BUTON_PLIN, CARD } from "./stiluri";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
@@ -37,11 +36,16 @@ import { BUTON_PLIN } from "./butoane";
       fără tenta rece a lui slate, iar conturul devine astfel neutru,
       nu albăstrui.
 
-   2. CONTUR, NU UMBRĂ.
-      Nicio clasă `shadow-*` în toată secțiunea. Adâncimea vine dintr-un
-      contur solid: 2px la carduri, 1px la restul. Umbrele difuze mari sunt
+   2. CONTURUL FACE MUNCA, NU UMBRA.
+      Cardul are un contur de 1px și o umbră abia perceptibilă (`shadow-sm`),
+      iar la hover conturul se colorează în avo-600 și se îngroașă la 2px.
+      Atât — nicio umbră care crește, nicio ridicare. Umbrele difuze mari sunt
       exact semnătura vizuală a șabloanelor generice; un contur crisp citește
       ca desen tehnic, ceea ce se potrivește cu ce vinde firma.
+
+      Aici scria „nicio clasă shadow-*", într-un fișier care avea `shadow-sm`
+      și `hover:shadow-md`. Rețeta e acum în components/stiluri.ts, folosită de
+      toate cardurile din site — categorie, ofertă și produs.
 
    3. UN SINGUR ACCENT: `avo-600` (#004A99), pe hue-ul siglei.
       Îl primesc numai elementele de decizie. Secțiunea avea albastru, emerald
@@ -57,7 +61,7 @@ import { BUTON_PLIN } from "./butoane";
       și fără buton. Acum, cu prețul pe gray-900, un buton gri ar lăsa cardul
       complet fără culoare, iar grila de patru ar citi plat.
 
-      Rețeta butonului nu stă aici, ci în components/butoane.ts — un singur șir
+      Rețeta butonului nu stă aici, ci în components/stiluri.ts — un singur șir
       de clase, folosit și de cardurile de ofertă, și de butonul de secțiune.
       Acolo sunt și treptele de hover și motivul pentru care sunt alea.
 
@@ -213,32 +217,47 @@ export default async function GamaProduse() {
             const cale = `/catalog/${c.slug}`;
             return (
               /*
-               * Cardul nu mai e un singur link peste tot.
+               * TOT CARDUL E O SINGURĂ ȚINTĂ, prin link întins.
                *
-               * Zonele care duc undeva sunt două și se văd ca atare: fotografia
-               * (cu titlul pe ea) și butonul. Restul — pastila de preț, marginile —
-               * nu reacționează la mouse și nu se poate da clic pe ele.
+               * AICI A FOST INVERS, și merită spus de ce s-a schimbat. Cardul
+               * avea două zone care duceau undeva — fotografia și butonul —
+               * argumentul fiind că un card întreg făcut link promite ceva ce
+               * nu se vede: cursorul devine mână peste o cifră de preț.
                *
-               * Motivul e că un card întreg făcut link promite ceva ce nu se vede:
-               * cursorul devine mână peste o cifră de preț, care nu e o acțiune.
-               * Cu două ținte clare, ce e apăsabil arată apăsabil.
+               * Argumentul cădea la o verificare simplă: cele două linkuri
+               * duceau la ACEEAȘI adresă. Nu erau două acțiuni între care omul
+               * alege, era aceeași acțiune scrisă de două ori — două opriri
+               * consecutive cu Tab pentru aceeași destinație, anunțată de două
+               * ori de un cititor de ecran. Redundanța era problema, nu soluția.
                *
-               * Conturul cardului nu mai are stare de hover, tocmai fiindcă
-               * hover-ul nu mai aparține cardului, ci celor două zone din el.
+               * CUM E FĂCUT. Nu cu un `<Link>` în jurul cardului: butonul e și
+               * el link, iar `<a>` în `<a>` e HTML invalid, pe care browserele
+               * îl repară imprevizibil. Singurul link rămâne butonul, iar un
+               * `::after` transparent (`after:absolute after:inset-0`) i se
+               * întinde peste tot cardul. În arborele de accesibilitate rămâne
+               * un singur link, cu o singură oprire de Tab, iar conturul de
+               * focus se vede pe buton — acolo unde scrie unde duce.
+               *
+               * `relative` pe `<article>` e ce ancorează stratul acela; fără el
+               * s-ar întinde peste cel mai apropiat părinte poziționat, adică
+               * peste toată grila.
+               *
+               * CE PIERDEM: textul de pe card nu mai poate fi selectat cu
+               * mouse-ul, fiindcă stratul stă deasupra lui. Pe un card care
+               * spune „De la 54 € / panou" nu e o pierdere reală — nimeni nu
+               * copiază de acolo, toți dau clic.
                */
               <article
                 key={c.slug}
-                className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+                className={`${CARD} group relative flex flex-col overflow-hidden`}
               >
                 {/* Fotografia, cu titlul așezat pe ea.
-                    `group/foto` limitează zoom-ul la hover-ul acestei zone, nu
-                    al cardului: numele explicit e necesar fiindcă butonul de
-                    dedesubt are propriul grup, iar un `group` fără nume le-ar
-                    amesteca. */}
-                <Link
-                  href={cale}
-                  className="group/foto relative block aspect-[4/3] overflow-hidden bg-gray-100"
-                >
+                    Nu mai e link: stratul întins al butonului acoperă și zona
+                    asta. Zoom-ul ascultă acum de `group`, adică de hover-ul
+                    întregului card — înainte pornea doar când mouse-ul intra pe
+                    fotografie, ceea ce arăta ca o scăpare acum, când tot cardul
+                    răspunde. */}
+                <div className="relative block aspect-[4/3] overflow-hidden bg-gray-100">
                   {/* Miniatura din WooCommerce, dacă a încărcat-o cineva;
                       altfel fotografia din public/.
 
@@ -269,7 +288,7 @@ export default async function GamaProduse() {
                        ieșirea din zoom să fie la fel de lină ca intrarea.
                        Se animă `transform`, singura proprietate pe care
                        browserul o rezolvă pe compozitor, fără redesenare. */
-                    className="object-cover transition-transform duration-300 ease-out group-hover/foto:scale-105"
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                   />
 
                   {/* Badge-ul stă pe aceeași sticlă ca banda de jos: două rețete
@@ -302,7 +321,7 @@ export default async function GamaProduse() {
                       {c.nume}
                     </h3>
                   </div>
-                </Link>
+                </div>
 
                 {/* Piciorul cardului: ancora de preț și îndemnul. */}
                 <div className="flex items-end justify-between gap-2 p-4">
@@ -332,7 +351,7 @@ export default async function GamaProduse() {
 
                   <Link
                     href={cale}
-                    className={BUTON_PLIN}
+                    className={`${BUTON_PLIN} after:absolute after:inset-0`}
                   >
                     Accesează
                   </Link>
@@ -348,17 +367,19 @@ export default async function GamaProduse() {
             Prețurile sunt exprimate în EUR, fără TVA. Taxa verde DEEE nu este inclusă
             (0,7 RON / kg). Disponibilitatea se confirmă la plasarea comenzii.
           </p>
-          {/* Acțiunea principală a secțiunii, deci albastrul de brand — nu
-              închis, ca să nu concureze cu bannerul. */}
+          {/* Acțiunea principală a secțiunii. Aceeași rețetă ca butoanele din
+              carduri — se deosebește doar prin poziție și prin lățimea completă
+              pe telefon, nu printr-un desen propriu.
+
+              A avut o săgeată care se deplasa la hover. A căzut odată cu regula
+              „la hover se schimbă doar culoarea": o săgeată care se mișcă e
+              exact genul de mișcare pe care regula o exclude, iar textul spune
+              deja unde duce butonul. */}
           <Link
             href="/catalog"
             className={`${BUTON_PLIN} w-full sm:w-auto`}
           >
             Vezi catalogul complet
-            <ArrowRight
-              size={15}
-              className="shrink-0"
-            />
           </Link>
         </div>
       </div>

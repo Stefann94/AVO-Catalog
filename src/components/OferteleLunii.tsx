@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaOferte, type Oferta } from "@/lib/oferte";
-import { BUTON_PLIN } from "./butoane";
+import { BUTON_PLIN, CARD } from "./stiluri";
 
 /**
  * Ofertele lunii — produsele de pe coperta catalogului.
@@ -134,7 +134,7 @@ export default async function OferteleLunii({
           {lista.map((o) => (
             <article
               key={o.sku}
-              className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+              className={`${CARD} group relative flex flex-col overflow-hidden`}
             >
               {/* Zona vizuală — aceeași proporție ca fotografia cardului de
                   categorie, ca cele două grile să aibă același ritm. */}
@@ -238,7 +238,7 @@ export default async function OferteleLunii({
                       calea. */}
                   <Link
                     href={`/catalog/${o.categorie}`}
-                    className={BUTON_PLIN}
+                    className={`${BUTON_PLIN} after:absolute after:inset-0`}
                   >
                     Vezi
                   </Link>

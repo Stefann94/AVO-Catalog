@@ -1,6 +1,7 @@
 import { fetchGraphQL } from '@/lib/graphql-client';
 import { GET_ALL_PRODUCTS_QUERY, GET_CATEGORIES_QUERY } from '@/lib/queries';
 import Link from 'next/link';
+import { BUTON_PLIN, CARD } from '@/components/stiluri';
 
 /**
  * Forma datelor întoarse de GET_CATEGORIES_QUERY și GET_ALL_PRODUCTS_QUERY.
@@ -72,7 +73,7 @@ export default async function CatalogPage() {
               </div>
             ) : (
               products.map((product) => (
-                <div key={product.id} className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col">
+                <div key={product.id} className={`${CARD} relative overflow-hidden group flex flex-col`}>
                   {/* Image Placeholder */}
                   <div className="h-48 bg-slate-100 flex items-center justify-center p-6 relative overflow-hidden">
                     {product.image ? (
@@ -98,8 +99,8 @@ export default async function CatalogPage() {
                           {product.price ? product.price : 'La cerere'}
                         </span>
                       </div>
-                      <Link href={`/catalog/produs/${product.slug}`} className="bg-slate-900 hover:bg-blue-600 text-white p-2 rounded-xl transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                      <Link href={`/catalog/produs/${product.slug}`} className={`${BUTON_PLIN} after:absolute after:inset-0`}>
+                        Vezi
                       </Link>
                     </div>
                   </div>

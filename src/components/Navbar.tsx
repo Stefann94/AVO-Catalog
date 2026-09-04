@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.png";
-import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
+import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -122,7 +122,7 @@ export default function Navbar() {
                 </div>
                 <div className="p-4 bg-slate-200/30 hover:bg-avo-50/50 transition-colors cursor-pointer group/link">
                   <Link href="/devino-partener" className="text-sm text-avo-600 font-bold flex items-center gap-1.5 justify-center">
-                    Află cum devii partener <ArrowUpRight size={16} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                    Află cum devii partener
                   </Link>
                 </div>
               </div>
