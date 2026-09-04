@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
-import { BUTON_PLIN, CARD } from "./stiluri";
+import type { CSSProperties } from "react";
+import { BUTON_PLIN, CARD, dimensiuneTitlu } from "./stiluri";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
@@ -161,6 +162,8 @@ import { BUTON_PLIN, CARD } from "./stiluri";
    ══════════════════════════════════════════════════════════════════════════ */
 
 
+const TITLU = "Categoriile principale pentru casa și energia ta";
+
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
 export default async function GamaProduse() {
@@ -205,9 +208,14 @@ export default async function GamaProduse() {
                 lung ca să încapă pe un rând lângă ștampilă, iar echilibrarea
                 împarte cuvintele între rânduri în loc să lase unul singur
                 atârnând jos. */}
-            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-gray-900 leading-tight text-balance">
-              Categoriile principale pentru casa și energia ta
-            </h2>
+            <div
+              className="@container min-w-0 flex-1"
+              style={{ "--dim-titlu": dimensiuneTitlu(TITLU) } as CSSProperties}
+            >
+              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+                {TITLU}
+              </h2>
+            </div>
 
             {/* Ștampila e o dată tehnică, dar rămâne pe fontul global, ca tot
                 restul secțiunii. Fără umbră: contur de 1px. */}

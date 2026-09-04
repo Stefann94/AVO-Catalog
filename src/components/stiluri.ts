@@ -90,3 +90,38 @@ export const CARD =
   "rounded-xl border border-gray-200 bg-white shadow-sm " +
   "transition-[border-color,box-shadow] duration-200 " +
   "hover:border-avo-600 hover:ring-1 hover:ring-avo-600";
+
+/**
+ * Dimensiunea unui titlu de secțiune, calculată din lungimea lui.
+ *
+ * PROBLEMA. Titlurile de secțiune trebuie să stea pe un singur rând, dar
+ * lungimea lor variază: „Ofertele lunii Septembrie 2026" are 30 de caractere,
+ * „Categoriile principale pentru casa și energia ta" are 47, iar cel de la
+ * oferte se lungește singur cu numele lunii. O dimensiune fixă ori taie
+ * titlurile lungi pe două rânduri, ori le lasă pe cele scurte prea mici.
+ *
+ * SOLUȚIA. Corpul literei devine o fracțiune din lățimea DISPONIBILĂ, împărțită
+ * la câte caractere are titlul. Cu cât e mai lung, cu atât scade — exact atât
+ * cât să încapă, niciodată mai mult decât plafonul.
+ *
+ * DE CE `cqi`, NU `vw`. Unitățile de viewport măsoară fereastra, dar titlul nu
+ * primește toată fereastra: la lățimi mari stă pe același rând cu ștampila
+ * „Prețuri valabile", care îi ia vreo 300px. `cqi` măsoară containerul în care
+ * chiar se află, deci socoteala iese corectă și cu ștampila lângă el, și fără
+ * ea. Cere `@container` pe învelișul titlului.
+ *
+ * CONSTANTA 0,55 e lățimea medie a unui caracter, în em, pentru Libre Franklin
+ * la greutatea 800. E aleasă cu o marjă în plus față de media reală: dacă
+ * greșim în sus, titlul iese cu câțiva pixeli mai mic decât ar fi încăput;
+ * dacă greșim în jos, se rupe pe două rânduri. Prima greșeală nu se vede,
+ * a doua da.
+ *
+ * PE TELEFON regula nu se aplică. Un titlu de 47 de caractere ar avea nevoie de
+ * ~14px ca să încapă pe un rând la 375px lățime — ilizibil pentru un titlu de
+ * secțiune. Acolo rămâne dimensiunea fixă și se rupe pe rânduri, cum e normal.
+ */
+export function dimensiuneTitlu(text: string, plafonPx = 42): string {
+  const LATIME_CARACTER = 0.55;
+  const procenteDinContainer = 100 / (text.length * LATIME_CARACTER);
+  return `min(${plafonPx}px, ${procenteDinContainer.toFixed(2)}cqi)`;
+}

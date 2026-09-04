@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaOferte, type Oferta } from "@/lib/oferte";
-import { BUTON_PLIN, CARD } from "./stiluri";
+import type { CSSProperties } from "react";
+import { BUTON_PLIN, CARD, dimensiuneTitlu } from "./stiluri";
 
 /**
  * Ofertele lunii — produsele de pe coperta catalogului.
@@ -94,15 +95,22 @@ export default async function OferteleLunii({
   // secțiunea pur și simplu nu apare.
   if (lista.length === 0) return null;
 
+  const titlu = `Ofertele lunii${perioada.eticheta ? ` ${perioada.eticheta}` : ""}`;
+
   return (
     <section className="bg-white py-16 sm:py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-8 sm:mb-10 lg:mb-12">
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
-            <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-gray-900 leading-tight sm:whitespace-nowrap">
-              Ofertele lunii{perioada.eticheta ? ` ${perioada.eticheta}` : ""}
-            </h2>
+            <div
+              className="@container min-w-0 flex-1"
+              style={{ "--dim-titlu": dimensiuneTitlu(titlu) } as CSSProperties}
+            >
+              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+                {titlu}
+              </h2>
+            </div>
 
             {/* Aceeași ștampilă ca la „Gama de produse", cu altă etichetă:
                 acolo răspunde la „de când sunt prețurile", aici la „cât mai țin
