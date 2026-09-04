@@ -26,6 +26,12 @@ type Produs = {
   image?: { sourceUrl: string; altText?: string | null } | null;
 };
 
+/** „1.475 €", din numărul brut întors de WooCommerce. */
+const eur = (p?: string | null) => {
+  const n = Number(p);
+  return Number.isFinite(n) && n > 0 ? `${n.toLocaleString("ro-RO")} €` : "La cerere";
+};
+
 export async function generateStaticParams() {
   return [
     ...CATEGORII_CUNOSCUTE.map((c) => ({ categorie: [c.slug] })),
@@ -138,7 +144,7 @@ export default async function PaginaCategorie({
                     </p>
                     <div className="mt-auto pt-4 border-t border-slate-900/[0.07]">
                       <span className="text-[20px] font-extrabold text-slate-900 tabular-nums">
-                        {p.price ?? "La cerere"}
+                        {eur(p.price)}
                       </span>
                     </div>
                   </div>

@@ -1,3 +1,14 @@
+/**
+ * `price(format: RAW)`, nu prețul formatat de WooCommerce.
+ *
+ * Fără `format: RAW`, câmpul întoarce HTML gata compus — „675,00&nbsp;€" —
+ * fiindcă WooCommerce aplică setările de monedă pe server, iar spațiul dintre
+ * cifră și simbol e neîntrerupt, ca prețul să nu se rupă pe două rânduri.
+ *
+ * React randează șirul ca text simplu: nu decodifică entitățile, deci pe ecran
+ * apărea literal „675,00&nbsp;€". Formatarea o face front-end-ul, care știe și
+ * moneda, și locale-ul — ca în toate celelalte interogări.
+ */
 export const GET_ALL_PRODUCTS_QUERY = `
   query GetAllProducts {
     products(first: 50) {
@@ -8,8 +19,8 @@ export const GET_ALL_PRODUCTS_QUERY = `
         slug
         type
         ... on SimpleProduct {
-          price
-          regularPrice
+          price(format: RAW)
+          regularPrice(format: RAW)
         }
         productCategories {
           nodes {
@@ -38,6 +49,17 @@ export const GET_CATEGORIES_QUERY = `
   }
 `;
 
+/**
+ * `price(format: RAW)`, nu prețul formatat de WooCommerce.
+ *
+ * Fără `format: RAW`, câmpul întoarce HTML gata compus — „675,00&nbsp;€" —
+ * fiindcă WooCommerce aplică setările de monedă pe server, iar spațiul dintre
+ * cifră și simbol e neîntrerupt, ca prețul să nu se rupă pe două rânduri.
+ *
+ * React randează șirul ca text simplu: nu decodifică entitățile, deci pe ecran
+ * apărea literal „675,00&nbsp;€". Formatarea o face front-end-ul, care știe și
+ * moneda, și locale-ul — ca în toate celelalte interogări.
+ */
 export const GET_CATEGORY_PAGE_QUERY = `
   query GetCategoryPage($slug: ID!, $categorySlug: String!) {
     productCategory(id: $slug, idType: SLUG) {
@@ -57,7 +79,7 @@ export const GET_CATEGORY_PAGE_QUERY = `
         slug
         ... on SimpleProduct {
           sku
-          price
+          price(format: RAW)
           stockStatus
         }
         image {

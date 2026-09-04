@@ -29,6 +29,12 @@ type ProdusWoo = {
 // Catalogul se revalidează o dată pe oră, ca și restul interogărilor GraphQL.
 export const revalidate = 3600;
 
+/** „1.475 €", din numărul brut întors de WooCommerce. */
+const eur = (p?: string | null) => {
+  const n = Number(p);
+  return Number.isFinite(n) && n > 0 ? `${n.toLocaleString("ro-RO")} €` : "La cerere";
+};
+
 export default async function CatalogPage() {
   const productsData = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, {}, { tags: ['produse'] });
   const categoriesData = await fetchGraphQL(GET_CATEGORIES_QUERY, {}, { tags: ['produse'] });
@@ -96,7 +102,7 @@ export default async function CatalogPage() {
                     <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                       <div>
                         <span className="text-2xl font-bold text-slate-900">
-                          {product.price ? product.price : 'La cerere'}
+                          {eur(product.price)}
                         </span>
                       </div>
                       <Link href={`/catalog/produs/${product.slug}`} className={`${BUTON_PLIN} after:absolute after:inset-0`}>
