@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: AVO — Legătura cu site-ul
- * Description: Două lucruri de care are nevoie site-ul Next.js. (1) Expune prin WPGraphQL perioada de valabilitate a catalogului, ca site-ul să afișeze luna corectă fără modificări de cod. (2) Anunță site-ul la fiecare salvare de produs sau de setări, ca modificarea să apară în câteva secunde în loc de o oră. Se configurează din WooCommerce → Setări → Produse → Catalog AVO.
- * Version:     1.1.0
+ * Description: Două lucruri de care are nevoie site-ul Next.js. (1) Expune prin WPGraphQL perioada de valabilitate a catalogului, ca site-ul să afișeze luna corectă fără modificări de cod. (2) Anunță site-ul la fiecare salvare de produs sau de setări, ca modificarea să apară în câteva secunde în loc de o oră. (3) Expune datele scrise de importatorul CSV pe fiecare produs — prețul la volum, pragul de cantitate, unitatea și capacitatea. Se configurează din WooCommerce → Setări → Produse → Catalog AVO.
+ * Version:     1.2.0
  * Author:      Avo Grup Invest
  * Requires PHP: 7.4
  *
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 if (defined('AVO_PERIOADA_CATALOG_VERSIUNE')) {
     return;
 }
-define('AVO_PERIOADA_CATALOG_VERSIUNE', '1.1.0');
+define('AVO_PERIOADA_CATALOG_VERSIUNE', '1.2.0');
 
 const AVO_OPT_ETICHETA = 'avo_perioada_eticheta';
 const AVO_OPT_DE       = 'avo_perioada_valabil_de';
@@ -184,6 +184,145 @@ add_action('graphql_register_types', function () {
         },
     ]);
 });
+
+/* -------------------------------------------------------------------------
+ * 3b. Datele de catalog de pe fiecare produs
+ * ---------------------------------------------------------------------- */
+
+/**
+ * DE CE E NEVOIE DE SECȚIUNEA ASTA.
+ *
+ * Importatorul CSV scrie pe fiecare produs câteva valori care nu există în
+ * WooCommerce standard și pe care WooGraphQL, prin urmare, nu le expune:
+ *
+ *   _pret_volum ....... al doilea preț din catalog, cel pentru cantitate
+ *   _prag_volum ....... de la ce cantitate se aplică („4 paleți", „12 buc")
+ *   _unitate_pret ..... „buc" sau „panou"
+ *   _pret_container ... „la cerere", la produsele ofertate pe container
+ *   _capacitate_kwh ... capacitatea exactă, unde catalogul o declară
+ *   _sursa_catalog .... din ce ediție vine prețul
+ *
+ * Fără ele, cardul de produs de pe site poate afișa prețul, dar nu și rândul
+ * „1.450 € de la 12 buc" — adică exact ce deosebește un preț de distribuitor de
+ * unul de magazin. Sunt 88 din cele 172 de produse care au al doilea preț, deci
+ * jumătate din catalog și-ar pierde argumentul comercial.
+ *
+ * DE CE UN SINGUR CÂMP, NU ȘASE. `dateCatalog` grupează tot ce ține de catalogul
+ * lunar. Șase câmpuri răzlețe pe `Product` s-ar amesteca cu cele ale
+ * WooCommerce, iar peste un an nimeni n-ar mai ști care sunt ale noastre.
+ *
+ * DE CE PE INTERFAȚA `Product`, NU PE `SimpleProduct`. Tot catalogul e din
+ * produse simple azi, dar dacă vreodată apare unul variabil (un panou cu mai
+ * multe puteri, de exemplu), câmpul e deja acolo. Interfața le acoperă pe toate.
+ */
+/*
+ * Nu verificăm aici dacă WooGraphQL e activ. Dacă tipul `Product` nu există în
+ * schemă, WPGraphQL ignoră înregistrarea de mai jos fără eroare fatală — iar o
+ * verificare pe nume de clasă ar fi mai fragilă decât lipsa ei: numele s-au
+ * schimbat între versiunile WooGraphQL, deci ar începe să dea fals negativ fix
+ * la o actualizare.
+ */
+add_action('graphql_register_types', function () {
+    register_graphql_object_type('DateCatalogProdus', [
+        'description' => 'Valorile scrise de importatorul CSV pe produs, din catalogul lunar.',
+        'fields'      => [
+            'pretVolum' => [
+                'type'        => 'Float',
+                'description' => 'Al doilea preț din catalog, pentru cantitate. null când produsul n-are.',
+            ],
+            'pragVolum' => [
+                'type'        => 'String',
+                'description' => 'Cantitatea de la care se aplică prețul de volum, ex. "4 paleți" sau "12 buc".',
+            ],
+            'unitatePret' => [
+                'type'        => 'String',
+                'description' => 'Unitatea la care se raportează prețul: "buc" sau "panou".',
+            ],
+            'pretContainer' => [
+                'type'        => 'String',
+                'description' => 'Marcaj pentru produsele ofertate pe container, ex. "la cerere".',
+            ],
+            'capacitateKwh' => [
+                'type'        => 'Float',
+                'description' => 'Capacitatea exactă în kWh, unde catalogul o declară.',
+            ],
+            'sursaCatalog' => [
+                'type'        => 'String',
+                'description' => 'Ediția din care vine prețul, ex. "Catalog Solar One 09.2026".',
+            ],
+        ],
+    ]);
+
+    register_graphql_field('Product', 'dateCatalog', [
+        'type'        => 'DateCatalogProdus',
+        'description' => 'Datele din catalogul lunar. null la produsele care nu vin din import.',
+        'resolve'     => function ($sursa) {
+            $id = avo_id_produs($sursa);
+            if (!$id) {
+                return null;
+            }
+
+            $text = function ($cheie) use ($id) {
+                $v = trim((string) get_post_meta($id, $cheie, true));
+                return $v === '' ? null : $v;
+            };
+
+            // Numerele se întorc ca Float sau null, niciodată ca 0: un „0" ar
+            // însemna pe site „preț zero", nu „nu există preț de volum", iar
+            // cardul ar afișa „0 € de la 12 buc".
+            $numar = function ($cheie) use ($id) {
+                $v = trim((string) get_post_meta($id, $cheie, true));
+                if ($v === '' || !is_numeric($v)) {
+                    return null;
+                }
+                return (float) $v;
+            };
+
+            $date = [
+                'pretVolum'     => $numar('_pret_volum'),
+                'pragVolum'     => $text('_prag_volum'),
+                'unitatePret'   => $text('_unitate_pret'),
+                'pretContainer' => $text('_pret_container'),
+                'capacitateKwh' => $numar('_capacitate_kwh'),
+                'sursaCatalog'  => $text('_sursa_catalog'),
+            ];
+
+            // Produsele adăugate manual în WooCommerce n-au niciuna dintre
+            // valorile astea. Întoarcem null pe tot obiectul, ca site-ul să
+            // distingă „produs din afara catalogului" de „produs din catalog
+            // fără preț de volum".
+            foreach ($date as $valoare) {
+                if ($valoare !== null) {
+                    return $date;
+                }
+            }
+            return null;
+        },
+    ]);
+});
+
+/**
+ * ID-ul de post al produsului, din obiectul pe care îl dă WPGraphQL.
+ *
+ * Numele proprietății diferă între versiunile WooGraphQL — unele modele expun
+ * `ID`, altele `databaseId`. Le încercăm pe amândouă, în loc să legăm plugin-ul
+ * de o versiune anume: o actualizare de WooGraphQL n-ar trebui să golească
+ * jumătate din cardurile de pe site.
+ */
+function avo_id_produs($sursa) {
+    if (is_object($sursa)) {
+        if (!empty($sursa->ID)) {
+            return (int) $sursa->ID;
+        }
+        if (!empty($sursa->databaseId)) {
+            return (int) $sursa->databaseId;
+        }
+    }
+    if (is_array($sursa) && !empty($sursa['ID'])) {
+        return (int) $sursa['ID'];
+    }
+    return 0;
+}
 
 /* -------------------------------------------------------------------------
  * 4. Notificarea site-ului (webhook)
