@@ -1,0 +1,149 @@
+Perioadă catalog       : Septembrie 2026  (01.09.2026 – 30.09.2026)
+Produse extrase        : 172
+Categorii              : 22
+Cu preț la volum       : 88
+Fără preț la volum     : 84
+Fără niciun preț       : 2
+Denumiri pe mai multe rânduri reunite : 8
+
+Produse pe categorie:
+   28  Panouri Fotovoltaice
+   28  Sisteme de Montaj > K2 Systems
+   22  Stocare Energie > Acumulatori Low-Voltage
+   18  Invertoare > Hibride Trifazate
+   11  Invertoare > Hibride Monofazate
+    7  Stocare Energie > Sisteme Stocare Complete
+    7  Sisteme de Montaj > Structuri Acoperiș Metalic
+    6  Sisteme de Montaj > Structuri Acoperiș Plat
+    6  Sisteme de Montaj > Cleme și Accesorii
+    5  Monitorizare & Smart Devices > Smart Meters
+    4  Invertoare > On-Grid
+    4  Stocare Energie > Acumulatori High-Voltage
+    4  Stocare Energie > Accesorii Stocare
+    4  Stații de Încărcare Auto
+    3  Echipamente Conversie & Comutare
+    3  Monitorizare & Smart Devices > Dispozitive Smart
+    3  Sisteme de Montaj > Șine și Profile
+    2  Stocare Energie > Micro ESS / Balcon
+    2  Invertoare > Off-Grid
+    2  Accesorii > Cabluri Solare
+    2  Accesorii > Conectori
+    1  Sisteme de Montaj > Structuri Țiglă
+
+Erori de validare: niciuna
+
+Avertismente: niciunul
+
+Ofertele lunii (marcate "Featured" în WooCommerce) — 4:
+  CS6.2-48TD-460     Canadian Solar CS6.2-48TD-460, N-Type TOPCon — 65 EUR/panou
+  SE-F16             Deye SE-F16 C — 1580 EUR/buc
+  FLB48314TG1-H      FELICITY FLB48314TG1-H - 16kWh, cu încălzire, IP65 — 1475 EUR/buc
+  HOPE-16-0LM-A1     HOPE 16.0LM-A1 — 1450 EUR/buc
+
+SKU-uri derivate din denumire (catalogul nu conține un cod de model) — de revizuit:
+  CONTROL-BOX-GB-L-BASE
+      <- Control Box GB-L + BASE
+  DEYE-BOS-G-PRO-5-12-KWH
+      <- Deye BOS-G PRO, 5.12 kWh
+  DEYE-BOS-A-7-68-KWH
+      <- Deye BOS-A, 7.68 kWh
+  CONTROL-BOX-BOS-A-HVB-750V-160A-EU-HV
+      <- Control Box BOS-A HVB 750V/160A-EU - HV
+  PACHET-STOCARE-DEYE-BOS-A-99-84-KWH
+      <- Pachet Stocare Deye BOS-A 99.84 kWh
+  PACHET-STOCARE-DEYE-BOS-A-161-98-KWH
+      <- Pachet Stocare Deye BOS-A 161.98 kWh
+  PACHET-STOCARE-DEYE-BOS-B-PRO-128-KWH
+      <- Pachet Stocare Deye BOS-B PRO, 128 kWh
+  PACHET-STOCARE-DEYE-BOS-B-PRO-241-5-KWH
+      <- Pachet Stocare Deye BOS-B PRO, 241.5 kWh
+  SUN-SMART-PLUG
+      <- SUN Smart Plug
+  SUN-SMART-SWITCH
+      <- SUN Smart-Switch
+  PYTES-V5-5-12KWH
+      <- PYTES V5, 5.12kWh
+  PYTES-V5A-5-12-KWH
+      <- PYTES V5a, 5.12 kWh
+  PYTES-V12-11-776KWH-CU-INCALZIRE-IP66
+      <- PYTES V12 - 11.776kWh, cu încălzire, IP66
+  PYTES-V15-14-34KWH
+      <- PYTES V15, 14.34kWh
+  LICHIDARE-STOC-PYTES-V16-16KWH-CU-INCALZIRE-IP66
+      <- LICHIDARE STOC - PYTES V16 - 16kWh, cu încălzire, IP66
+  DYNESS-POWERBOX-G2-10-24KWH
+      <- DYNESS POWERBOX G2, 10.24kWh
+  DYNESS-POWERBRICK-PLUS-16-07KWH-CU-INCALZIRE-IP65
+      <- DYNESS PowerBrick Plus - 16.07kWh, cu încălzire, IP65
+  GROWATT-SPH-5000TL-BL-UP
+      <- GROWATT SPH 5000TL BL-UP
+  GROWATT-SPH-10000TL-HU
+      <- GROWATT SPH 10000TL-HU
+  GROWATT-SPH-8000-TL3-BH-UP
+      <- GROWATT SPH 8000 TL3-BH-UP
+  GROWATT-SPH-10000-TL3-BH-UP
+      <- GROWATT SPH 10000 TL3-BH-UP
+  GROWATT-WIT-15K-X-HU
+      <- GROWATT WIT 15K-X-HU
+  AXE-5-0L-C1
+      <- AXE 5.0L-C1
+  BAZA-SI-CABLURI-CONEXIUNE-PENTRU-GROWATT-AXE-5-0L
+      <- Bază și cabluri conexiune pentru Growatt AXE 5.0L
+  HOPE-5-0L-B1
+      <- HOPE 5.0L-B1
+  HOPE-16-0LM-A1
+      <- HOPE 16.0LM-A1
+  GROWATT-THOR-03AS-S
+      <- GROWATT THOR 03AS-S
+  GROWATT-SPM-C-MONOFAZAT
+      <- GROWATT SPM-C, monofazat
+  GROWATT-TPM-C-TRIFAZAT
+      <- GROWATT TPM-C, trifazat
+  SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-CA
+      <- Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt
+  SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI
+      <- Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc
+  SINA-DE-MONTARE-TRAPEZOIDALA-ISO-290MM
+      <- Șină de montare trapezoidală ISO 290mm
+  SINA-DE-MONTARE-TRAPEZOIDALA-ISO-540MM
+      <- Șină de montare trapezoidală ISO 540mm
+  SINA-PROFIL-ALUMINIU-MINI-RAIL-380MM
+      <- Șină profil aluminiu Mini Rail 380mm
+  SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA
+      <- Șină aluminiu ISO 4300 mm – trapezoidală
+  SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA-INALTA-LA-60MM
+      <- Șină aluminiu ISO 4300 mm – trapezoidală, înaltă la 60mm
+  SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-2-4-M
+      <- Șină aluminiu ISO cu prindere laterală la 2,4 m
+  SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-3-5-M
+      <- Șină aluminiu ISO cu prindere laterală la 3.5 m
+  SUPORT-U-PENTRU-ACOPERIS-METALIC
+      <- Suport U pentru acoperiș metalic
+  CARLIG-MONTAJ-TIGLA-AJUSTABIL-3-POZITII-ALUMINIU-IOS
+      <- Cârlig montaj țiglă ajustabil, 3 poziții, aluminiu IOS
+  SURUB-ISO-CU-DUBLU-FILET-HANGERBOARD-PLACA-MONTAJ
+      <- Surub ISO cu dublu filet Hangerboard + placa montaj
+  CONECTOR-PENTRU-SINA
+      <- Conector pentru șină
+  CLEMA-DE-CAPAT
+      <- Clemă de capăt
+  CLEMA-DE-MIJLOC
+      <- Clemă de mijloc
+  DOME-PARAVANT-SCURT-1448-1779-MM
+      <- Dome Paravânt Scurt 1448 - 1779 mm
+  CABLU-SOLAR-6MM-TAMBUR-500M-ROSU
+      <- Cablu solar 6mm² Tambur 500m – Rosu
+  CABLU-SOLAR-6MM-TAMBUR-500M-NEGRU
+      <- Cablu solar 6mm² Tambur 500m – Negru
+  SET-CONECTORI-MC4-EVO2-MAMA
+      <- Set Conectori MC4 EVO2 - mamă
+  SET-CONECTORI-MC4-EVO2-TATA
+      <- Set Conectori MC4 EVO2 - tată
+
+Typos în catalogul sursă (NEcorectate automat, denumirile rămân fidele catalogului):
+  "trapezidală" -> "trapezoidală"   (Basic Rail-Blocator șină / Basic Rail-Suport fixare)
+  "Dome Pravânt" -> "Dome Paravânt"   (Dome Pravânt Extralung 2045 - 2398 mm)
+  "Paravant" -> "Paravânt"   (Paravant L2200 / L2350 (scris fără diacritice))
+  "acoperis plat" -> "acoperiș plat"   (Sisteme montaj PB-068.1 / PB-062.1 / PB-098 / PB-096)
+  "Surub ISO" -> "Șurub ISO"   (Surub ISO cu dublu filet Hangerboard)
+  "citire directa" -> "citire directă"   (EASTRON SDM630, trifazat)
