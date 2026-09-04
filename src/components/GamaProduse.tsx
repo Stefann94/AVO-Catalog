@@ -1,22 +1,9 @@
-import Image, { type StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
-
-import BannerB2B from "./BannerB2B";
-
-/**
- * Imaginile sunt importate static, nu date ca șir de caractere.
- *
- * Așa Next le calculează la build un `blurDataURL` — o miniatură inline care
- * ține locul pozei cât se încarcă. Cu `src="/cat-panouri.jpg"` nu are de unde
- * s-o genereze, fiindcă nu vede fișierul la compilare, iar cardurile ar afișa
- * patru dreptunghiuri gri până sosesc imaginile.
- */
-import imgPanouri from "../../public/cat-panouri.jpg";
-import imgInvertoare from "../../public/cat-invertoare.jpg";
-import imgStocare from "../../public/cat-stocare.jpg";
-import imgMontaj from "../../public/cat-montaj.jpg";
+import { incarcaGamaProduse } from "@/lib/gama";
+import { BUTON_PLIN } from "./butoane";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
@@ -26,13 +13,15 @@ import imgMontaj from "../../public/cat-montaj.jpg";
  * extensia din tools/wordpress o expune prin GraphQL. Se actualizează singură la
  * fiecare import lunar, fără atins codul.
  *
- * Cifrele pe categorie sunt încă din cele 172 de produse importate
- * (tools/catalog-import). La trecerea lor pe GraphQL se înlocuiesc cu
- * productCategories { count } + agregări de preț; markup-ul rămâne.
+ * Cardurile vin acum tot din WooCommerce, prin lib/gama.ts: numele, numărul de
+ * produse (categoria plus subcategoriile ei), descrierea, fotografia și prețul
+ * de pornire. Componenta nu mai ține nicio cifră; ce e scris în cod e doar
+ * rezerva pentru cazul în care WordPress nu răspunde.
  *
- * "de la" apare DOAR unde e o ancoră onestă. La Sisteme de Montaj cel mai ieftin
- * produs e un suport de 1,87 € — inutil alături de "de la 54 €" — așa că acolo
- * arătăm acoperirea, nu prețul.
+ * „de la" apare DOAR unde e o ancoră onestă. La Sisteme de Montaj cel mai
+ * ieftin produs e un șurub Dome de 0,21 € — inutil alături de „de la 54 €" —
+ * așa că acolo arătăm cea mai mare subcategorie, nu prețul. Regula și motivul
+ * ei stau în lib/gama.ts, lângă datele pe care le guvernează.
  */
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -58,13 +47,19 @@ import imgMontaj from "../../public/cat-montaj.jpg";
       Îl primesc numai elementele de decizie. Secțiunea avea albastru, emerald
       cu degrade, galben și cyan în concurență; niciunul nu însemna nimic.
 
-      În carduri, singurul lucru albastru în repaus e cifra de preț. Butonul
-      „Accesează" stă gri și se colorează abia la hover. Patru butoane albastru
-      plin, unul lângă altul, trăgeau privirea înaintea fotografiilor și a
-      cifrelor — adică înaintea lucrurilor după care se alege o categorie.
-      Culoarea plină e rezervată momentului în care butonul chiar e ținta
-      mouse-ului; până atunci conturul și fundalul gri spun destul că e
-      apăsabil.
+      În card, singurul lucru colorat e butonul. Prețul e gray-900, ca titlul,
+      fiindcă e informație, nu acțiune.
+
+      A EXISTAT AICI O REGULĂ CONTRARĂ, iar schimbarea e deliberată. Butonul a
+      stat gri în repaus, colorându-se abia la hover, ca patru butoane albastru
+      plin să nu tragă privirea înaintea fotografiilor și a cifrelor. Motivul a
+      dispărut odată cu prețul: cât timp cifra era avo-600, cardul avea albastru
+      și fără buton. Acum, cu prețul pe gray-900, un buton gri ar lăsa cardul
+      complet fără culoare, iar grila de patru ar citi plat.
+
+      Rețeta butonului nu stă aici, ci în components/butoane.ts — un singur șir
+      de clase, folosit și de cardurile de ofertă, și de butonul de secțiune.
+      Acolo sunt și treptele de hover și motivul pentru care sunt alea.
 
       Nu e `blue-600` (#2563EB), albastrul implicit din Tailwind: acela bate în
       violet și e același cu al lui Apple și al oricărui SaaS. Dar nu e nici
@@ -72,26 +67,32 @@ import imgMontaj from "../../public/cat-montaj.jpg";
       pe alb. Vezi globals.css pentru cum e construită scara, de ce treapta
       600 coboară sub sigla și de ce cromatica e ținută sus.
 
-   Raza de colț e 8px (`rounded-lg`) peste tot. A fost 12px, aceeași cu a
-   butoanelor din navbar, dar pe un card de 330px lățime colțul acela rotunjea
-   prea mult desenul; la 8px cardul citește ca placă tehnică, nu ca widget.
-   Divergența față de navbar e asumată: acolo elementele sunt mici și scunde,
-   unde 12px e proporțional.
+   TREI RAZE, fiecare cu un rol. Nu una singură, cum scria aici — codul avea
+   deja patru, iar comentariul descria o regulă pe care n-o respecta:
 
-   O singură excepție: badge-ul cu numărul de produse, la 6px (`rounded-md`).
-   Motivul e că raza plină pe un element de 32px înălțime dă aproape o pilulă,
-   iar eticheta cerea un aspect mai pătrat, de plăcuță. Diferența e
-   intenționată, nu o scăpare — orice alt element nou rămâne la 8px.
+     12px `rounded-xl` ... suprafețe: cardul
+     8px  `rounded-lg` ... comenzi: butoanele, ștampila „Prețuri valabile"
+     6px  `rounded-md` ... etichete: badge-ul cu numărul de produse
+
+   Butoanele au fost pilule (`rounded-full`). Era a patra rază, fără rol propriu
+   — iar pe un buton de 44px, pilula citește ca element de interfață web, nu ca
+   desen tehnic. Trecute la 8px, se aliniază cu ștampila, care are aceeași
+   greutate vizuală și stă în aceeași secțiune.
+
+   Badge-ul rămâne la 6px fiindcă pe un element de 28px înălțime, 8px se apropie
+   deja de pilulă, iar eticheta cerea aspect de plăcuță.
+
+   Un element nou primește raza rolului lui, nu una nouă.
 
    4. CARDUL SPUNE TREI LUCRURI, NU ȘAPTE.
       Ce categorie e, câte produse are, de la cât pornește. Atât. Restul se
       află după clic, în pagina categoriei, unde e loc ca datele tehnice să
       fie complete, nu tăiate la două rânduri.
 
-        titlu ..... 16px bold (700)  gray-900   pe bandă de sticlă, peste poză
-        badge ..... 13px bold (700)  gray-900   colțul din dreapta-sus
-        preț ...... 17px extrabold   avo-600    în pastilă, jos-stânga
-        îndemn .... 13px semibold    gray-800   buton gri, albastru la hover
+        titlu ..... 15px bold (700)       gray-900   bandă de sticlă, peste poză
+        badge ..... 12px bold (700)       gray-900   colțul din dreapta-sus
+        preț ...... 22px extrabold (800)  gray-900   jos-stânga
+        îndemn .... 14px semibold (600)   alb        buton avo-600, jos-dreapta
 
       CE A FOST ÎNAINTE, în ordine: o descriere în proză, un rând de sigle,
       apoi o fișă tehnică de două rânduri. Toate au căzut.
@@ -124,11 +125,9 @@ import imgMontaj from "../../public/cat-montaj.jpg";
      gray-900 #101828 pe alb ........ 17.75 ✓  (titluri de secțiune)
      gray-900 pe sticlă .. 6.09 – 13.90 ✓  (titlu card, badge — vezi mai jos)
      gray-500 #6A7282 pe alb ......... 4.84 ✓  („DE LA", eticheta pastilei)
-     avo-600  #004A99 pe alb ......... 8.61 ✓  (preț, săgeți, buton principal)
-     alb pe avo-600 .................. 8.61 ✓  („Accesează" la hover)
-     gray-800 pe gray-100 ........... 13.27 ✓  („Accesează" în repaus)
-     alb pe gray-900 #101828 ........ 17.75 ✓  (bannerul închis)
-     avo-300 #92C1FF pe gray-900 ..... 9.54 ✓  (iconița de pe banner)
+     alb pe avo-600 #004A99 .......... 8.61 ✓  (buton, repaus)
+     alb pe avo-700 #003B7D ......... 10.93 ✓  (buton, hover)
+     alb pe avo-800 #002D64 ......... 13.50 ✓  (buton, apăsat)
 
    CUM SE MĂSOARĂ CONTRASTUL PE STICLĂ. Nu se poate calcula din culoarea
    scrisă în clasă: fundalul real e compunerea dintre alb la 45% și fotografia
@@ -158,104 +157,6 @@ import imgMontaj from "../../public/cat-montaj.jpg";
    ══════════════════════════════════════════════════════════════════════════ */
 
 
-type Categorie = {
-  slug: string;
-  nume: string;
-  produse: number;
-  deLa?: number;
-  unitate?: string;
-  /**
-   * Ancora de jos pentru categoriile fără preț comparabil. Aceeași gramatică
-   * cu a prețului (etichetă mică + cifră mare), dar cifra e a catalogului,
-   * nu un preț — vezi comentariul de la randare pentru de ce.
-   */
-  statistica?: { eticheta: string; valoare: string };
-  imagine: StaticImageData;
-};
-
-/**
- * DE UNDE VIN CIFRELE DIN FIȘE. Fiecare e verificabilă, niciuna nu e rotunjită
- * sau estimată. Sursa e src/lib/categorii.ts, prin însumarea subcategoriilor:
- *
- *   Invertoare — 18 hibride trifazate + 11 monofazate = 29 din 35.
- *   Stocare ---- acumulatori low-voltage 22 din 39.
- *   Montaj ----- cleme și accesorii 6 + șine și profile 3 = 9 din 51.
- *
- * Numărul de branduri de la panouri vine din src/lib/branduri.ts și închide
- * exact: Aiko 14 + Canadian 9 + Jinko 3 + Tongwei 1 + Ulica 1 = 28, adică
- * fix numărul de produse din categorie. Suma care închide e ce dovedește că
- * lista de branduri e completă, nu doar plauzibilă.
- *
- * Formularea „N din M" e intenționată peste tot unde există un întreg. „29
- * hibride" ar fi adevărat, dar nu spune nimic despre restul; „29 din 35"
- * spune și cât de specializat e catalogul — exact informația după care un
- * instalator decide dacă merită să deschidă categoria.
- */
-
-const CATEGORII: Categorie[] = [
-  {
-    slug: "panouri-fotovoltaice",
-    nume: "Panouri Fotovoltaice",
-    produse: 28,
-    /* Panourile n-au subcategorii, deci al doilea rând nu poate fi o
-       împărțire. Numărul de branduri e cea mai utilă alternativă reală: spune
-       că nu ești legat de un singur furnizor, ceea ce la panouri — unde
-       disponibilitatea variază de la lună la lună — chiar contează. */
-    deLa: 54,
-    unitate: "panou",
-    imagine: imgPanouri,
-  },
-  {
-    slug: "invertoare",
-    nume: "Invertoare",
-    produse: 35,
-    deLa: 355,
-    unitate: "buc",
-    imagine: imgInvertoare,
-  },
-  {
-    slug: "stocare-energie",
-    nume: "Stocare Energie",
-    produse: 39,
-    deLa: 395,
-    unitate: "buc",
-    imagine: imgStocare,
-  },
-  {
-    /**
-     * Montajul nu are un preț de comparat — cel mai ieftin produs e o clemă de
-     * 1,87 €, inutilă lângă „de la 54 €" — dar nici nu are voie să lase gol
-     * slotul în care celelalte trei au o cifră: în grila de patru, absența
-     * citește ca lipsă, nu ca decizie.
-     *
-     * Așa că primește o cifră adevărată, în aceeași gramatică: 28 din cele 51
-     * de produse sunt K2 Systems (subcategoria K2, src/lib/categorii.ts). E
-     * verificabil, e diferențiator — K2 e marcă germană de referință, iar
-     * majoritatea catalogului de montaj e pe ea — și e exact genul de lucru
-     * care dă un motiv de clic acolo unde prețul nu poate.
-     *
-     * Numitorul 51 e chiar numărul din badge-ul de pe fotografie, deci cele
-     * două cifre ale cardului se explică una pe alta în loc să se repete.
-     *
-     * `interval` a fost „Structuri și componente" — un titlu, nu o dată, pus
-     * exact în poziția în care celelalte carduri promit o măsurătoare.
-     * Tipurile de acoperiș urcă aici fiindcă ele SUNT axa de selecție la
-     * structuri; că e o axă categorială, nu numerică, nu contează — slotul
-     * cere informația după care se alege, nu neapărat o cifră.
-     */
-    slug: "sisteme-de-montaj",
-    nume: "Sisteme de Montaj",
-    produse: 51,
-    /* Singura categorie cu axă categorială, nu numerică: la structuri alegi
-       după tipul de acoperiș, nu după o valoare. De-aia primul rând e în DM
-       Sans, nu în mono.
-       Al doilea rând răspunde la întrebarea care decide dacă mai cauți și în
-       altă parte: vin și piesele mărunte, sau doar structura? Cine a comandat
-       vreodată o structură fără cleme știe cât costă răspunsul greșit. */
-    statistica: { eticheta: "K2 Systems", valoare: "28" },
-    imagine: imgMontaj,
-  },
-];
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
 export default async function GamaProduse() {
@@ -266,7 +167,12 @@ export default async function GamaProduse() {
    * `cache` din React face ca ambele componente să împartă o singură cerere,
    * iar rezerva scrisă în cod există într-un singur loc.
    */
-  const perioada = await incarcaPerioadaCatalog();
+  // Cele două pleacă odată: n-au nicio dependență între ele, iar înlănțuite ar
+  // aduna două drumuri până la WordPress în timpul de randare al paginii.
+  const [perioada, categorii] = await Promise.all([
+    incarcaPerioadaCatalog(),
+    incarcaGamaProduse(),
+  ]);
 
   return (
     <section className="bg-[#F8F9FA] py-16 sm:py-20 lg:py-28">
@@ -303,7 +209,7 @@ export default async function GamaProduse() {
 
         {/* ── Categorii ──────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-          {CATEGORII.map((c) => {
+          {categorii.map((c) => {
             const cale = `/catalog/${c.slug}`;
             return (
               /*
@@ -333,8 +239,24 @@ export default async function GamaProduse() {
                   href={cale}
                   className="group/foto relative block aspect-[4/3] overflow-hidden bg-gray-100"
                 >
+                  {/* Miniatura din WooCommerce, dacă a încărcat-o cineva;
+                      altfel fotografia din public/.
+
+                      DIFERENȚA DINTRE CELE DOUĂ nu e doar adresa. Fișierul din
+                      public/ e importat static, deci Next îi calculează la
+                      build un `blurDataURL` — o miniatură inline care ține
+                      locul pozei cât se încarcă. Pentru o adresă din
+                      WooCommerce nu are de unde: fișierul nu există la
+                      compilare. De-aia `placeholder` se pune doar pe varianta
+                      locală, iar cea remotă se sprijină pe fundalul gri al
+                      containerului.
+
+                      Nu e o regresie de acceptat pe termen lung — miniatura
+                      neclară se poate genera la build descărcând poza, sau
+                      stocând-o ca meta pe categorie. Până atunci, cardul
+                      arată corect în ambele cazuri. */}
                   <Image
-                    src={c.imagine}
+                    src={c.imagine ?? c.imagineLocala!}
                     alt=""
                     fill
                     /* Cardul are cel mult ~296px la xl (7xl minus padding, în
@@ -342,7 +264,7 @@ export default async function GamaProduse() {
                        Se cere cu 10% peste, fiindcă la hover imaginea e mărită
                        la 105% și altfel s-ar vedea ușor moale. */
                     sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 330px"
-                    placeholder="blur"
+                    {...(c.imagine ? {} : { placeholder: "blur" as const })}
                     /* Tranziția stă pe element, nu pe starea de hover, ca
                        ieșirea din zoom să fie la fel de lină ca intrarea.
                        Se animă `transform`, singura proprietate pe care
@@ -410,7 +332,7 @@ export default async function GamaProduse() {
 
                   <Link
                     href={cale}
-                    className="flex items-center justify-center h-10 px-5 rounded-full bg-avo-600 text-[14px] font-semibold text-white transition-colors duration-200 hover:bg-blue-600"
+                    className={BUTON_PLIN}
                   >
                     Accesează
                   </Link>
@@ -419,15 +341,6 @@ export default async function GamaProduse() {
             );
           })}
         </div>
-
-        {/* Bannerul B2B stă sub carduri, nu deasupra lor.
-
-            Deasupra, se așeza între titlul secțiunii și gama de produse și
-            întrerupea exact drumul pentru care există secțiunea: titlu →
-            categorii. Sub carduri, ajunge după ce omul a văzut ce se vinde,
-            adică fix momentul în care întrebarea „și eu ce preț am?" apare
-            singură. */}
-        <BannerB2B />
 
         {/* ── Subsol ─────────────────────────────────────────── */}
         <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
@@ -439,12 +352,12 @@ export default async function GamaProduse() {
               închis, ca să nu concureze cu bannerul. */}
           <Link
             href="/catalog"
-            className="group inline-flex items-center justify-center gap-2 h-11 px-5 sm:px-6 w-full sm:w-auto shrink-0 rounded-lg bg-avo-600 text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-avo-700"
+            className={`${BUTON_PLIN} w-full sm:w-auto`}
           >
             Vezi catalogul complet
             <ArrowRight
               size={15}
-              className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+              className="shrink-0"
             />
           </Link>
         </div>

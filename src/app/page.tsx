@@ -1,6 +1,7 @@
 import HeroSlider from "@/components/HeroSlider";
 import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
+import OferteleLunii from "@/components/OferteleLunii";
 
 /**
  * Pagina e prerandată static, iar perioada catalogului vine acum din WooCommerce.
@@ -39,6 +40,10 @@ export default function Home() {
 
       {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
       <GamaProduse />
+
+      {/* Ofertele lunii — produsele de pe coperta catalogului, sub gama de
+          produse: întâi „ce acoperim", apoi „ce e bun luna asta". */}
+      <OferteleLunii />
     </div>
   );
 }

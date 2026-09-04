@@ -16,6 +16,25 @@ const nextConfig: NextConfig = {
      * `quality` cu altă valoare — altfel Next o respinge.
      */
     formats: ["image/avif", "image/webp"],
+
+    /**
+     * Pozele de categorie încărcate în WooCommerce.
+     *
+     * `next/image` refuză orice adresă externă nedeclarată — altfel oricine ar
+     * putea folosi optimizatorul nostru ca proxy pentru imagini străine. Lista
+     * e restrânsă la calea în care WordPress își ține fișierele încărcate, nu la
+     * tot domeniul: nimic din afara bibliotecii media nu poate trece pe aici.
+     *
+     * Cât timp o categorie n-are miniatură în WooCommerce, cardul folosește
+     * fotografia din public/ — vezi lib/gama.ts.
+     */
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.avogrupinvest.ro",
+        pathname: "/wp-content/uploads/**",
+      },
+    ],
   },
 };
 
