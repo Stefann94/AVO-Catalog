@@ -199,16 +199,14 @@ export default async function GamaProduse() {
                 DE CE NU „CELE MAI POPULARE CATEGORII". Ar fi fost o afirmație
                 nesusținută: magazinul n-a avut nicio comandă, `totalSales` e
                 null pe toate produsele, iar ordonarea după popularitate
-                întoarce de fapt ordinea implicită. Titlul spune în schimb ceva
-                verificabil — cele patru categorii chiar acoperă un sistem
-                întreg, de la modul până la structura care îl ține pe acoperiș.
+                întoarce de fapt ordinea implicită — conectori și șuruburi.
 
                 `text-balance` în loc de `whitespace-nowrap`: titlul e acum prea
                 lung ca să încapă pe un rând lângă ștampilă, iar echilibrarea
                 împarte cuvintele între rânduri în loc să lase unul singur
                 atârnând jos. */}
             <h2 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] font-extrabold text-gray-900 leading-tight text-balance">
-              Tot ce-ți trebuie, de la panouri la montaj
+              Categoriile principale pentru casa și energia ta
             </h2>
 
             {/* Ștampila e o dată tehnică, dar rămâne pe fontul global, ca tot
