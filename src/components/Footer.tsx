@@ -4,21 +4,29 @@ import { Mail, MapPin, Phone, Truck } from "lucide-react";
 /**
  * Sigla de brand, în culorile ei, nu silueta albă.
  *
- * DE CE STĂ PE O PLĂCUȚĂ ALBĂ. Sigla e bleumarin — măsurat pe fișier,
- * #172A4A și #192E52 acoperă 84% din pixelii opaci, plus un accent roșu
- * #982239 — deci luminanța ei e L=0,028. Pe orice fundal întunecat se stinge,
- * și nu contează ce fel de întunecat:
+ * DE CE STĂ PE O PLĂCUȚĂ ALBĂ. Sigla e bleumarin. Măsurat pe fișierul de acum
+ * (marca triunghiulară plus „AVO | GRUP INVEST"), pe cei 52.370 de pixeli
+ * opaci:
  *
- *   pe slate-900 (varianta veche) ....... 1,23:1
- *   pe gray-800 (fundalul de acum) ...... 1,09:1
- *   pe gray-700 ......................... 1,31:1
+ *   #203050  bleumarin ..... 56,8%   ← cerneala principală
+ *   #902030  roșu accent .... 12,6%
+ *   #90A0B0  gri-albastru .... 4,6%   ← grila de celule din triunghi
+ *
+ * Luminanța bleumarinului e L=0,030, deci pe orice fundal întunecat se stinge:
+ * pe gray-800, fundalul acestui footer, dă 1,12:1 — practic invizibilă.
  *
  * Ca sigla color să atingă măcar 3:1 — pragul WCAG pentru elemente negrafice —
  * fundalul ar trebui să fie pe la #777777, adică gri MEDIU. Un footer acolo ar
  * fi spălăcit și ar rupe legătura cu hero-ul și navbar-ul, care sunt închise.
  *
  * Plăcuța albă rezolvă amândouă cerințele deodată: footer-ul rămâne închis,
- * iar sigla stă pe suprafața pentru care a fost desenată și ajunge la 13,52:1.
+ * iar sigla stă pe suprafața pentru care a fost desenată și ajunge la 13,12:1.
+ *
+ * FIȘIERUL a fost pregătit, nu copiat ca atare: originalul era un JPEG de
+ * 1 MB, 3168×1344, cu fundal alb opac și margini goale care ocupau două treimi
+ * din cadru. Alb opac ar fi ieșit ca un dreptunghi vizibil în navbar, care e
+ * sticlă peste hero-ul întunecat. E acum PNG cu transparență, decupat pe
+ * conținut și redus la 1200px lățime.
  * E și tratamentul obișnuit pentru o siglă întunecată pe subsol închis.
  *
  * Alternativele, dacă plăcuța nu convine: footer deschis (dar atunci pagina nu
