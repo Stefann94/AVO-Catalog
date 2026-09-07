@@ -47,3 +47,10 @@ tools/wordpress/*.zip
 
 # jurnalul serverului de dezvoltare
 .dev.log
+
+# tools/wordpress/incarca-poze.js
+# Credentialele stau in tools/wordpress/.env.local, prins deja de `.env*` de
+# mai sus. Sablonul fara secrete e singurul care are voie in repo.
+!tools/wordpress/.env.local.exemplu
+tools/wordpress/incarca-poze-stare.json
+tools/wordpress/incarca-poze-jurnal.txt
