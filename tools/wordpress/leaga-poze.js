@@ -429,9 +429,12 @@ async function main() {
 
   if (legate && !PROBA) {
     scrie('');
-    scrie('ATENȚIE: fișele de produs de pe site NU vor arăta pozele până nu cere');
-    scrie('`image` și GET_PRODUSE_TOATE_QUERY din src/lib/queries.ts (vezi produs.ts:254).');
-    scrie('Cardurile de categorie și /catalog le vor arăta imediat ce se regenerează.');
+    scrie('Pozele apar pe site la prima regenerare: fișele de produs, /catalog,');
+    scrie('paginile de categorie și „Ofertele lunii" cer toate câmpul `image`.');
+    scrie('');
+    scrie('Aici scria că interogarea trebuie încă reparată. A fost reparată între');
+    scrie('timp — `image` e cerut acum în GET_PRODUSE_TOATE_QUERY și în');
+    scrie('GET_OFERTE_QUERY. Mesajul rămăsese să trimită omul la o treabă făcută.');
   }
 }
 
