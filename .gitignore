@@ -54,3 +54,5 @@ tools/wordpress/*.zip
 !tools/wordpress/.env.local.exemplu
 tools/wordpress/incarca-poze-stare.json
 tools/wordpress/incarca-poze-jurnal.txt
+tools/wordpress/raport-poze.txt
+tools/wordpress/raport-poze.json
