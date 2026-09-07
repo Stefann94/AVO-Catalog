@@ -3,6 +3,7 @@ import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
 import OferteleLunii from "@/components/OferteleLunii";
 import ConditiiB2B from "@/components/ConditiiB2B";
+import BaraFiltre from "@/components/BaraFiltre";
 
 /**
  * Pagina e prerandată static, iar perioada catalogului vine acum din WooCommerce.
@@ -39,8 +40,29 @@ export default function Home() {
         <BandaBranduri />
       </div>
 
-      {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
-      <GamaProduse />
+      {/*
+        ÎNVELIȘUL CARE MĂRGINEȘTE BARA DE FILTRE.
+
+        Cuprinde EXACT o secțiune, „Gama de produse", și de aici își ia bara
+        ambele capete: pornește din dreptul titlului „Categoriile principale…" și
+        se oprește unde se termină secțiunea, adică înainte de „Ofertele lunii".
+
+        E doar `relative` — fără lățime, fără padding, fără fundal. Secțiunea
+        dinăuntru rămâne exact ce era, pe toată lățimea, cu aceeași grilă de
+        patru coloane și aceleași margini. Nimic nu se îngustează.
+
+        Dacă bara ar trebui vreodată să însoțească și secțiunile următoare,
+        singura modificare e să le mutăm în acest `div`. Nimic altceva.
+      */}
+      <div className="relative">
+        {/* Cuprinsul catalogului, în marja liberă din stânga. Apare de la 1620px
+            în sus, unde marja lăsată de `max-w-7xl` e destul de lată cât s-o
+            țină fără să atingă conținutul. Calculul e în globals.css. */}
+        <BaraFiltre />
+
+        {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
+        <GamaProduse />
+      </div>
 
       {/* Ofertele lunii — produsele de pe coperta catalogului, sub gama de
           produse: întâi „ce acoperim", apoi „ce e bun luna asta". */}

@@ -473,3 +473,76 @@ export const GET_PRODUSE_TOATE_QUERY = `
     }
   }
 `;
+
+/**
+ * Panoul „Catalogul pe scurt" — tot ce-i trebuie, într-o singură cerere.
+ *
+ * Trei seturi de date care n-au nicio legătură între ele stau în aceeași
+ * interogare fiindcă ajung în aceeași secțiune: GraphQL le rezolvă în paralel
+ * pe server, deci un drum până la WordPress în loc de trei. Aceeași socoteală
+ * ca la `construiestePreturiQuery`.
+ *
+ * ─── DE CE `terms`, NU O NUMĂRĂTOARE PE PRODUSE ───────────────────────────
+ *
+ * Numărul de produse pe fiecare stare de stoc (155 / 15 / 2) se poate afla în
+ * două feluri: ceri toate produsele și le numeri în front-end, sau ceri
+ * termenii taxonomiei, care poartă deja `count`. Al doilea costă o conexiune de
+ * 3 noduri în loc de 172, iar cifra vine calculată de WordPress — deci nu poate
+ * să iasă alta decât cea din administrare.
+ *
+ * ATENȚIE LA CELE DOUĂ NUME DE ENUM, care NU sunt identice și nu sunt greșeală
+ * de scriere:
+ *
+ *   `terms(where: { taxonomies: [PADISPONIBILITATE] })`  ... fără underliniuțe
+ *   `taxonomyFilter: { taxonomy: PA_DISPONIBILITATE }`   ... cu underliniuță
+ *
+ * Primul e enum-ul de taxonomii al WPGraphQL, al doilea e cel al filtrului din
+ * WooGraphQL. Sunt două extensii diferite care numesc același lucru altfel.
+ * Verificat pe magazinul real: schimbate între ele, interogarea pică.
+ *
+ * ─── DE CE SE CER SUBCATEGORIILE, NU DOAR NUMĂRUL LOR ─────────────────────
+ *
+ * Fiindcă ELE sunt structura catalogului. PDF-ul lunar nu are opt secțiuni, ci
+ * treizeci și șase, iar titlurile lor poartă tot ce contează:
+ *
+ *     Invertoare DEYE Trifazate Hibride High-Voltage
+ *     Panouri fotovoltaice Canadian Solar
+ *     Acumulatori Growatt Lifepo4 51.2V Low Voltage - LICHIDARE STOC
+ *
+ * Importatorul le transformă în subcategorii WooCommerce, deci ierarhia de
+ * acolo E cuprinsul catalogului. O bară care ar arăta doar cele opt categorii
+ * de nivel 1 ar ascunde exact distincțiile după care se cumpără — monofazat de
+ * trifazat, low-voltage de high-voltage.
+ *
+ * `count` pe părinte numără doar produsele puse DIRECT pe el, iar importul le
+ * pune pe cele mai multe în subcategorii: „Invertoare" are `count: null`, iar
+ * cele 35 de produse stau în „Hibride Trifazate", „Hibride Monofazate",
+ * „On-Grid" și „Off-Grid". Numărul de pe părinte e suma. Aceeași regulă ca în
+ * lib/gama.ts.
+ */
+export const GET_PANOU_CATALOG_QUERY = `
+  query GetPanouCatalog {
+    disponibilitate: terms(first: 10, where: { taxonomies: [PADISPONIBILITATE] }) {
+      nodes {
+        name
+        slug
+        count
+      }
+    }
+    categorii: productCategories(first: 20, where: { parent: 0, hideEmpty: true }) {
+      nodes {
+        name
+        slug
+        count
+        menuOrder
+        children(first: 30) {
+          nodes {
+            name
+            slug
+            count
+          }
+        }
+      }
+    }
+  }
+`;

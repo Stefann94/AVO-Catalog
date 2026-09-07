@@ -61,6 +61,172 @@
   --font-mono: var(--font-mono-app), ui-monospace, monospace;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   GEOMETRIA BAREI DE FILTRE
+   ──────────────────────────────────────────────────────────────────────────
+   Bara din stânga (components/BaraFiltre.tsx) trăiește lângă secțiunea „Gama de
+   produse". Cifrele stau aici, nu în componentă, fiindcă descriu o relație cu
+   AȘEZAREA PAGINII — lățimea containerului centrat al secțiunilor — nu ceva
+   intern componentei. Cine schimbă `max-w-7xl` trebuie să le găsească.
+
+   ─── DE UNDE IES ─────────────────────────────────────────────────────────
+
+   Conținutul paginii nu se îngustează. Bara încape în marja liberă lăsată de
+   containerul centrat al secțiunilor:
+
+       secțiunile au max-w-7xl (1280px), centrate, cu lg:px-12 înăuntru
+       ⇒ conținutul vizibil începe la  (100vw - 1280px) / 2 + 48px
+       ⇒ banda liberă din stânga are exact atâta lățime
+
+   Toate se aplică numai de la 1620px în sus, unde banda are cel puțin 170px —
+   minimul la care o listă de categorii mai e citibilă. Sub acel prag bara nu se
+   afișează deloc, iar variabilele nu sunt folosite de nimeni.
+
+   ─── DE CE NU DOAR CENTRATĂ ──────────────────────────────────────────────
+
+   Aici bara era pur și simplu centrată în bandă, iar la 1920 iese bine: 34px
+   până la fereastră, 34px până la text. Problema apare mai sus. Banda crește cu
+   jumătate din lățimea ecranului, bara nu — e plafonată la 300px — deci
+   centrarea o împinge tot mai departe de conținut: la 2560 rămânea la 194px de
+   fereastră ȘI la 194px de text, iar la 3440 la 414px. Măsurat pe pagina
+   randată, la 2560 arăta ca un obiect uitat în gol, nu ca sumarul secțiunii de
+   lângă.
+
+   Regula are de-aceea două jumătăți, iar `max()` alege între ele:
+
+     centrată ..... cât timp banda e strâmtă și centrarea chiar dă margini egale
+     alipită ...... de îndată ce banda se lărgește; distanța până la text se
+                    oprește la 64px și rămâne acolo, oricât ar crește ecranul
+
+   `max()`, nu `min()`: valoarea mai mare e cea mai la dreapta, adică cea mai
+   aproape de conținut. Cele două se întâlnesc la 2040px lățime de fereastră —
+   sub prag câștigă centrarea, peste el alipirea, iar trecerea e continuă,
+   fiindcă în punctul acela dau exact aceeași valoare.
+
+   Rezultat, măsurat: 24px la 1620 · 34px la 1920 · 324px la 2560 · 764px la
+   3440 — iar distanța până la text e 24 · 34 · 64 · 64.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── PE VERTICALĂ ───────────────────────────────────────────────────────
+     Unde începe bara, măsurat din vârful secțiunii „Gama de produse".
+
+     Reperul e LINIA DE SUB TITLU, sublinierea de 1px de sub „Categoriile
+     principale…". Bara pornește exact de acolo, deci capătul ei de sus cade pe
+     o muchie care există deja în pagină, nu într-un gol.
+
+     Suma e scrisă desfăcută fiindcă fiecare termen e o clasă din
+     components/GamaProduse.tsx, iar cine schimbă una trebuie să vadă care:
+
+         112px ... `lg:py-28`, padding-ul de sus al secțiunii
+          44px ... rândul mastheadului: titlul lângă ștampila „Prețuri
+                   valabile", a cărei înălțime `h-11` îl domină
+          28px ... `sm:mt-7`, distanța de la masthead la linie
+
+     E o constantă, nu o valoare potrivită din ochi, ȘI SE POATE SCRIE CA
+     ATARE fiindcă nu variază: containerul secțiunilor e plafonat la
+     `max-w-7xl`, deci lățimea lui rămâne 1184px la orice fereastră peste
+     1280px. Corpul titlului se calculează în `cqi` din containerul acela
+     (vezi `dimensiuneTitlu` din components/stiluri.ts), deci și el e constant,
+     și odată cu el înălțimea rândului. Verificat pe pagina randată: linia cade
+     la 184px de vârful secțiunii la 1620, 1920, 2560 și 3440 deopotrivă. */
+  --bara-sus: calc(112px + 44px + 28px);
+
+  /* Banda liberă din stânga: de la marginea ferestrei până unde începe textul
+     secțiunilor. */
+  --bara-banda: calc((100vw - 1280px) / 2 + 48px);
+
+  /* Marja liberă, plafonată. */
+  --bara-latime: min(300px, calc((100vw - 1280px) / 2));
+
+  /* Cât de departe de coloana de text are voie bara să rămână. 64px e distanța
+     de la care bara încă citește ca aparținând secțiunii; peste ea începe să
+     pară un obiect separat. */
+  --bara-alipire: 64px;
+
+  --bara-stanga: max(
+    calc((var(--bara-banda) - var(--bara-latime)) / 2),
+    calc(var(--bara-banda) - var(--bara-alipire) - var(--bara-latime))
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BARA DE DERULARE A MENIULUI DIN STÂNGA
+   ──────────────────────────────────────────────────────────────────────────
+   Cele opt categorii cu subcategoriile lor fac ~30 de rânduri, deci panoul se
+   derulează pe orice ecran obișnuit. Bara implicită a sistemului e lată, gri și,
+   pe Windows, are săgeți la capete — arată ca o fereastră de aplicație lipită
+   într-o pagină îngrijită.
+
+   Scrisă aici, nu ca utilitare Tailwind, fiindcă pseudo-elementele
+   `::-webkit-scrollbar` nu au echivalent în Tailwind, iar `scrollbar-color` are
+   nevoie de două valori care trebuie să rămână împreună.
+
+   DOUĂ SINTAXE, NU UNA. `scrollbar-width` și `scrollbar-color` sunt standardul
+   și merg în Firefox și în Chrome 121+. `::-webkit-scrollbar` acoperă Safari și
+   Chrome-urile mai vechi. Declarate amândouă, browserul o ia pe cea pe care o
+   știe; declarată doar una, o parte din utilizatori ar vedea bara implicită.
+
+   CULOAREA e `avo-600`, adică fix accentul folosit de butoane și de conturul de
+   hover. Nu e o culoare nouă introdusă pentru o bară de derulare.
+
+   LUNGIMEA CURSORULUI nu se poate stabili de aici: browserul o calculează ca
+   raport între cât se vede și cât e în total. A fost încercat un indicator
+   propriu, desenat din JavaScript, tocmai ca să poată avea înălțime fixă — s-a
+   renunțat la el. Bara nativă, stilizată, e ce a rămas.
+
+   UNDE ÎNCEPE ȘI UNDE SE TERMINĂ nu se hotărăște de aici, ci din așezarea
+   panoului: clasa se pune pe etajul din mijloc al barei de filtre, nu pe tot
+   panoul (vezi components/BaraFiltre.tsx). De-aia bara nativă pornește de sub
+   antetul cu luna catalogului și se oprește deasupra notei de preț — se vede
+   exact cât ține partea care chiar se derulează.
+
+   Așezată pe tot panoul, cum era, dunga traversa și antetul, și nota, deși pe
+   acolo nu se mișcă nimic. O bară de derulare care trece peste conținut fix
+   minte despre ce anume se derulează.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.derulare-avo {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-avo-600) transparent;
+}
+
+/* ATENȚIE: regula asta NU decide lățimea în browserele curente, oricât ar părea
+   că o face. Măsurat pe pagina randată în Chrome — `offsetWidth - clientWidth`
+   pe zona derulabilă — ies 10px, nu cei scriși aici: acolo unde `scrollbar-width`
+   e suportat, standardul câștigă, iar `::-webkit-scrollbar` e ignorat cu totul.
+
+   Aici scria 1px, cu un comentariu care explica de ce e bine să fie atât de
+   subțire. Explicația descria ceva ce nu se întâmpla: în Chrome bara avea, și
+   atunci, cei 10px ai lui `thin`.
+
+   Regula rămâne pentru Safari, singurul care încă merge doar pe sintaxa webkit,
+   și e pusă pe 10px tocmai ca acolo să iasă la fel ca în restul browserelor.
+   Cine vrea să schimbe grosimea barei o schimbă din `scrollbar-width` de mai
+   sus, și abia apoi aici. */
+.derulare-avo::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Fără margini: dunga trebuie să înceapă exact sub antet și să se termine exact
+   deasupra notei de preț, adică să acopere toată zona derulabilă. Marginea de
+   2rem de dinainte avea rost cât timp `overflow` stătea pe tot panoul și dunga
+   ajungea în colțurile rotunjite; acum n-are ce feri. */
+.derulare-avo::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.derulare-avo::-webkit-scrollbar-thumb {
+  background-color: var(--color-avo-600);
+  border-radius: 9999px;
+}
+
+/* Hover-ul ÎNCHIDE, nu deschide — aceeași treaptă ca la butoane (vezi
+   components/stiluri.ts): avo-600 → avo-700. */
+.derulare-avo::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-avo-700);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
