@@ -229,6 +229,10 @@ export const GET_OFERTE_QUERY = `
         id
         name
         slug
+        image {
+          sourceUrl
+          altText
+        }
         productCategories(first: 3) {
           nodes {
             slug

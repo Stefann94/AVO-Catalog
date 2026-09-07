@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaOferte, type Oferta } from "@/lib/oferte";
@@ -146,7 +147,15 @@ export default async function OferteleLunii({
             >
               {/* Zona vizuală — aceeași proporție ca fotografia cardului de
                   categorie, ca cele două grile să aibă același ritm. */}
-              <div className="relative aspect-[4/3] bg-avo-50">
+              {/* Fundalul se schimbă odată cu conținutul, și nu din capriciu:
+                  `avo-50` a fost ales ca să susțină o CIFRĂ mare — un accent
+                  discret în spatele unui număr. Fotografiile de produs vin
+                  decupate pe alb, iar un dreptunghi alb așezat peste tenta
+                  albastră se vede ca o scăpare, nu ca o poză. Unde e poză,
+                  fundalul e alb; unde e cifră, rămâne exact ce era. */}
+              <div
+                className={`relative aspect-[4/3] ${o.imagine ? "bg-white" : "bg-avo-50"}`}
+              >
                 {/* Badge în exact poziția badge-ului „N produse". */}
                 {o.disponibilitate === "Lichidare stoc" ? (
                   <span className="absolute top-3 right-3 z-10 inline-flex items-center h-7 px-2.5 rounded-md bg-gray-900 text-[11px] font-bold uppercase tracking-wide text-white">
@@ -154,9 +163,35 @@ export default async function OferteleLunii({
                   </span>
                 ) : null}
 
-                {/* Cifra care ține locul pozei. Baseline comun și leading-none:
+                {/* ── Fotografia, când există ──
+                    `object-contain`, nu `cover`: pozele sunt produse decupate,
+                    iar o tăiere pe margini le-ar reteza colțurile. E invers
+                    decât la cardurile de categorie, unde fotografiile sunt de
+                    ambianță și umplerea cadrului e tocmai ce se vrea.
+
+                    `pb-12` ferește poza de banda cu brand și SKU de dedesubt;
+                    fără el, produsul ar sta pe jumătate sub ea.
+
+                    Fără `alt` din WooCommerce se folosește denumirea produsului:
+                    e cea mai bună descriere pe care o avem, iar numele
+                    fișierului („SE-F16.webp") n-ar spune nimic unui cititor de
+                    ecran. */}
+                {o.imagine ? (
+                  <div className="absolute inset-0 p-4 pb-12">
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={o.imagine.url}
+                        alt={o.imagine.alt ?? o.nume}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 330px"
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                /* Cifra care ține locul pozei. Baseline comun și leading-none:
                     unitatea stă lipită de cifră, ca într-o fișă tehnică, nu ca
-                    două cuvinte alăturate. */}
+                    două cuvinte alăturate. */
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-4 pb-10">
                   {o.spec ? (
                     <span className="flex items-baseline gap-1 text-gray-900">
@@ -190,6 +225,7 @@ export default async function OferteleLunii({
                     </span>
                   )}
                 </div>
+                )}
 
                 {/* Banda de jos — poziția titlului din cardul de categorie.
                     Brandul identifică, SKU-ul e ce se dictează la telefon; de
@@ -199,10 +235,13 @@ export default async function OferteleLunii({
                   <span className="truncate text-[13px] font-bold text-gray-900">
                     {o.brand}
                   </span>
-                  {/* SKU-ul apare aici DOAR când sus stă o cifră. Când e el
-                      însuși cifra de titlu, l-am scrie de două ori în același
-                      pătrat, la 30px și la 11px distanță de câțiva pixeli. */}
-                  {o.spec ? (
+                  {/* SKU-ul apare aici DOAR când sus NU stă el însuși. Când e
+                      el cifra de titlu, l-am scrie de două ori în același
+                      pătrat, la 30px și la 11px distanță de câțiva pixeli.
+
+                      Deci apare și când sus e o fotografie — atunci codul chiar
+                      lipsește din cadru, iar el e ce se dictează la telefon. */}
+                  {o.imagine || o.spec ? (
                     <span className="shrink-0 font-mono text-[11px] text-gray-600">
                       {o.sku}
                     </span>

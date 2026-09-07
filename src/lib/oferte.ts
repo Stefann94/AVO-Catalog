@@ -63,14 +63,29 @@ export type Oferta = {
   /** Slug de categorie nivel 1, pentru linkul din card. Vezi lib/categorii.ts. */
   categorie: string;
   /**
-   * Cifra care ține locul fotografiei. Catalogul nu are imagini de produs —
-   * coloana `Images` nici nu există în CSV — iar pentru un instalator „615 Wp"
-   * identifică produsul mai bine decât o poză cu un dreptunghi negru.
+   * Fotografia produsului, din biblioteca media WordPress.
    *
-   * Se extrage deja, la import: `Putere (Wp)` la panouri, `Putere (kW)` la
+   * A LIPSIT DIN TIPUL ĂSTA, și lipsa era justificată: catalogul PDF n-are
+   * imagini de produs, coloana `Images` nici nu există în CSV-ul de import, iar
+   * secțiunea a fost desenată în jurul cifrei tocmai fiindcă poză nu exista.
+   *
+   * Acum există: 79 de fotografii au fost urcate în biblioteca media și legate
+   * de produse. Premisa a căzut, deci cade și consecința ei — dar numai unde e
+   * cazul, fiindcă 93 de produse tot n-au poză, iar `spec` rămâne exact la fel
+   * de necesară pentru ele.
+   */
+  imagine?: { url: string; alt?: string };
+  /**
+   * Cifra care ține locul fotografiei, când nu există `imagine`.
+   *
+   * Pentru un instalator „615 Wp" identifică produsul cel puțin la fel de bine
+   * ca o poză cu un dreptunghi negru, deci nu e o umplutură — e a doua cea mai
+   * bună variantă, și rămâne așa.
+   *
+   * Se extrage la import: `Putere (Wp)` la panouri, `Putere (kW)` la
    * invertoare, `Capacitate exactă (kWh)` la acumulatori. Opțională, fiindcă
    * structurile de montaj n-au o cifră care să le definească; acolo panoul
-   * cade pe numele brandului.
+   * cade pe codul de model.
    */
   spec?: { valoare: string; unitate: string };
   pret: number;
@@ -169,6 +184,7 @@ type NodProdus = {
   slug?: string | null;
   sku?: string | null;
   price?: string | null;
+  image?: { sourceUrl?: string | null; altText?: string | null } | null;
   productCategories?: {
     nodes?: { slug?: string | null; parent?: { node?: { slug?: string | null } | null } | null }[] | null;
   } | null;
@@ -265,6 +281,13 @@ function mapeaza(nod: NodProdus): Oferta | null {
   return {
     sku,
     nume,
+    // `altText` gol devine `undefined`, nu șir vid: în WooCommerce câmpul e
+    // adesea necompletat, iar un `alt=""` explicit înseamnă „imagine
+    // decorativă", ceea ce o fotografie de produs nu e. Componenta decide ce
+    // scrie în locul lui. Aceeași regulă ca în lib/produs.ts.
+    imagine: nod.image?.sourceUrl
+      ? { url: nod.image.sourceUrl, alt: nod.image.altText?.trim() || undefined }
+      : undefined,
     brand: atribut(nod, "pa_brand") ?? "",
     categorie,
     spec: specDin(nod),
