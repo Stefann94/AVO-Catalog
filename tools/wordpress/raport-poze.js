@@ -44,6 +44,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { explicaEsecDeAcces } = require('./diagnostic-acces');
 
 /* ── Argumente și credențiale ───────────────────────────────────────────── */
 
@@ -160,9 +161,12 @@ async function main() {
   try {
     await cere('/wp-json/wc/v3/products?per_page=1');
   } catch (e) {
-    console.error(`\nNu pot ajunge la WooCommerce: ${e.message}`);
-    console.error('Verifică WP_URL, utilizatorul și parola de aplicație.');
-    process.exit(1);
+    console.error('');
+    for (const r of await explicaEsecDeAcces(URL_WP, e)) console.error(r);
+    // `process.exit` peste o cerere încă deschisă face libuv să tipărească un
+    // „Assertion failed" după mesaj, care arată ca o prăbușire. Ieșim curat.
+    process.exitCode = 1;
+    return;
   }
 
   // `_fields` taie răspunsul la ce ne trebuie. Fără el, fiecare produs vine cu
