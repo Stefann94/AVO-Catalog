@@ -195,6 +195,53 @@ function coduriSePotrivesc(alNostru, alLor) {
   return a.includes(b) || b.includes(a);
 }
 
+/* ── A DOUA REGULĂ: jetoanele din titlu ─────────────────────────────────────
+   Pragul de 5 caractere de mai sus e necesar, dar taie și produse reale:
+   magazinul scrie codul „V5a" pentru ceea ce la noi e „PYTES-V5A-5-12-KWH",
+   iar „V5a" are trei caractere. La fel „V5", „V15", sau paravânturile, unde
+   magazinul folosește un cod intern (XPF_PB068.5.005A) și pune modelul nostru
+   doar în titlu: „Paravant L2350 (2350x304x0,5)".
+
+   Deci: dacă potrivirea pe cod nu reușește, se compară JETOANELE codului
+   nostru cu cele din titlul lor. Toate trebuie să apară. „PYTES-V5A-5-12-KWH"
+   se sparge în [pytes, v5a, 5, 12, kwh] și toate cinci se regăsesc în
+   „Acumulator Pytes Litiu LifePo4 V5a 48V 5.12kWh".
+
+   ─── DE CE SE RESPING PACHETELE ─────────────────────────────────────────
+
+   Fiindcă regula asta, singură, ar accepta un lucru greșit — și avem cazul
+   concret: pentru „SUN-5K-SG03LP1-EU" magazinul întoarce „Kit Invertor 5 KW
+   DEYE SUN-5K-SG03LP1-EU + 10 x Panou fotovoltaic". Titlul chiar conține
+   codul nostru, dar produsul e un kit cu zece panouri, iar fotografia lui
+   arată o paletă de panouri, nu un invertor.
+
+   Un titlu care începe cu „Kit" sau „Pachet", sau care leagă componente cu
+   „+", descrie un ansamblu. Îl sărim și trecem la rezultatul următor — la
+   Pytes V15 exact asta a salvat situația: primul rezultat era un pachet,
+   al doilea acumulatorul singur.
+
+   „Set" NU e în listă, deși sună la fel: la noi există „Set Conectori MC4
+   EVO2", care e chiar produsul căutat. Cuvântul descrie ambalajul unui
+   singur articol, nu o combinație de produse diferite. */
+
+const ESTE_PACHET = /^\s*(kit|pachet|bundle)\b|\s\+\s/i;
+
+function titluSePotriveste(skuNostru, titluLor) {
+  if (!titluLor || ESTE_PACHET.test(titluLor)) return false;
+
+  const jetoane = (s) => String(s).toLowerCase().split(/[^a-z0-9]+/i).filter(Boolean);
+  const ale = jetoane(skuNostru);
+  if (!ale.length) return false;
+
+  // Un singur jeton e prea puțin ca dovadă, decât dacă e un cod în sine —
+  // adică amestecă litere și cifre și are cel puțin patru caractere. „L2350"
+  // trece; „set" sau „12" nu.
+  if (ale.length === 1 && !(ale[0].length >= 4 && /[a-z]/.test(ale[0]) && /\d/.test(ale[0]))) return false;
+
+  const lor = new Set(jetoane(titluLor));
+  return ale.every((j) => lor.has(j));
+}
+
 /* ── Citirea din pagini ─────────────────────────────────────────────────── */
 
 /** Candidații dintr-o pagină de rezultate: adresa produsului și titlul lui. */
@@ -342,8 +389,19 @@ async function main() {
         const { corp } = await ia(c.url);
         const codLor = codDinPagina(corp);
         vazute.push(`${c.titlu.slice(0, 30)}=${codLor ?? '?'}`);
-        if (codLor && coduriSePotrivesc(p.sku, codLor)) {
-          potrivit = { ...c, cod: codLor, poza: pozaDinPagina(corp) };
+
+        // Întâi codul — e dovada cea mai tare. Apoi titlul, pentru cazurile în
+        // care magazinul folosește un cod intern sau prea scurt.
+        const prinCod = codLor && coduriSePotrivesc(p.sku, codLor);
+        const prinTitlu = !prinCod && titluSePotriveste(p.sku, c.titlu);
+
+        if (prinCod || prinTitlu) {
+          potrivit = {
+            ...c,
+            cod: codLor ?? '(fără cod)',
+            cum: prinCod ? `cod magazin: ${codLor}` : `titlu magazin: ${c.titlu.slice(0, 60)}`,
+            poza: pozaDinPagina(corp),
+          };
           break;
         }
       }
@@ -365,7 +423,7 @@ async function main() {
 
       if (DOAR_CAUTA) {
         scrie(`${eticheta} ar lua    ${p.sku}  ← ${potrivit.cod}  ${potrivit.poza.split('/').pop().slice(0, 44)}`);
-        manifest.push([p.sku, '', potrivit.poza, potrivit.titlu, `cod magazin: ${potrivit.cod}`]);
+        manifest.push([p.sku, "", potrivit.poza, potrivit.titlu, potrivit.cum]);
         gasite++;
         continue;
       }
@@ -377,7 +435,7 @@ async function main() {
       fs.writeFileSync(path.join(DIR, fisier), corp);
 
       scrie(`${eticheta} luat      ${p.sku}  ← ${potrivit.cod}  ${Math.round(corp.length / 1024)}KB  ${fisier}`);
-      manifest.push([p.sku, fisier, potrivit.poza, potrivit.titlu, `cod magazin: ${potrivit.cod}`]);
+      manifest.push([p.sku, fisier, potrivit.poza, potrivit.titlu, potrivit.cum]);
       gata.add(p.sku);
       delete stare.negasite[p.sku];
       gasite++;
