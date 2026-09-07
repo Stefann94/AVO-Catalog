@@ -411,6 +411,25 @@ export const GET_SLUGURI_PRODUSE_QUERY = `
  * `first: 50`, nu 100: interogarea cere atribute, categorii, etichete și meta
  * pentru fiecare produs, iar la 100 răspunsul devine destul de greu încât să
  * fie el însuși un motiv de 500.
+ *
+ * ─── `image` A LIPSIT DE AICI, ȘI LIPSA NU SE VEDEA NICĂIERI ──────────────
+ *
+ * lib/produs.ts citea `nod.image?.sourceUrl` de la bun început, iar
+ * components/produs/FisaProdus.tsx avea de mult și randarea fotografiei, și
+ * varianta fără ea. Cum interogarea nu cerea câmpul, `nod.image` era MEREU
+ * `undefined`, deci toate cele 172 de fișe cădeau pe varianta fără poză —
+ * corect, tăcut și permanent. Niciun tip nu se plângea: câmpul e opțional,
+ * fiindcă acoperirea chiar se face produs cu produs.
+ *
+ * Consecința practică era cea mai proastă cu putință: se puteau urca toate
+ * pozele în WooCommerce fără ca site-ul să se schimbe cu nimic, iar concluzia
+ * firească ar fi fost că încărcarea a eșuat.
+ *
+ * `altText` se cere odată cu adresa fiindcă lib/produs.ts îl folosește deja:
+ * gol, devine `undefined`, nu șir vid — acolo scrie de ce contează diferența.
+ *
+ * Comentariul stă AICI, nu lângă câmp: GraphQL nu are comentarii pe mai multe
+ * rânduri, iar cele cu `#` ar fi plecat pe fir la fiecare cerere.
  */
 export const GET_PRODUSE_TOATE_QUERY = `
   query GetProduseToate($after: String) {
@@ -424,6 +443,10 @@ export const GET_PRODUSE_TOATE_QUERY = `
         slug
         description
         shortDescription
+        image {
+          sourceUrl
+          altText
+        }
         ... on SimpleProduct {
           sku
           price(format: RAW)
