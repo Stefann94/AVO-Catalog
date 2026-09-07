@@ -66,6 +66,95 @@ export type DateBaraFiltre = {
 
 const ORDINE_STARI = ["in-stoc", "lichidare-stoc", "la-comanda"];
 
+/* ══════════════════════════════════════════════════════════════════════════
+   Ordinea categoriilor și a subcategoriilor
+   ──────────────────────────────────────────────────────────────────────────
+   E ORDINEA DIN CATALOGUL TIPĂRIT, nu una inventată aici și nu mărimea.
+
+   Bara se numește „cuprinsul catalogului". Un cuprins care listează altfel
+   decât cartea nu e cuprins, e altă listă — iar sortarea după numărul de
+   produse chiar dădea altceva: „Sisteme de Montaj" (51) apărea prima, deși în
+   PDF începe abia la pagina 8 și ține până la 11, iar „Panouri Fotovoltaice",
+   cu care se DESCHIDE catalogul la pagina 3, cădea pe locul patru. Cine avea
+   catalogul deschis alături găsea două ordini diferite pentru același lucru.
+
+   ─── DE UNDE IESE ────────────────────────────────────────────────────────
+
+   Din ordinea PAGINILOR din „Catalog lunar Solar One", citită mecanic, nu din
+   ochi: parserul din tools/catalog-import parcurge PDF-ul liniar, deci rândurile
+   din solar-one-woocommerce.csv păstrează ordinea tipărită. Listele de mai jos
+   sunt ordinea primei apariții a fiecărei categorii în acel fișier.
+
+     p. 3–4 ... Panouri Fotovoltaice
+     p. 5 ..... Invertoare
+     p. 6 ..... Stocare Energie, apoi Echipamente Conversie & Comutare
+     p. 7 ..... Stații de Încărcare Auto, Monitorizare & Smart Devices
+     p. 8–11 .. Sisteme de Montaj
+     p. 11 .... Accesorii
+
+   Primele trei sunt confirmate și de coperta catalogului, care își anunță
+   singură cuprinsul: „Panouri fotovoltaice • Invertoare • Stocare energie •
+   Sisteme montaj • Accesorii".
+
+   „Echipamente Conversie & Comutare" e la pagina 6 fiindcă acolo sunt tipărite
+   cele trei produse ale ei — sub un titlu de secțiune care nu li se potrivește,
+   vezi ORPHANS din tools/catalog-import/overrides.js.
+
+   ─── CE SE ÎNTÂMPLĂ CU CE NU E ÎN LISTĂ ──────────────────────────────────
+
+   Merge la coadă, ordonat după numărul de produse, și rămâne vizibil. O
+   categorie nouă adăugată în WooCommerce nu dispare fiindcă n-a prevăzut-o
+   nimeni aici; doar nu poate ști singură a câta e în catalogul tipărit.
+
+   Slugurile sunt unice în tot arborele, deci subcategoriile încap într-o
+   singură listă plată, fără să fie grupate pe părinte.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const ORDINE_CATEGORII = [
+  "panouri-fotovoltaice",
+  "invertoare",
+  "stocare-energie",
+  "echipamente-conversie-comutare",
+  "statii-de-incarcare-auto",
+  "monitorizare-smart-devices",
+  "sisteme-de-montaj",
+  "accesorii",
+];
+
+const ORDINE_SUBCATEGORII = [
+  // Invertoare — pagina 5, în ordinea secțiunilor DEYE; Off-Grid vine de la
+  // pagina 8, din blocul Growatt de lichidare.
+  "hibride-monofazate",
+  "hibride-trifazate",
+  "on-grid",
+  "off-grid",
+  // Stocare Energie — pagina 6, apoi acumulatorii altor branduri la pagina 7.
+  "acumulatori-high-voltage",
+  "accesorii-stocare",
+  "sisteme-stocare-complete",
+  "acumulatori-low-voltage",
+  "micro-ess-balcon",
+  // Monitorizare & Smart Devices — pagina 7.
+  "dispozitive-smart",
+  "smart-meters",
+  // Sisteme de Montaj — paginile 8–9 secțiunea generică, 10–11 blocul K2.
+  "structuri-acoperis-plat",
+  "cleme-si-accesorii",
+  "structuri-acoperis-metalic",
+  "sine-si-profile",
+  "structuri-tigla",
+  "k2-systems",
+  // Accesorii — pagina 11.
+  "cabluri-solare",
+  "conectori",
+];
+
+/** Poziția în ordinea din catalog; necunoscutele la coadă, nu la cap. */
+function pozitie(ordine: string[], slug: string): number {
+  const i = ordine.indexOf(slug);
+  return i === -1 ? 99 : i;
+}
+
 type NodTermen = {
   name?: string | null;
   slug?: string | null;
@@ -114,11 +203,13 @@ function mapeazaCategorii(noduri: NodCategorie[]): CategorieFiltru[] {
           produse: s?.count ?? 0,
         }))
         .filter((s) => s.slug && s.nume && s.produse > 0)
-        // Cea mai mare subcategorie prima. În catalog ordinea e cea din PDF,
-        // dar WooCommerce n-o păstrează: `menuOrder` e 0 pe toate. Mărimea e
-        // cel puțin un criteriu, și e cel care pune sus lucrurile pe care le
-        // caută cei mai mulți — „Hibride Trifazate" înaintea lui „Off-Grid".
-        .sort((a, b) => b.produse - a.produse);
+        // Ordinea din catalogul tipărit; mărimea decide doar între cele pe care
+        // ORDINE_SUBCATEGORII nu le cunoaște. Vezi comentariul de la constantă.
+        .sort(
+          (a, b) =>
+            pozitie(ORDINE_SUBCATEGORII, a.slug) -
+              pozitie(ORDINE_SUBCATEGORII, b.slug) || b.produse - a.produse,
+        );
 
       const direct = c?.count ?? 0;
       const dinCopii = subcategorii.reduce((s, x) => s + x.produse, 0);
@@ -132,10 +223,19 @@ function mapeazaCategorii(noduri: NodCategorie[]): CategorieFiltru[] {
       };
     })
     .filter((c) => c.slug && c.nume && c.produse > 0)
-    // `menuOrder` e 0 pe toate până le ordonează cineva în WooCommerce; atunci
-    // decide numărul de produse, care e cel puțin o ordine motivată. Când
-    // cineva le aranjează acolo, aceea câștigă — fără modificare de cod.
-    .sort((a, b) => a.ordine - b.ordine || b.produse - a.produse)
+    // Trei criterii, în ordinea asta:
+    //
+    //   `menuOrder` ...... e 0 pe toate până le aranjează cineva în WooCommerce.
+    //                      Rămâne primul tocmai ca aranjarea de acolo să
+    //                      câștige, fără modificare de cod.
+    //   catalogul ........ ordinea paginilor din PDF; vezi ORDINE_CATEGORII.
+    //   numărul .......... doar pentru categoriile pe care lista nu le cunoaște.
+    .sort(
+      (a, b) =>
+        a.ordine - b.ordine ||
+        pozitie(ORDINE_CATEGORII, a.slug) - pozitie(ORDINE_CATEGORII, b.slug) ||
+        b.produse - a.produse,
+    )
     .map(({ slug, nume, produse, subcategorii }) => ({
       slug,
       nume,
@@ -188,43 +288,11 @@ export const BARA_REZERVA: DateBaraFiltre = {
     { slug: "lichidare-stoc", eticheta: "Lichidare stoc", produse: 15 },
     { slug: "la-comanda", eticheta: "La comandă", produse: 2 },
   ],
+  // Scrise în ordinea din catalogul tipărit, ca rezerva să arate la fel cu
+  // varianta care vine din WooCommerce. Sortarea le-ar aduce oricum aici, dar
+  // atunci fișierul ar fi singurul loc din proiect unde ordinea scrisă diferă
+  // de cea afișată — iar cine îl citește ar crede că e ordinea reală.
   categorii: [
-    {
-      slug: "sisteme-de-montaj",
-      nume: "Sisteme de Montaj",
-      produse: 51,
-      subcategorii: [
-        { slug: "k2-systems", nume: "K2 Systems", produse: 28 },
-        { slug: "structuri-acoperis-metalic", nume: "Structuri Acoperiș Metalic", produse: 7 },
-        { slug: "structuri-acoperis-plat", nume: "Structuri Acoperiș Plat", produse: 6 },
-        { slug: "cleme-si-accesorii", nume: "Cleme și Accesorii", produse: 6 },
-        { slug: "sine-si-profile", nume: "Șine și Profile", produse: 3 },
-        { slug: "structuri-tigla", nume: "Structuri Țiglă", produse: 1 },
-      ],
-    },
-    {
-      slug: "stocare-energie",
-      nume: "Stocare Energie",
-      produse: 39,
-      subcategorii: [
-        { slug: "acumulatori-low-voltage", nume: "Acumulatori Low-Voltage", produse: 22 },
-        { slug: "sisteme-stocare-complete", nume: "Sisteme Stocare Complete", produse: 7 },
-        { slug: "acumulatori-high-voltage", nume: "Acumulatori High-Voltage", produse: 4 },
-        { slug: "accesorii-stocare", nume: "Accesorii Stocare", produse: 4 },
-        { slug: "micro-ess-balcon", nume: "Micro ESS / Balcon", produse: 2 },
-      ],
-    },
-    {
-      slug: "invertoare",
-      nume: "Invertoare",
-      produse: 35,
-      subcategorii: [
-        { slug: "hibride-trifazate", nume: "Hibride Trifazate", produse: 18 },
-        { slug: "hibride-monofazate", nume: "Hibride Monofazate", produse: 11 },
-        { slug: "on-grid", nume: "On-Grid", produse: 4 },
-        { slug: "off-grid", nume: "Off-Grid", produse: 2 },
-      ],
-    },
     {
       slug: "panouri-fotovoltaice",
       nume: "Panouri Fotovoltaice",
@@ -232,19 +300,61 @@ export const BARA_REZERVA: DateBaraFiltre = {
       subcategorii: [],
     },
     {
-      slug: "monitorizare-smart-devices",
-      nume: "Monitorizare & Smart Devices",
-      produse: 8,
+      slug: "invertoare",
+      nume: "Invertoare",
+      produse: 35,
       subcategorii: [
-        { slug: "smart-meters", nume: "Smart Meters", produse: 5 },
-        { slug: "dispozitive-smart", nume: "Dispozitive Smart", produse: 3 },
+        { slug: "hibride-monofazate", nume: "Hibride Monofazate", produse: 11 },
+        { slug: "hibride-trifazate", nume: "Hibride Trifazate", produse: 18 },
+        { slug: "on-grid", nume: "On-Grid", produse: 4 },
+        { slug: "off-grid", nume: "Off-Grid", produse: 2 },
       ],
+    },
+    {
+      slug: "stocare-energie",
+      nume: "Stocare Energie",
+      produse: 39,
+      subcategorii: [
+        { slug: "acumulatori-high-voltage", nume: "Acumulatori High-Voltage", produse: 4 },
+        { slug: "accesorii-stocare", nume: "Accesorii Stocare", produse: 4 },
+        { slug: "sisteme-stocare-complete", nume: "Sisteme Stocare Complete", produse: 7 },
+        { slug: "acumulatori-low-voltage", nume: "Acumulatori Low-Voltage", produse: 22 },
+        { slug: "micro-ess-balcon", nume: "Micro ESS / Balcon", produse: 2 },
+      ],
+    },
+    {
+      slug: "echipamente-conversie-comutare",
+      nume: "Echipamente Conversie & Comutare",
+      produse: 3,
+      subcategorii: [],
     },
     {
       slug: "statii-de-incarcare-auto",
       nume: "Stații de Încărcare Auto",
       produse: 4,
       subcategorii: [],
+    },
+    {
+      slug: "monitorizare-smart-devices",
+      nume: "Monitorizare & Smart Devices",
+      produse: 8,
+      subcategorii: [
+        { slug: "dispozitive-smart", nume: "Dispozitive Smart", produse: 3 },
+        { slug: "smart-meters", nume: "Smart Meters", produse: 5 },
+      ],
+    },
+    {
+      slug: "sisteme-de-montaj",
+      nume: "Sisteme de Montaj",
+      produse: 51,
+      subcategorii: [
+        { slug: "structuri-acoperis-plat", nume: "Structuri Acoperiș Plat", produse: 6 },
+        { slug: "cleme-si-accesorii", nume: "Cleme și Accesorii", produse: 6 },
+        { slug: "structuri-acoperis-metalic", nume: "Structuri Acoperiș Metalic", produse: 7 },
+        { slug: "sine-si-profile", nume: "Șine și Profile", produse: 3 },
+        { slug: "structuri-tigla", nume: "Structuri Țiglă", produse: 1 },
+        { slug: "k2-systems", nume: "K2 Systems", produse: 28 },
+      ],
     },
     {
       slug: "accesorii",
@@ -254,12 +364,6 @@ export const BARA_REZERVA: DateBaraFiltre = {
         { slug: "cabluri-solare", nume: "Cabluri Solare", produse: 2 },
         { slug: "conectori", nume: "Conectori", produse: 2 },
       ],
-    },
-    {
-      slug: "echipamente-conversie-comutare",
-      nume: "Echipamente Conversie & Comutare",
-      produse: 3,
-      subcategorii: [],
     },
   ],
 };

@@ -177,6 +177,21 @@ function Eticheta({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * „de" înaintea substantivului, după regula românească a numeralului.
+ *
+ * Se pune când ultimele două cifre sunt 00 sau 20–99: „172 DE produse", dar
+ * „8 categorii" și „101 produse". Scrisă ca funcție, nu ghicită o dată în text,
+ * fiindcă cifrele vin din WooCommerce și se schimbă lunar: la 19 produse un
+ * „de" fix ar da „19 de produse", iar la 20 lipsa lui ar da „20 produse".
+ *
+ * Pragul `n >= 20` ține zeroul afară: 0 % 100 e tot 0, deci fără el ar ieși
+ * „0 de produse".
+ */
+function cuDe(n: number): string {
+  return n >= 20 && (n % 100 === 0 || n % 100 >= 20) ? "de " : "";
+}
+
 export default async function BaraFiltre() {
   // Cele două pleacă odată: perioada nu depinde de bară, iar înlănțuite ar
   // aduna două drumuri până la WordPress în randare.
@@ -184,6 +199,11 @@ export default async function BaraFiltre() {
     incarcaBaraFiltre(),
     incarcaPerioadaCatalog(),
   ]);
+
+  // Suma de pe categorii, nu de pe stările de stoc. Amândouă dau 172 azi, dar
+  // una singură descrie lista de dedesubt — iar dacă vreodată nu se mai
+  // potrivesc, cifra din subsol trebuie să fie cea a listei pe care o închide.
+  const totalProduse = categorii.reduce((s, c) => s + c.produse, 0);
 
   return (
     <div
@@ -359,15 +379,38 @@ export default async function BaraFiltre() {
           </div>
         </div>
 
-        {/* ── ETAJUL 3: nota de preț ──
-            Tot în afara zonei derulabile. E condiția tuturor cifrelor de
-            deasupra, deci locul ei e oricum jos și mereu vizibilă.
+        {/* ── ETAJUL 3: totalul ──
+            Tot în afara zonei derulabile.
+
+            AICI SCRIA NOTA DE TVA ȘI DEEE, iar problema ei nu era formularea:
+            aceeași condiție e scrisă, cuvânt cu cuvânt, în subsolul secțiunii
+            de alături — „Prețurile sunt exprimate în EUR, fără TVA. Taxa verde
+            DEEE nu este inclusă (0,7 RON / kg)" — și a treia oară pe fiecare
+            pagină a catalogului tipărit. Două exemplare vizibile simultan, la
+            câțiva centimetri unul de altul, nu conving pe nimeni mai mult decât
+            unul; doar ocupă podeaua barei cu ceva ce omul tocmai a citit.
+
+            Pe deasupra, era o notă despre PREȚURI într-un panou care nu arată
+            niciun preț. Bara arată câte produse sunt și unde stau.
+
+            Totalul e ce spune un cuprins la final: cât ține cartea. Nu e scris
+            nicăieri altundeva în pagină — cardurile dau cifre pe categorie,
+            bara le dă pe fiecare rând, dar suma n-o dă nimeni — și răspunde la
+            întrebarea pe care și-o pune cineva care se uită la o listă înainte
+            s-o deschidă: cât e de mare?
+
+            Se calculează din categoriile chiar afișate deasupra, nu dintr-o
+            constantă: dacă WooCommerce întoarce altceva, cifra se mută odată cu
+            lista, nu rămâne să mintă.
 
             Conturul de sus e singurul care merge dintr-o margine în alta a
             panoului. Liniile dintre blocuri sunt retrase cu 20px, fiindcă
             despart rânduri ale aceluiași obiect; asta închide obiectul. */}
         <p className="shrink-0 border-t border-gray-200 bg-white px-5 py-3 text-[11px] leading-relaxed text-gray-500">
-          Prețuri fără TVA. Taxa verde DEEE nu e inclusă (0,7 RON/kg).
+          <span className="font-semibold text-gray-900">
+            {totalProduse} {cuDe(totalProduse)}produse
+          </span>{" "}
+          în {categorii.length} {cuDe(categorii.length)}categorii
         </p>
       </aside>
     </div>
