@@ -35,7 +35,7 @@ export default function Home() {
         Hero-ul primește `flex-1`, banda `shrink-0`: banda își cere înălțimea
         ei, hero-ul ia tot restul, pe orice ecran.
       */}
-      <div className="flex h-[100svh] flex-col">
+      <div data-navbar-clar className="flex h-[100svh] flex-col">
         <HeroSlider />
         <BandaBranduri />
       </div>

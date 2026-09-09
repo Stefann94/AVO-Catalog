@@ -119,8 +119,9 @@ import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
       BANDA DE STICLĂ e `bg-white/45 backdrop-blur-2xl backdrop-saturate-200`.
       Alb, nu gri: la 45% fotografia chiar se vede prin ea, iar banda citește
       ca sticlă mată, nu ca o plăcuță lipită peste poză. A fost o vreme
-      `slate-100/80`, rețeta din navbar — corectă acolo, dar aici ieșea un
-      dreptunghi gri opac care ascundea poza.
+      `slate-100/80`, rețeta de atunci a navbarului (care e azi
+      `slate-300/60`) — corectă acolo, dar aici ieșea un dreptunghi gri opac
+      care ascundea poza.
 
       Nu e nici un degrade negru peste poză, cum se face de obicei: un degrade
       ar întuneca fotografia exact în partea de jos, unde la trei din patru

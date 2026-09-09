@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from "../../public/logo.png";
 import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
@@ -60,7 +61,7 @@ import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone
  */
 const BUTON_BARA =
   "shrink-0 whitespace-nowrap flex items-center justify-center " +
-  "bg-slate-100/60 border border-slate-200/60 text-slate-700 rounded-xl " +
+  "bg-white/70 border border-white/80 text-slate-700 rounded-xl " +
   "font-semibold transition-all " +
   "hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
@@ -72,15 +73,122 @@ const BUTON_MENIU =
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  /**
+   * DOUĂ STICLE, DUPĂ CE E ÎN SPATELE BAREI
+   *
+   * Bara e translucidă, iar transparența compune MEREU spre fundal. De-aici
+   * ies două cerințe pe care o singură valoare nu le poate îndeplini:
+   *
+   *   peste hero ....... o tentă DESCHISĂ dă gri mediu, cu formele video-ului
+   *                      vizibile prin ea. `slate-100/80` → ≈ #C6CBD3.
+   *   peste conținut ... aceeași tentă deschisă dă ≈ #F4F7FA, iar pagina e
+   *                      #F8F9FA. Bara ajunge la patru unități de fundal,
+   *                      adică dispare. Acolo e nevoie de o tentă ÎNCHISĂ
+   *                      lăsată mai transparentă: `slate-300/60` → ≈ #DFE6EE.
+   *
+   * A doua e chiar mai transparentă decât prima — 60% față de 80% — deci se
+   * vede mai mult prin ea, nu mai puțin. Ce diferă e direcția tentei.
+   *
+   * ─── CUM E DETECTAT HERO-UL ──────────────────────────────────────────────
+   *
+   * Bara NU știe nimic despre hero și nici despre pagina de start. Caută un
+   * element marcat `data-navbar-clar`; pe prima pagină e blocul întunecat de
+   * un ecran, hero plus plinta cu siglele (vezi app/page.tsx). Pe paginile de
+   * catalog nu există niciun asemenea element, deci bara rămâne gri, fără
+   * nicio ramură scrisă special pentru ele.
+   *
+   * Marcajul e un atribut, nu un `id`: o pagină viitoare cu alt antet închis
+   * îl pune pe ea și merge, fără să atingă fișierul ăsta.
+   *
+   * ─── DE CE `IntersectionObserver`, NU UN ASCULTĂTOR DE `scroll` ───────────
+   *
+   * Un ascultător de `scroll` rulează la fiecare pixel derulat și, ca să știe
+   * unde e muchia, ar chema `getBoundingClientRect()` de fiecare dată — adică
+   * ar forța recalcularea așezării în timpul derulării. Observatorul raportează
+   * de DOUĂ ori pe toată pagina: o dată când hero-ul iese de sub bară, o dată
+   * când se întoarce.
+   *
+   * `rootMargin` retrage marginea de sus a ferestrei cu exact înălțimea barei,
+   * deci pragul cade pe muchia ei de jos, nu pe cea a ferestrei. Înălțimea nu
+   * e o constantă — bara are trei înălțimi, după lățimea ecranului (vezi
+   * `--inaltime-navbar` din app/globals.css) — așa că e măsurată de pe
+   * elementul real și recitită la redimensionare.
+   *
+   * ─── DE CE DEPINDE DE `usePathname` ──────────────────────────────────────
+   *
+   * Navbarul e randat în app/layout.tsx, deci NU se remontează la navigarea
+   * dintre pagini: React îl păstrează, se schimbă doar ce e sub el. Cu lista
+   * de dependențe goală, efectul ar fi rulat o singură dată, la prima
+   * încărcare — iar cine intra pe prima pagină și dădea clic pe „Catalog
+   * Produse" rămânea cu sticla deschisă peste conținut alb, adică exact bara
+   * invizibilă de la care a pornit toată treaba.
+   *
+   * ─── DE CE STAREA E CALCULATĂ ȘI SINCRON, NU DOAR DIN OBSERVATOR ─────────
+   *
+   * Observatorul își trimite primul raport abia în cadrul următor. Fără
+   * măsurătoarea de dinaintea lui, bara ar porni gri și ar sări pe deschis
+   * după primul cadru — o clipire la FIECARE încărcare a primei pagini.
+   */
+  const bara = useRef<HTMLElement | null>(null);
+  const [pesteZonaInchisa, setPesteZonaInchisa] = useState(false);
+  const cale = usePathname();
+
+  useEffect(() => {
+    let observator: IntersectionObserver | null = null;
+
+    /**
+     * Recitește totul de la zero: ținta, înălțimea barei, starea.
+     *
+     * E o funcție, nu cod în corpul efectului, din două motive. Unul de
+     * curățenie — un `setState` scris direct în efect e semnalat de
+     * `react-hooks/set-state-in-effect`, pe bună dreptate. Unul real: aceeași
+     * recitire e nevoie la trei momente diferite (montare, schimbare de rută,
+     * redimensionare), iar scrisă de trei ori ar diverge la prima modificare.
+     */
+    const recalculeaza = () => {
+      observator?.disconnect();
+      observator = null;
+
+      const tinta = document.querySelector("[data-navbar-clar]");
+      if (!tinta) {
+        setPesteZonaInchisa(false);
+        return;
+      }
+
+      const inaltime = bara.current?.offsetHeight ?? 68;
+
+      setPesteZonaInchisa(tinta.getBoundingClientRect().bottom > inaltime);
+
+      observator = new IntersectionObserver(
+        ([raport]) => setPesteZonaInchisa(raport.isIntersecting),
+        { rootMargin: `-${inaltime}px 0px 0px 0px` },
+      );
+      observator.observe(tinta);
+    };
+
+    recalculeaza();
+    window.addEventListener("resize", recalculeaza);
+
+    return () => {
+      observator?.disconnect();
+      window.removeEventListener("resize", recalculeaza);
+    };
+  }, [cale]);
+
   /*
-   * Aici era o stare `isScrolled`, actualizată de un ascultător de scroll
-   * care nu era folosit în niciun `className`. Rezultatul: la fiecare
-   * derulare peste pragul de 20px se declanșa un re-render al întregului
-   * navbar, fără nicio schimbare vizibilă. Aspectul rămâne identic.
+   * Aici era o stare `isScrolled`, actualizată de un ascultător de scroll care
+   * nu era folosit în niciun `className`: la fiecare derulare peste pragul de
+   * 20px se declanșa un re-render al întregului navbar, fără nicio schimbare
+   * vizibilă. A fost ștearsă.
+   *
+   * `pesteZonaInchisa` de mai sus NU e aceeași stare întoarsă pe furiș. Aceea
+   * măsura derularea și nu decidea nimic; asta răspunde la o singură întrebare
+   * — e ceva întunecat în spatele barei? — o pune de două ori pe toată pagina,
+   * și decide o culoare care chiar se vede.
    */
 
   return (
-    <nav className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
+    <nav ref={bara} className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
       {/* ── Bara de contact ──────────────────────────────────────────────
           `h-8`, nu `py-2`: înălțimea ei intră în `--inaltime-navbar`, deci
           trebuie să fie o cifră, nu o consecință a textului dinăuntru. */}
@@ -136,7 +244,7 @@ export default function Navbar() {
           `lg:px-6`, nu `lg:px-12`: la 1024 cei 48px de gardă de fiecare parte
           erau exact ce lipsea ca meniul complet să încapă. De la 2xl, unde e
           loc, se întorc. */}
-      <div className="bg-slate-100/80 backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 h-[68px] 2xl:h-[72px]">
+      <div className={`${pesteZonaInchisa ? "bg-slate-100/80" : "bg-slate-300/60"} backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 h-[68px] 2xl:h-[72px] transition-colors duration-300`}>
         <div className="h-full w-full px-4 sm:px-6 2xl:px-12 flex items-center justify-between gap-3 xl:gap-4">
         {/*
           Sigla stă la jumătatea distanței dintre marginea din stânga și primul
@@ -247,7 +355,7 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Caută produse..."
-              className="bg-slate-100/60 border border-slate-200/60 text-slate-900 text-sm rounded-xl pl-10 pr-4 h-11 focus:outline-none focus:bg-slate-50/80 focus:shadow-inner transition-all w-64 min-w-0 max-w-full"
+              className="bg-white/70 border border-white/80 text-slate-900 text-sm rounded-xl pl-10 pr-4 h-11 focus:outline-none focus:bg-white focus:shadow-inner transition-all w-64 min-w-0 max-w-full"
             />
           </div>
 
@@ -280,7 +388,7 @@ export default function Navbar() {
             1279 bara are acum formă de desktop, deci hamburgerul n-ar mai avea
             ce să deschidă. */}
         <button
-          className="lg:hidden shrink-0 text-slate-800 p-2 bg-slate-100/80 rounded-xl border border-slate-200/60 hover:bg-white transition-colors ml-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+          className="lg:hidden shrink-0 text-slate-800 p-2 bg-white/70 rounded-xl border border-white/80 hover:bg-white transition-colors ml-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-expanded={isMobileMenuOpen}
           aria-label={isMobileMenuOpen ? "Închide meniul" : "Deschide meniul"}
