@@ -3,7 +3,7 @@ import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
 import type { CSSProperties } from "react";
-import { BUTON_PLIN, CARD, dimensiuneTitlu } from "./stiluri";
+import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
@@ -181,8 +181,27 @@ export default async function GamaProduse() {
     incarcaGamaProduse(),
   ]);
 
+  /**
+   * PADDING-UL VERTICAL E ASIMETRIC, și niciunul dintre capete nu e liber.
+   *
+   *   SUS, `lg:pt-28` ... cei 112px sunt scriși ȘI ca literal în `--bara-sus`
+   *      din app/globals.css (112 + 44 + 28 = 184px), de unde bara de filtre
+   *      își ia ancorajul pe linia de sub titlu. Schimbați aici fără să fie
+   *      schimbați și acolo, bara pornește din gol.
+   *
+   *   JOS, `lg:pb-20` ... 80px, din care bara de filtre își ia capătul de jos
+   *      (`bottom-10` în BaraFiltre, măsurat de la marginea secțiunii). Scăzut
+   *      mai mult fără să scadă și `bottom`, panoul ajunge lipit de ultimul
+   *      rând de conținut.
+   *
+   * A fost `lg:py-28` pe amândouă. Împreună cu cei 112px ai secțiunii de
+   * dedesubt ieșeau 224px de gol la joncțiune, peste o tăietură pe care
+   * culoarea o face deja singură — de patru ori și jumătate cel mai mare
+   * interval dinăuntrul secțiunii. Socoteala întreagă e în OferteleLunii.tsx,
+   * lângă cealaltă jumătate a joncțiunii.
+   */
   return (
-    <section className="bg-[#F8F9FA] py-16 sm:py-20 lg:py-28">
+    <section className="bg-[#F8F9FA] py-16 sm:pt-20 lg:pt-28 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-8 sm:mb-10 lg:mb-12">
@@ -281,7 +300,7 @@ export default async function GamaProduse() {
                     întregului card — înainte pornea doar când mouse-ul intra pe
                     fotografie, ceea ce arăta ca o scăpare acum, când tot cardul
                     răspunde. */}
-                <div className="relative block aspect-[4/3] overflow-hidden bg-gray-100">
+                <div className={`relative block ${CADRU_FOTO_CARD} overflow-hidden bg-gray-100`}>
                   {/* Miniatura din WooCommerce, dacă a încărcat-o cineva;
                       altfel fotografia din public/.
 

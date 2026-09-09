@@ -55,7 +55,7 @@ export default function Home() {
         singura modificare e să le mutăm în acest `div`. Nimic altceva.
       */}
       <div className="relative">
-        {/* Cuprinsul catalogului, în marja liberă din stânga. Apare de la 1620px
+        {/* Cuprinsul catalogului, în marja liberă din stânga. Apare de la 1760px
             în sus, unde marja lăsată de `max-w-7xl` e destul de lată cât s-o
             țină fără să atingă conținutul. Calculul e în globals.css. */}
         <BaraFiltre />

@@ -89,19 +89,59 @@ export default function HeroSlider() {
 
       {/* Content - Vertically Centered Text */}
       <div className="absolute inset-0 z-20 w-full max-w-[1800px] mx-auto px-6 lg:px-16 xl:px-24">
-          
-          {/* Top-Left Section: Vertically Centered Text & Buttons */}
-          <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left h-full max-w-3xl pt-20">
+
+          {/* Top-Left Section: Vertically Centered Text & Buttons
+
+              `pt` e exact înălțimea barei fixe, din variabila definită în
+              app/globals.css. Era `pt-20` (80px), o cifră care nu nimerea
+              niciuna dintre cele trei înălțimi reale ale barei: la 1024 și mai
+              sus conținutul urca cu 20–24px sub ea, deci „centrat pe verticală"
+              însemna de fapt centrat în raport cu un capăt de sus greșit. */}
+          <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left h-full max-w-3xl pt-[var(--inaltime-navbar)]">
             <div className="flex flex-col w-full">
-              
+
               {/* Badge Area - Removed by request */}
-              
-              
-              {/* Text Area - Strict fixed height to guarantee ZERO layout shift (SEO & UX) */}
-              <div className="h-[340px] sm:h-[300px] lg:h-[340px] flex flex-col justify-center items-center sm:items-start gap-4">
-                <h1 
+
+
+              {/* ── Zona de text ────────────────────────────────────────────
+                  Înălțime FIXATĂ, ca trecerea de la un slide la altul să nu
+                  miște butoanele de dedesubt: titlurile au 27–33 de caractere,
+                  deci fără ea rândurile ar diferi de la un slide la altul.
+
+                  Nu mai e o listă de cifre pe praguri de lățime, ci `clamp` pe
+                  înălțimea ferestrei. Motivul e că mărimea de care are nevoie
+                  blocul depinde de cât loc are pe VERTICALĂ, iar praguri pe
+                  lățime nu văd asta: pe o fereastră de 600px înălțime, cei
+                  340px rezervați plus butoanele și punctele nu mai încăpeau
+                  deasupra benzii de branduri.
+
+                    240px ... podeaua. La `lg`, titlul de 60px pe două rânduri
+                              (150px) plus subtitlul pe două (64px) și spațiul
+                              dintre ele (16px) cer 230px.
+                    36svh ... cât ia în mod normal, adică 324px pe o fereastră
+                              de 900px și 340px pe una de 1080.
+                    340px ... plafonul de dinainte, păstrat: la 1920×1080
+                              aspectul rămâne exact cel de azi.
+
+                  `svh`, nu `vh` sau `dvh`, din același motiv ca la înălțimea
+                  hero-ului din app/page.tsx: e singura care nu se recalculează
+                  în timp ce derulezi pe telefon.
+
+                  TEXTUL STĂ LA BAZA CUTIEI, nu la mijloc (`justify-end`, nu
+                  `justify-center`). Rezerva nefolosită se duce atunci toată
+                  deasupra titlului, unde oricum e cer liber, în loc să se
+                  împartă în două și să lase o gaură între subtitlu și butoane.
+                  Se vedea la lățimile unde titlul încape pe un rând: la 1150
+                  rămâneau ~90px de gol exact acolo. Distanța de la subtitlu la
+                  butoane e acum aceeași pe toate cele trei slide-uri. */}
+              <div className="h-[clamp(240px,36svh,340px)] flex flex-col justify-end items-center sm:items-start gap-4">
+                <h1
                   key={`title-${activeIndex}`}
-                  className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight animate-[fadeInUp_0.5s_ease-out_forwards]"
+                  /* Treapta de 60px la `lg` e nouă. Titlul sărea direct de la
+                     48px la 72px, iar 72px pe o fereastră de 1024 însemna un
+                     titlu care ocupă singur jumătate din hero, cu restul gol.
+                     Cei 72px se întorc la 2xl, unde chiar e loc pentru ei. */
+                  className="text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-extrabold text-white leading-tight animate-[fadeInUp_0.5s_ease-out_forwards]"
                 >
                   {slides[activeIndex].title}
                 </h1>
@@ -141,30 +181,63 @@ export default function HeroSlider() {
                   </button>
                 ))}
               </div>
+
+              {/* ── Cele trei cifre ale slide-ului ──────────────────────────
+                  DOUĂ AȘEZĂRI, la două praguri, fiindcă rolul lor se schimbă
+                  odată cu lățimea:
+
+                    de la xl .... colț dreapta-jos, `absolute`. Măsurat: la 1280
+                                  fișele încep la 472px de marginea din stânga,
+                                  iar punctele se termină la 408px — nu se ating.
+                                  Așa arată compoziția de azi la 1920.
+                    la lg ....... în firul paginii, sub puncte. La 1024 aceleași
+                                  fișe ar începe la 216px, adică peste punctele
+                                  care țin până la 376px, și ar cădea exact pe
+                                  ele și pe verticală. Sub coloană nu se calcă
+                                  cu nimic.
+                    sub lg ...... ascunse. Cele trei fișe pe un rând ar avea
+                                  ~200px fiecare, cu descrieri pe patru rânduri.
+
+                  ÎN AȘEZAREA DIN FIR CONTEAZĂ ȘI ÎNĂLȚIMEA, de-aia condiția e
+                  scrisă ca o singură interogare cu două jumătăți, nu ca `lg:`.
+                  Fișele stau în aceeași coloană cu titlul, butoanele și
+                  punctele; pe o fereastră de 1150×620 coloana cerea 580px din
+                  cei 562 rămași după banda de branduri, iar ce depășea intra
+                  sub bandă. Peste 720px înălțime încape cu tot cu ele.
+
+                  La `xl` pragul nu se aplică: acolo fișele sunt `absolute`,
+                  deci nu mai împing coloana în jos, oricât ar fi de scundă
+                  fereastra. Ambele variante scriu `display: grid`, deci nu se
+                  contrazic acolo unde se suprapun.
+
+                  ERA `hidden xl:grid`, deci între 1024 și 1279 hero-ul rămânea
+                  cu jumătatea dreaptă și cu ultimii ~200px de sus în jos goi —
+                  cel mai vizibil gol din pagină la lățimile alea.
+
+                  `absolute` se ancorează în învelișul `absolute inset-0` de mai
+                  sus, singurul părinte poziționat, nu în coloana asta. */}
+              <div className="mt-8 hidden [@media(min-width:64rem)_and_(min-height:45rem)]:grid xl:grid grid-cols-3 gap-3 xl:gap-4 w-full max-w-3xl xl:absolute xl:bottom-16 xl:right-10 xl:mt-0">
+                {slides[activeIndex].stats.map((stat, idx) => {
+                  return (
+                    <div
+                      key={`stat-${activeIndex}-${idx}`}
+                      className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 2xl:p-5 rounded-2xl 2xl:rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-3 2xl:gap-4 text-left"
+                      style={{ animationDelay: `${0.3 + (idx * 0.1)}s` }}
+                    >
+                      <div className="min-w-[56px] 2xl:min-w-[64px] px-1.5 2xl:px-2 h-12 2xl:h-14 rounded-2xl flex items-center justify-center font-bold text-[15px] 2xl:text-lg shrink-0 text-white">
+                        {stat.value}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-white font-semibold text-[13px] 2xl:text-sm mb-1 leading-tight">{stat.label}</h3>
+                        <p className="text-[11px] 2xl:text-xs text-slate-400 leading-snug">{stat.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Bottom-Right Section: Features Horizontal Bar */}
-          <div className="absolute bottom-16 right-6 lg:right-10 xl:right-10 hidden xl:grid grid-cols-3 gap-4 w-full max-w-3xl">
-            {slides[activeIndex].stats.map((stat, idx) => {
-              return (
-                <div 
-                  key={`stat-${activeIndex}-${idx}`} 
-                  className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl hover:bg-white/10 transition-colors cursor-default animate-[fadeInUp_0.6s_ease-out_0.3s_forwards] opacity-0 flex items-center gap-4"
-                  style={{ animationDelay: `${0.3 + (idx * 0.1)}s` }}
-                >
-                  <div className="min-w-[64px] px-2 h-14 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0 text-white">
-                    {stat.value}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-sm mb-1 leading-tight">{stat.label}</h3>
-                    <p className="text-xs text-slate-400 leading-snug">{stat.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
       </div>
 
       <style jsx global>{`

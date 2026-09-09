@@ -102,6 +102,37 @@ export const CARD =
   " hover:border-avo-600 hover:ring-1 hover:ring-avo-600";
 
 /**
+ * Cadrul fotografiei dintr-un card — proporția, cu un plafon de înălțime.
+ *
+ * PROBLEMA. Grilele de pe prima pagină au patru coloane la `xl`, două între
+ * `sm` și `xl`, una sub. Cardurile sunt fixe ca număr — patru categorii, patru
+ * oferte — deci trei coloane n-au ce căuta acolo: ar lăsa un card orfan pe al
+ * doilea rând. Numai că un card care la 1280 are 296px lățime ajunge, la 1279,
+ * să aibă 581. Cu `aspect-[4/3]` curat, fotografia lui crește odată cu el: de
+ * la 222px înălțime la 436. Măsurat pe pagina randată, la 1150 ieșeau două
+ * dale de 528×373, cu poza ocupând 400px din ele, iar prețul și butonul de sub
+ * ea păreau uitate în colț. Ăsta era cel mai vizibil defect al paginii între
+ * 1024 și 1280.
+ *
+ * SOLUȚIA E UN PLAFON, NU O LISTĂ DE PROPORȚII PE PRAGURI. `max-h` se aplică
+ * peste `aspect-ratio`: cât timp cardul e îngust, proporția decide și
+ * fotografia e 4:3; de la 347px lățime în sus, înălțimea se oprește la 260px,
+ * iar cadrul devine treptat mai panoramic, fără nicio treaptă și fără niciun
+ * salt când tragi de marginea ferestrei.
+ *
+ * DE CE 260px. La `xl`, unde așezarea e cea de referință, fotografia are 222px.
+ * Plafonul trebuie să fie peste ea, altfel ar tăia și acolo unde nu e nevoie,
+ * dar destul de aproape cât cardul lat să rămână în aceeași familie de înălțimi
+ * ca cel îngust. Cu 260, banda de înălțimi a fotografiei pe tot intervalul e
+ * 214 → 260, în loc de 214 → 436.
+ *
+ * Funcționează fiindcă pozele sunt `object-cover` (categorii) sau
+ * `object-contain` pe un fundal plin (oferte): și una, și alta suportă un cadru
+ * mai lat fără să arate greșit.
+ */
+export const CADRU_FOTO_CARD = "aspect-[4/3] max-h-[260px]";
+
+/**
  * Dimensiunea unui titlu de secțiune, calculată din lungimea lui.
  *
  * PROBLEMA. Titlurile de secțiune trebuie să stea pe un singur rând, dar

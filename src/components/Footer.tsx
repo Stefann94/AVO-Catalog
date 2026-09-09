@@ -151,9 +151,22 @@ export default function Footer() {
     <footer className="bg-gray-800 border-t border-gray-700">
       {/* ── Corpul footer-ului ─────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+        {/* PATRU COLOANE DE LA `xl`, NU DE LA `lg`.
+
+            Împărțirea 4·4·2·2 din douăsprezece funcționează cât timp
+            containerul e la lățimea lui plină: la 1280 o coloană de două
+            douăsprezecimi are 170px, destul pentru „Politica de
+            confidențialitate" pe două rânduri. La 1024 aceeași împărțire dă
+            128px, iar jumătate din linkuri se rup în trei rânduri, cu ultimul
+            cuvânt atârnând singur — footer-ul arăta ca o coloană de text
+            înghesuită, nu ca patru liste.
+
+            Sub `xl` rămân cele două coloane pe care footer-ul le are oricum de
+            la `sm`: la 1024 fiecare are 448px, adică toate linkurile pe un
+            singur rând. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-10 xl:gap-8">
           {/* Identitate + contact */}
-          <div className="lg:col-span-4">
+          <div className="xl:col-span-4">
             {/* `inline-flex`, nu `block`: plăcuța se strânge pe lățimea siglei
                 în loc să se întindă pe toată coloana. Rază 12px, ca tot restul
                 proiectului. Padding-ul e vizual echilibrat, nu egal — 16px pe
@@ -224,7 +237,7 @@ export default function Footer() {
           </div>
 
           {/* Catalog */}
-          <nav className="lg:col-span-4" aria-labelledby="footer-catalog">
+          <nav className="xl:col-span-4" aria-labelledby="footer-catalog">
             <h2 id="footer-catalog" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Catalog
             </h2>
@@ -243,7 +256,7 @@ export default function Footer() {
           </nav>
 
           {/* Companie */}
-          <nav className="lg:col-span-2" aria-labelledby="footer-companie">
+          <nav className="xl:col-span-2" aria-labelledby="footer-companie">
             <h2 id="footer-companie" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Companie
             </h2>
@@ -259,7 +272,7 @@ export default function Footer() {
           </nav>
 
           {/* Informații */}
-          <nav className="lg:col-span-2" aria-labelledby="footer-info">
+          <nav className="xl:col-span-2" aria-labelledby="footer-info">
             <h2 id="footer-info" className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mb-5">
               Informații
             </h2>

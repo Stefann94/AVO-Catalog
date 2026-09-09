@@ -67,7 +67,10 @@ export default async function PaginaCategorie({
   const descriere = dinWoo?.description ?? cunoscuta?.descriere ?? "";
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-28 sm:pt-32 pb-16 sm:pb-24">
+    /* Înălțimea barei fixe vine din variabilă, nu dintr-o cifră proprie:
+       `pt-28 sm:pt-32` nu nimerea niciuna dintre cele trei înălțimi reale ale
+       navbarului. Motivul complet e în app/globals.css. */
+    <div className="bg-slate-50 min-h-screen pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <Link
           href="/catalog"
@@ -122,7 +125,14 @@ export default async function PaginaCategorie({
                   href={`/catalog/produs/${p.slug}`}
                   className={`${CARD} group flex flex-col p-3`}
                 >
-                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
+                  {/* Plafon de înălțime peste proporție, aceeași idee ca la
+                      cardurile de pe prima pagină (vezi CADRU_FOTO_CARD din
+                      components/stiluri.ts), cu cifrele acestei grile: la `xl`
+                      fotografia are 176px, iar în banda de două coloane, între
+                      768 și 1024, cardul ajunge la 416px lățime și fotografia
+                      la 260 — cu produsul tot atât de mic, doar cu mai mult gri
+                      în jur. `max-h` o oprește la 200px. */}
+                  <div className="relative aspect-[16/10] max-h-[200px] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.image?.sourceUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaOferte, type Oferta } from "@/lib/oferte";
 import type { CSSProperties } from "react";
-import { BUTON_PLIN, CARD, dimensiuneTitlu } from "./stiluri";
+import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
 
 /**
  * Ofertele lunii — produsele de pe coperta catalogului.
@@ -98,8 +98,41 @@ export default async function OferteleLunii({
 
   const titlu = `Ofertele lunii${perioada.eticheta ? ` ${perioada.eticheta}` : ""}`;
 
+  /**
+   * RITMUL DINTRE SECȚIUNI, la `lg`: 128px deasupra, 160px dedesubt.
+   *
+   * A fost 224px de fiecare parte — 112px de padding de la secțiunea vecină
+   * plus 112px de aici — adică gol turnat peste o tăietură pe care culoarea o
+   * face deja singură (#F8F9FA → alb, alb → slate-900).
+   *
+   * Referința pentru „prea mult" o dă secțiunea însăși: cel mai mare interval
+   * DINĂUNTRUL ei e 48px, de la linia de sub titlu la grilă, iar între carduri
+   * sunt 20px. Aerul dintre secțiuni era de 4,7 ori cel mai mare interval
+   * intern; acum e de 2,7. Sub 2 ar începe să se atingă.
+   *
+   * DE CE 48px SUS ȘI 80px JOS, nu 64 și 64. Nu e preferință, e o constrângere:
+   *
+   *   DEASUPRA ... GamaProduse dă 80px, cât o lasă bara de filtre. Padding-ul
+   *                ei de jos e ce mărginește panoul din stânga (`bottom-10` în
+   *                BaraFiltre, măsurat de la marginea secțiunii); scăzut mai
+   *                mult, panoul ajunge lipit de ultimul rând de conținut, adică
+   *                exact eșecul descris în capul acelui fișier. Restul până la
+   *                128 se pune aici: 48px.
+   *   DEDESUBT ... 80 + 80. Tăietura de acolo nu mai e între două nuanțe
+   *                deschise, ci spre slate-900; un salt de contrast atât de
+   *                mare suportă, și cere, mai mult aer.
+   *
+   * PADDING-UL DE SUS AL LUI GAMAPRODUSE NU SE ATINGE, oricât ar tenta. Cei
+   * 112px sunt scriși ca literal în `--bara-sus` din app/globals.css
+   * (112 + 44 + 28 = 184px) și sunt ce ține bara ancorată pe linia de sub
+   * titlu. Schimbat acolo fără variabilă, bara pornește din gol.
+   *
+   * SUB `lg` joncțiunea de deasupra rămâne 128px, din padding-uri simetrice de
+   * 64; cea de dedesubt e 128px, respectiv 144px la `sm`. Nicăieri nu iese mai
+   * strâmt decât la `lg`, deci nu e nevoie de praguri suplimentare.
+   */
   return (
-    <section className="bg-white py-16 sm:py-20 lg:py-28">
+    <section className="bg-white py-16 lg:pt-12 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-8 sm:mb-10 lg:mb-12">
@@ -154,7 +187,7 @@ export default async function OferteleLunii({
                   albastră se vede ca o scăpare, nu ca o poză. Unde e poză,
                   fundalul e alb; unde e cifră, rămâne exact ce era. */}
               <div
-                className={`relative aspect-[4/3] ${o.imagine ? "bg-white" : "bg-avo-50"}`}
+                className={`relative ${CADRU_FOTO_CARD} ${o.imagine ? "bg-white" : "bg-avo-50"}`}
               >
                 {/* Badge în exact poziția badge-ului „N produse". */}
                 {o.disponibilitate === "Lichidare stoc" ? (

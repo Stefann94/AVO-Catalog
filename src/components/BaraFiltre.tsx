@@ -11,17 +11,18 @@ import { SUPRAFATA } from "./stiluri";
  * Bara ține cât ține conținutul secțiunii „Gama de produse":
  *
  *   PORNEȘTE  de pe linia de sub titlul „Categoriile principale…"
- *   SE OPREȘTE cu 56px înainte de finalul secțiunii, nelipită de el
+ *   SE OPREȘTE cu 40px înainte de finalul secțiunii, nelipită de el
  *   ÎNTRE ELE  stă lipită de fereastră, nemișcată cât derulezi
  *
  * Toate trei ies din aceeași construcție, fără JavaScript:
  *
- *   un înveliș `absolute top-(--bara-sus) bottom-14` într-un părinte `relative`
+ *   un înveliș `absolute top-(--bara-sus) bottom-10` într-un părinte `relative`
  *   care cuprinde DOAR secțiunea „Gama de produse" (vezi app/page.tsx).
  *   `--bara-sus` e 184px, iar de unde iese scrie în app/globals.css;
  *
- *   panoul dinăuntru e `sticky top-32`, deci se lipește de fereastră, dar nu
- *   poate ieși din înveliș nici în sus, nici în jos.
+ *   panoul dinăuntru e `sticky` la înălțimea barei fixe plus 1,5rem, deci se
+ *   lipește de fereastră fără s-o atingă, dar nu poate ieși din înveliș nici
+ *   în sus, nici în jos.
  *
  * ─── CUM S-A AJUNS LA CELE DOUĂ CAPETE ────────────────────────────────────
  *
@@ -38,15 +39,22 @@ import { SUPRAFATA } from "./stiluri";
  *
  * Ce a rămas leagă capătul de sus de o muchie care EXISTĂ în pagină: linia de
  * 1px de sub titlu. Bara începe de acolo, deci pare tăiată din aceeași
- * așezare, nu așezată peste ea. Jos rămân cei 56px de respiro.
+ * așezare, nu așezată peste ea. Jos rămân 40px de respiro.
  *
- * COSTUL, spus pe față: panoul scade de la 606px la 478px, fiindcă sus s-au
- * adăugat 128px de retragere și jos nu s-a scăzut nimic. Din ei, zona
- * derulabilă pierde tot atât. Lista are oricum 935px de conținut, deci se
- * derula și înainte — se derulează acum mai mult, iar bara de derulare o arată.
- * Dacă se dorește mai multă listă vizibilă, singura pârghie e capătul de jos:
- * `bottom-0` ar da înapoi 56px, cu prețul de a lipi panoul de secțiune, adică
- * exact de unde s-a plecat.
+ * CAPĂTUL DE JOS DEPINDE DE PADDING-UL SECȚIUNII, și asta trebuie știut
+ * înainte de a umbla la oricare dintre ele. `bottom-10` se măsoară de la
+ * marginea secțiunii, iar GamaProduse are sub ultimul rând de conținut
+ * `lg:pb-20`, adică 80px. Panoul se oprește deci la 40px sub conținut și la
+ * 40px deasupra marginii — fix la mijlocul padding-ului. Dacă acel padding
+ * scade, `bottom` trebuie să scadă odată cu el; altfel panoul ajunge lipit de
+ * ultimul rând, adică exact în varianta respinsă mai sus. A fost `bottom-14`
+ * cât timp padding-ul era `lg:py-28`.
+ *
+ * COSTUL, spus pe față: retragerea de 184px din capul secțiunii scurtează
+ * panoul cu tot atât, iar zona derulabilă pierde exact cât pierde panoul.
+ * Lista are ~935px de conținut, deci se derula și înainte — se derulează acum
+ * mai mult, iar bara de derulare o arată. Dacă se dorește mai multă listă
+ * vizibilă, pârghia nu e capătul de jos, ci colapsarea subcategoriilor.
  *
  * ─── DE CE NU `fixed` ─────────────────────────────────────────────────────
  *
@@ -78,10 +86,24 @@ import { SUPRAFATA } from "./stiluri";
  * grilă nu pierde o coloană. Bara încape în marja goală lăsată de containerul
  * centrat — sau nu apare deloc.
  *
- * Pragul de 1620px e scris ca atare, nu luat din scara Tailwind: pragurile
- * standard (1280, 1536) n-au nicio legătură cu lățimea conținutului nostru. La
- * 1620px marja e de 170px, minimul la care o listă de categorii mai e citibilă;
- * la 1536px ar fi 128px, iar singura alternativă ar fi fost să intre peste text.
+ * Pragul e scris ca atare, nu luat din scara Tailwind: pragurile standard
+ * (1280, 1536) n-au nicio legătură cu lățimea conținutului nostru.
+ *
+ * A FOST 1620px, unde marja e de 170px. Motivul scris atunci era că 170px e
+ * „minimul la care o listă de categorii mai e citibilă". Măsurat pe pagina
+ * randată, nu e: la 170px se rup pe două rânduri TOATE cele 16 etichete, de la
+ * „Panouri Fotovoltaice" în jos. Cifrele, numărând câte etichete din 16 se rup:
+ *
+ *     170px (fereastră 1620) ... 16 din 16
+ *     210px (fereastră 1700) ...  6 din 16
+ *     240px (fereastră 1760) ...  2 din 16 — cele două nume lungi de tot
+ *     300px (fereastră 1880) ...  0
+ *
+ * Pragul e acum 1760px, adică prima lățime la care bara arată a listă, nu a
+ * bloc de text rupt. Sub el nu se pierde nimic: aceleași categorii sunt în
+ * secțiunea de alături, cu fotografii. Cele două nume care încă se rup —
+ * „Echipamente Conversie & Comutare" și „Monitorizare & Smart Devices" — au
+ * peste 28 de caractere; un rând al doilea la ele e normal, nu e înghesuială.
  *
  * ─── TREI ETAJE, DIN CARE SE DERULEAZĂ UNUL SINGUR ────────────────────────
  *
@@ -216,7 +238,7 @@ export default async function BaraFiltre() {
          `pointer-events-none` aici, `auto` pe panou: învelișul e o coloană
          înaltă cât secțiunea, iar fără asta ar înghiți clicurile din zona goală
          de sub panou. */
-      className="pointer-events-none absolute top-(--bara-sus) bottom-14 left-(--bara-stanga) z-30 hidden w-(--bara-latime) min-[1620px]:block"
+      className="pointer-events-none absolute top-(--bara-sus) bottom-10 left-(--bara-stanga) z-30 hidden w-(--bara-latime) min-[1760px]:block"
     >
       <aside
         aria-label="Cuprinsul catalogului"
@@ -227,7 +249,11 @@ export default async function BaraFiltre() {
          *               până la 56px de finalul secțiunii. Fără el, cele ~30 de
          *               rânduri ar fi ieșit pe sub marginea secțiunii și ar fi
          *               intrat peste „Ofertele lunii" — exact ce nu trebuie.
-         *   `100vh - 10rem` ... înălțimea ferestrei minus decalajul de sus.
+         *   `100vh - navbar - 3.5rem` ... înălțimea ferestrei minus tot ce e
+         *               deasupra panoului: bara fixă de sus (variabila din
+         *               globals.css), cei 1,5rem de decalaj ai lui `sticky` și
+         *               2rem de aer rămas jos. Era scris `100vh - 10rem`, adică
+         *               aceeași socoteală cu `top-32` băgat în cifră.
          *               Fără el, pe un ecran scund bara ar fi coborât sub
          *               marginea de jos, iar ultimele categorii ar fi fost
          *               inaccesibile: un element lipit de fereastră nu se
@@ -240,7 +266,7 @@ export default async function BaraFiltre() {
          * derularea — aia e pe etajul din mijloc, ca bara nativă să înceapă sub
          * antet și să se oprească deasupra notei.
          */
-        className={`${SUPRAFATA} pointer-events-auto sticky top-32 flex max-h-[min(100%,calc(100vh-10rem))] flex-col overflow-hidden`}
+        className={`${SUPRAFATA} pointer-events-auto sticky top-[calc(var(--inaltime-navbar)+1.5rem)] flex max-h-[min(100%,calc(100vh-var(--inaltime-navbar)-3.5rem))] flex-col overflow-hidden`}
       >
         {/* ── ETAJUL 1: antetul ──
             În afara zonei derulabile, deci nemișcat orice s-ar întâmpla în

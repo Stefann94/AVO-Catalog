@@ -163,7 +163,11 @@ export default function FisaProdus({
   const sigla = gasesteBrand(p.brand);
 
   return (
-    <div className="bg-white pt-28 sm:pt-32 pb-16 sm:pb-24">
+    /* Distanța de sus e înălțimea reală a barei fixe plus aerul paginii.
+       `pt-28 sm:pt-32` era o cifră potrivită din ochi, care nu nimerea
+       niciuna dintre cele trei înălțimi ale navbarului — vezi
+       app/globals.css. */
+    <div className="bg-white pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Firul Ariadnei ─────────────────────────────────── */}
         <nav aria-label="Navigare" className="text-[13px] text-gray-500">
@@ -270,16 +274,23 @@ export default function FisaProdus({
                 `sizes` e calculat, nu ghicit: coloana are 7 din 12 dintr-un
                 container de 1280px cu 96px de padding, adică ~660px la xl. Sub
                 `lg` coloana e cât ecranul. */}
-            <div className="flex flex-col items-center justify-center py-8 sm:py-14">
+            <div className="flex flex-col items-center justify-center py-6 lg:py-14">
               {p.imagine ? (
-                <div className="relative aspect-square w-full max-w-[520px]">
+                /* PLAFONUL CREȘTE ODATĂ CU AȘEZAREA, nu e unul singur.
+                   De la `lg` fotografia stă lângă panoul de preț, deci cei
+                   520px ai ei nu împing nimic mai jos. Sub `lg` cele două se
+                   așază una peste alta, iar un pătrat de 520px plus padding
+                   însemna 632px de fotografie înaintea prețului: pe o fereastră
+                   de 900×900 nu se vedea nici cifra, nici butonul, doar poza.
+                   La 400px, panoul de preț ajunge în prima vizualizare. */
+                <div className="relative aspect-square w-full max-w-[400px] lg:max-w-[520px]">
                   <Image
                     src={p.imagine.url}
                     /* Fără `alt` din WooCommerce, denumirea produsului e
                        descrierea corectă a pozei — nu „imagine produs". */
                     alt={p.imagine.alt ?? p.nume}
                     fill
-                    sizes="(max-width: 1024px) 100vw, 520px"
+                    sizes="(max-width: 1024px) 400px, 520px"
                     className="object-contain"
                     priority
                   />
@@ -349,8 +360,12 @@ export default function FisaProdus({
               `sticky` de la lg în sus. La un produs cu multe atribute, tabelul
               din stânga depășește ecranul, iar prețul ar rămâne sus, în afara
               câmpului vizual, exact când omul termină de citit datele și vrea
-              să acționeze. `top-28` ocolește navbar-ul fix. */}
-          <aside className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
+              să acționeze.
+
+              Distanța de sus e înălțimea reală a barei fixe, din variabila
+              definită în app/globals.css. `top-28` era o cifră fixă peste o
+              bară care are trei înălțimi. */}
+          <aside className="lg:col-span-5 lg:sticky lg:top-[calc(var(--inaltime-navbar)+1.5rem)] lg:self-start">
             {/* ── Capul coloanei: prețul și marca ──────────────
                 Cele două se împart la capetele rândului. E singurul loc din
                 fișă unde ceva stă lipit de marginea din dreapta, și e

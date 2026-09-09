@@ -100,8 +100,22 @@ const CARD_DARK = "bg-white/5 border border-white/10 rounded-2xl backdrop-blur-m
  * Cele două niveluri de partener.
  */
 const STATUTURI = [
-  { nume: "Gold", reducere: "−10%" },
-  { nume: "Platinum", reducere: "−15%" },
+  { 
+    nume: "Gold", 
+    reducere: "−10%",
+    bg: "bg-gradient-to-br from-yellow-500/20 to-amber-600/5",
+    border: "border-yellow-500/30",
+    hover: "hover:from-yellow-500/30 hover:to-amber-600/10",
+    textColor: "text-yellow-400"
+  },
+  { 
+    nume: "Platinum", 
+    reducere: "−15%",
+    bg: "bg-gradient-to-br from-slate-300/20 to-slate-400/5",
+    border: "border-slate-300/30",
+    hover: "hover:from-slate-300/30 hover:to-slate-400/10",
+    textColor: "text-slate-200"
+  },
 ];
 
 /**
@@ -154,7 +168,7 @@ const PASI = [
 
 export default function ConditiiB2B() {
   return (
-    <section id="conditii-b2b" className="relative bg-slate-900 py-16 sm:py-20 lg:py-28 overflow-hidden">
+    <section id="conditii-b2b" className="relative bg-slate-900 py-16 sm:py-20 lg:pt-20 lg:pb-28 overflow-hidden">
       {/* Un gradient subtil pe fundal pentru a nu fi doar un albastru plat */}
       <div className="absolute inset-0 bg-gradient-to-br from-avo-900/50 via-slate-900 to-slate-900/90 pointer-events-none" />
 
@@ -226,9 +240,9 @@ export default function ConditiiB2B() {
                 {STATUTURI.map((s) => (
                   <div
                     key={s.nume}
-                    className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm transition-colors hover:bg-white/10"
+                    className={`rounded-xl border ${s.border} ${s.bg} p-5 backdrop-blur-sm transition-colors ${s.hover}`}
                   >
-                    <span className="block text-[15px] font-bold text-white leading-none">
+                    <span className={`block text-[15px] font-bold ${s.textColor} leading-none`}>
                       {s.nume}
                     </span>
                     <span className="mt-4 block text-[36px] font-extrabold text-white leading-none tabular-nums tracking-tight">
@@ -282,13 +296,6 @@ export default function ConditiiB2B() {
                     key={t.treapta}
                     className="flex items-start gap-4 py-4"
                   >
-                    <span
-                      aria-hidden
-                      className="shrink-0 font-mono text-[13px] font-semibold text-slate-500 leading-6"
-                    >
-                      {t.treapta}
-                    </span>
-
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                         <span className="text-[16px] font-bold text-white leading-6">
@@ -320,17 +327,11 @@ export default function ConditiiB2B() {
             Cum devii partener
           </h3>
 
-          <ol className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+          <ul className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {PASI.map((p) => (
               <li key={p.numar} className="flex flex-col">
                 <span aria-hidden className="h-px w-full bg-white/10" />
-                <div
-                  aria-hidden
-                  className="mt-5 mb-2 flex items-center justify-center h-8 w-8 rounded-lg bg-white/10 border border-white/10 text-[14px] font-bold text-white"
-                >
-                  {p.numar}
-                </div>
-                <span className="mt-1.5 text-[16px] font-bold text-white leading-snug">
+                <span className="mt-5 text-[16px] font-bold text-white leading-snug">
                   {p.titlu}
                 </span>
                 <span className="mt-1.5 text-[14px] text-slate-300 leading-relaxed">
@@ -338,7 +339,7 @@ export default function ConditiiB2B() {
                 </span>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
 
         {/* ── Subsol pe fundalul albastru ───────────────────────────────────────────── */}

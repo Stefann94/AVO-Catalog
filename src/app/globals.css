@@ -62,6 +62,63 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   ÎNĂLȚIMEA BAREI DE SUS
+   ──────────────────────────────────────────────────────────────────────────
+   Navbarul e `fixed`, deci nu ocupă loc în pagină: fiecare pagină trebuie să-și
+   coboare singură conținutul cu exact cât ține bara. Valoarea aceea e scrisă
+   AICI, într-un singur loc, fiindcă o folosesc cinci fișiere diferite —
+   catalogul, pagina de categorie, fișa de produs, bara de filtre și panoul ei
+   lipicios.
+
+   CE ERA ÎNAINTE. Fiecare pagină avea o cifră proprie, potrivită din ochi:
+   `pt-32` la catalog, `pt-28 sm:pt-32` la categorie și la fișa de produs,
+   `top-32` la panouri. Niciuna nu era înălțimea reală a barei, iar bara nici nu
+   avea o singură înălțime. Măsurat pe pagina randată, înainte de schimbările
+   din Navbar.tsx:
+
+       69px  sub 1024   ...  doar rândul cu sigla
+      103px  1024–1279  ...  plus bara de contact
+      121px  1280–1439  ...  meniul se rupea pe două rânduri
+      107px  peste 1440 ...  meniul încăpea din nou pe un rând
+
+   Cu `pt-32` (128px) fix peste toate, la 1280 rămâneau 7px între bară și titlu
+   — titlul părea lipit de navbar — iar la 900 rămâneau 59px de gol.
+
+   DE CE CIFRELE DE MAI JOS SUNT SIGURE. Nu mai sunt măsurători ale unui
+   conținut care poate crește: rândurile navbarului au acum înălțimi declarate
+   (`h-8` bara de contact, `h-[68px]` / `2xl:h-[72px]` rândul siglei — vezi
+   components/Navbar.tsx), iar meniul nu se mai poate rupe pe două rânduri.
+   Suma e scrisă desfăcută, ca fiecare termen să trimită la clasa lui:
+
+     sub lg .... 68px, rândul siglei (`h-[68px]`)
+     de la lg .. 32px bara de contact (`h-8`), plus cele de mai sus
+     de la 2xl . rândul siglei crește la 72px, odată cu sigla (`2xl:h-12`)
+
+   Liniile de 1px de sub fiecare rând NU se adaugă la sume: `box-sizing:
+   border-box`, pus de preflight-ul lui Tailwind, le ține înăuntrul înălțimii
+   declarate. Verificat pe pagina randată: 68 · 100 · 104, exact cifrele astea.
+
+   Cine schimbă o înălțime în Navbar.tsx schimbă și cifra de aici. E singura
+   dependență de întreținut, în locul celor cinci de dinainte.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --inaltime-navbar: 68px;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --inaltime-navbar: calc(32px + 68px);
+  }
+}
+
+@media (min-width: 96rem) {
+  :root {
+    --inaltime-navbar: calc(32px + 72px);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    GEOMETRIA BAREI DE FILTRE
    ──────────────────────────────────────────────────────────────────────────
    Bara din stânga (components/BaraFiltre.tsx) trăiește lângă secțiunea „Gama de
@@ -78,9 +135,10 @@
        ⇒ conținutul vizibil începe la  (100vw - 1280px) / 2 + 48px
        ⇒ banda liberă din stânga are exact atâta lățime
 
-   Toate se aplică numai de la 1620px în sus, unde banda are cel puțin 170px —
-   minimul la care o listă de categorii mai e citibilă. Sub acel prag bara nu se
-   afișează deloc, iar variabilele nu sunt folosite de nimeni.
+   Toate se aplică numai de la 1760px în sus, unde banda are cel puțin 240px.
+   Pragul a fost 1620px (170px de bandă); de ce s-a mutat, cu măsurătorile
+   care au decis, e scris în capul lui components/BaraFiltre.tsx. Sub el bara
+   nu se afișează deloc, iar variabilele nu sunt folosite de nimeni.
 
    ─── DE CE NU DOAR CENTRATĂ ──────────────────────────────────────────────
 
@@ -103,7 +161,7 @@
    sub prag câștigă centrarea, peste el alipirea, iar trecerea e continuă,
    fiindcă în punctul acela dau exact aceeași valoare.
 
-   Rezultat, măsurat: 24px la 1620 · 34px la 1920 · 324px la 2560 · 764px la
+   Rezultat, măsurat: 24px la 1760 · 34px la 1920 · 324px la 2560 · 764px la
    3440 — iar distanța până la text e 24 · 34 · 64 · 64.
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -129,7 +187,7 @@
      1280px. Corpul titlului se calculează în `cqi` din containerul acela
      (vezi `dimensiuneTitlu` din components/stiluri.ts), deci și el e constant,
      și odată cu el înălțimea rândului. Verificat pe pagina randată: linia cade
-     la 184px de vârful secțiunii la 1620, 1920, 2560 și 3440 deopotrivă. */
+     la 184px de vârful secțiunii la 1760, 1920, 2560 și 3440 deopotrivă. */
   --bara-sus: calc(112px + 44px + 28px);
 
   /* Banda liberă din stânga: de la marginea ferestrei până unde începe textul
