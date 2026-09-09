@@ -63,3 +63,6 @@ tools/wordpress/cauta-poze-jurnal.txt
 tools/wordpress/cauta-poze-deye-index.json
 tools/wordpress/cauta-poze-deye-jurnal.txt
 poze-lipsa.html
+
+# capturi de ecran facute cu tools/captura, pentru verificari vizuale
+capturi/

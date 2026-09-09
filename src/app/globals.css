@@ -188,7 +188,19 @@
      (vezi `dimensiuneTitlu` din components/stiluri.ts), deci și el e constant,
      și odată cu el înălțimea rândului. Verificat pe pagina randată: linia cade
      la 184px de vârful secțiunii la 1760, 1920, 2560 și 3440 deopotrivă. */
-  --bara-sus: calc(112px + 44px + 28px);
+  --bara-sus: calc(var(--sectiune-sus) + 44px + 28px);
+
+  /* PADDING-UL DE SUS AL SECȚIUNII, scris o dată.
+     E `lg:pt-28` de pe GamaProduse. Era copiat ca literal în calculul de mai
+     jos, iar comentariul din componentă avertiza să fie schimbate împreună —
+     genul de înțelegere pe care cineva o rupe la prima modificare. Acum e o
+     variabilă din care ies amândouă ancorele. */
+  --sectiune-sus: 112px;
+
+  /* NIVELUL ȘTAMPILEI „PREȚURI VALABILE", adică vârful rândului de masthead.
+     Coloana de reclame pornește de aici, nu de la linie: o reclamă e conținut
+     de sine stătător, nu o notă a secțiunii, deci începe odată cu ea. */
+  --reclame-sus: var(--sectiune-sus);
 
   /* Banda liberă din stânga: de la marginea ferestrei până unde începe textul
      secțiunilor. */
@@ -225,8 +237,17 @@
    Chrome-urile mai vechi. Declarate amândouă, browserul o ia pe cea pe care o
    știe; declarată doar una, o parte din utilizatori ar vedea bara implicită.
 
-   CULOAREA e `avo-600`, adică fix accentul folosit de butoane și de conturul de
-   hover. Nu e o culoare nouă introdusă pentru o bară de derulare.
+   CULOAREA E `gray-300`, NU ACCENTUL. A fost `avo-600`, cu argumentul că e
+   „fix accentul folosit de butoane, nu o culoare nouă". Argumentul e adevărat
+   și greșit în același timp: regula site-ului nu spune că accentul se poate
+   folosi oriunde apare deja, ci că îl primesc NUMAI elementele de decizie —
+   butoane, linkuri, contur de hover. O bară de derulare nu e o decizie, e
+   mobilier.
+
+   Efectul se vedea: pe un panou în care tot ce e colorat cheamă la clic,
+   singurul lucru colorat era o dungă pe care n-o apeși niciodată, iar ochiul
+   cădea pe ea înaintea numelor de categorii. Pe gray-300 dunga spune „mai e
+   conținut" și atât.
 
    LUNGIMEA CURSORULUI nu se poate stabili de aici: browserul o calculează ca
    raport între cât se vede și cât e în total. A fost încercat un indicator
@@ -246,7 +267,7 @@
 
 .derulare-avo {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-avo-600) transparent;
+  scrollbar-color: var(--color-gray-300) transparent;
 }
 
 /* ATENȚIE: regula asta NU decide lățimea în browserele curente, oricât ar părea
@@ -275,14 +296,14 @@
 }
 
 .derulare-avo::-webkit-scrollbar-thumb {
-  background-color: var(--color-avo-600);
+  background-color: var(--color-gray-300);
   border-radius: 9999px;
 }
 
 /* Hover-ul ÎNCHIDE, nu deschide — aceeași treaptă ca la butoane (vezi
-   components/stiluri.ts): avo-600 → avo-700. */
+   components/stiluri.ts), doar că pe neutru: gray-300 → gray-400. */
 .derulare-avo::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-avo-700);
+  background-color: var(--color-gray-400);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -345,4 +366,36 @@ body {
   .animate-\[defilareBranduri_var\(--durata\)_linear_infinite\] {
     animation: none !important;
   }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PISTA DE OFERTE — derulare orizontală fără bară vizibilă
+   ──────────────────────────────────────────────────────────────────────────
+   Banda de oferte se derulează pe orizontală (components/BandaOferte.tsx), iar
+   sub ea stau două săgeți. O bară de derulare nativă, orizontală, ar fi apărut
+   exact între carduri și săgeți — două comenzi pentru aceeași mișcare, una sub
+   alta, la câțiva pixeli distanță.
+
+   AICI A FOST O ANIMAȚIE, `defilareOferte`, pe vremea când banda se mișca
+   singură. A fost ștearsă odată cu ea, împreună cu regula de
+   `prefers-reduced-motion` care o oprea: nimic nu se mai mișcă de la sine, deci
+   nu mai e nimic de oprit.
+
+   ASCUNDEREA E SIGURĂ AICI, ceea ce nu e o afirmație generală. Ascunzi o bară
+   de derulare doar când ce se derulează rămâne accesibil altfel; aici rămâne în
+   patru feluri: cele două săgeți, degetul pe touch, trackpad-ul, și Tab-ul, care
+   derulează pista singur când focusul ajunge pe un card din afara cadrului.
+
+   Trei sintaxe, pentru trei motoare: standardul, prefixul vechi de Firefox și
+   pseudo-elementul WebKit.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.fara-bara-derulare {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.fara-bara-derulare::-webkit-scrollbar {
+  display: none;
 }

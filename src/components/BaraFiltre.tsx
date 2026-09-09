@@ -167,7 +167,8 @@ import { SUPRAFATA } from "./stiluri";
  *   gray-900 #101828 pe alb ... 17,75 ✓  nume de categorie, titlul barei
  *   gray-600 #4A5565 pe alb .... 7,56 ✓  nume de subcategorie
  *   gray-500 #6A7282 pe alb .... 4,84 ✓  etichete, cifre, nota de subsol
- *   avo-700  #003B7D pe alb ... 10,93 ✓  hover
+ *   avo-700  #003B7D pe avo-50 . 10,06 ✓  numele și cifra, la hover
+ *   gray-900 #101828 pe avo-50 . 16,73 ✓  vecinii rândului atins
  *
  * ─── CE ARATĂ ─────────────────────────────────────────────────────────────
  *
@@ -193,7 +194,7 @@ import { SUPRAFATA } from "./stiluri";
  */
 function Eticheta({ children }: { children: React.ReactNode }) {
   return (
-    <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500">
+    <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-600">
       {children}
     </span>
   );
@@ -279,7 +280,7 @@ export default async function BaraFiltre() {
         <div className="shrink-0 px-5 pt-4">
           <Eticheta>Catalog</Eticheta>
           {perioada.eticheta ? (
-            <span className="mt-1.5 block text-[15px] leading-tight font-extrabold text-gray-900">
+            <span className="mt-1.5 block text-[17px] leading-tight font-extrabold text-gray-900">
               {perioada.eticheta}
             </span>
           ) : null}
@@ -314,25 +315,51 @@ export default async function BaraFiltre() {
                    de un singur accent pe care o ține tot site-ul, și ar fi cerut
                    fiecare propria verificare de contrast. */
                 const urgent = s.slug === "lichidare-stoc";
-                return (
-                  <li
-                    key={s.slug}
-                    className="flex items-baseline justify-between gap-3"
-                  >
+
+                /* DOAR LICHIDAREA E LINK, și asta nu e o inconsecvență.
+                   „În stoc" și „La comandă" descriu 157 din 172 de produse —
+                   un link către ele ar duce la aproape tot catalogul, adică
+                   la ceva ce butonul „Vezi catalogul complet" face deja.
+                   Lichidarea descrie 15 produse care dispar la epuizare; aia
+                   e o listă care merită pagina ei.
+
+                   Rândul devine link cu ACELEAȘI clase de hover ca o categorie,
+                   ca să nu inventăm un al doilea fel de rând apăsabil. */
+                const continut = (
+                  <>
                     <span
                       className={`text-[13px] leading-snug ${
-                        urgent ? "font-semibold text-gray-900" : "text-gray-600"
+                        urgent
+                          ? "font-semibold text-gray-900 transition-colors group-hover:text-avo-700"
+                          : "text-gray-600"
                       }`}
                     >
                       {s.eticheta}
                     </span>
                     <span
-                      className={`shrink-0 text-[12px] ${
-                        urgent ? "font-bold text-gray-900" : "text-gray-500"
+                      className={`shrink-0 rounded-md px-1.5 text-center text-[12px] font-bold ${
+                        urgent ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
                       }`}
                     >
                       {s.produse}
                     </span>
+                  </>
+                );
+
+                return (
+                  <li key={s.slug}>
+                    {urgent ? (
+                      <Link
+                        href="/catalog/lichidare-stoc"
+                        className="group -mx-2 flex items-baseline justify-between gap-3 rounded-md px-2 py-1 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                      >
+                        {continut}
+                      </Link>
+                    ) : (
+                      <span className="flex items-baseline justify-between gap-3">
+                        {continut}
+                      </span>
+                    )}
                   </li>
                 );
               })}
@@ -361,15 +388,35 @@ export default async function BaraFiltre() {
 
                       Cifra se colorează odată cu numele. Lăsată gri, la hover
                       rândul se rupea în două: jumătatea din stânga albastră,
-                      jumătatea din dreapta nu. */}
+                      jumătatea din dreapta nu.
+
+                      FUNDALUL DE HOVER E `avo-50`, NU UN GRI. A fost #F8F9FA
+                      — adică exact culoarea paginii de sub panou, aceeași
+                      greșeală pe care capul fișierului o descrie pentru antet
+                      și notă: „două benzi care păreau găurite în panou". Un
+                      rând care la hover ia culoarea paginii nu se aprinde, se
+                      găurește.
+
+                      Pe `avo-50` accentul apare NUMAI la interacțiune, nicăieri
+                      în repaus — ceea ce e chiar regula site-ului: culoarea o
+                      primesc elementele de decizie, iar un rând devine decizie
+                      abia când e atins.
+
+                      CIFRELE AU COLOANĂ PROPRIE, prin `min-w` plus aliniere la
+                      dreapta. Erau lipite de marginea rândului, fiecare unde o
+                      ducea lungimea numelui, deci de la 4 la 51 marginea din
+                      stânga a cifrei sărea. Font-ul n-are cifre de lățime egală
+                      (vezi app/layout.tsx), deci `tabular-nums` n-ar fi ajutat;
+                      o lățime minimă, da. */}
+
                   <Link
                     href={`/catalog/${c.slug}`}
-                    className="group -mx-2 flex items-baseline justify-between gap-3 rounded-md px-2 py-1 transition-colors hover:bg-[#F8F9FA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                    className="group -mx-2 flex items-baseline justify-between gap-3 rounded-md px-2 py-1 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
                   >
-                    <span className="text-[13px] leading-snug font-semibold text-gray-900 transition-colors group-hover:text-avo-700">
+                    <span className="text-[13px] leading-snug font-bold text-gray-900 transition-colors group-hover:text-avo-700">
                       {c.nume}
                     </span>
-                    <span className="shrink-0 text-[12px] font-semibold text-gray-500 transition-colors group-hover:text-avo-700">
+                    <span className="shrink-0 rounded-md bg-gray-100 px-1.5 text-center text-[12px] font-bold text-gray-600 transition-colors group-hover:bg-white group-hover:text-avo-700">
                       {c.produse}
                     </span>
                   </Link>
@@ -386,12 +433,12 @@ export default async function BaraFiltre() {
                         <li key={s.slug}>
                           <Link
                             href={`/catalog/${c.slug}/${s.slug}`}
-                            className="group -mx-1.5 flex items-baseline justify-between gap-3 rounded-md px-1.5 py-[3px] transition-colors hover:bg-[#F8F9FA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                            className="group -mx-1.5 flex items-baseline justify-between gap-3 rounded-md px-1.5 py-[3px] transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
                           >
                             <span className="text-[12px] leading-snug text-gray-600 transition-colors group-hover:text-avo-700">
                               {s.nume}
                             </span>
-                            <span className="shrink-0 text-[11px] text-gray-500 transition-colors group-hover:text-avo-700">
+                            <span className="shrink-0 min-w-[2.25ch] text-right text-[11px] text-gray-500 transition-colors group-hover:text-avo-700">
                               {s.produse}
                             </span>
                           </Link>

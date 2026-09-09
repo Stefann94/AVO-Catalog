@@ -166,3 +166,47 @@ export function dimensiuneTitlu(text: string, plafonPx = 42): string {
   const procenteDinContainer = 100 / (text.length * LATIME_CARACTER);
   return `min(${plafonPx}px, ${procenteDinContainer.toFixed(2)}cqi)`;
 }
+
+/**
+ * Titlul cel mai lung din site, folosit ca ETALON pentru toate titlurile de
+ * secțiune.
+ *
+ * ─── PROBLEMA PE CARE O REZOLVĂ ───────────────────────────────────────────
+ *
+ * `dimensiuneTitlu` calculează corpul din lungimea textului, ca titlul să
+ * încapă pe un rând. Corect ca mecanism, dar cu o consecință pe care n-o
+ * voiam: fiecare secțiune ajungea la ALT corp de literă, după cât de lung era
+ * titlul ei. Măsurat pe pagina randată, la 1440px:
+ *
+ *     Categoriile principale pentru casa și energia ta ... 47 caractere, ~33px
+ *     Ofertele lunii Septembrie 2026 .................... 30 caractere,  42px
+ *
+ * Adică 9px diferență între două titluri aflate la un ecran distanță. Se citea
+ * ca două fonturi diferite, deși e același font, aceeași grosime și aceeași
+ * culoare — doar altă treaptă de mărime.
+ *
+ * ─── DE CE UN ETALON, ȘI NU UN NUMĂR FIX ──────────────────────────────────
+ *
+ * Un `text-[33px]` scris de mână ar fi rezolvat egalitatea și ar fi pierdut
+ * exact ce face funcția bună: la ferestre înguste, sau lângă ștampila
+ * „Prețuri valabile", corpul trebuie să scadă ca titlul să nu se rupă. Etalonul
+ * păstrează comportamentul și adaugă doar regula care lipsea: toate titlurile
+ * de secțiune stau pe ACEEAȘI treaptă, iar treapta o dă cel mai lung dintre
+ * ele — singurul care are voie să decidă, fiindcă el e cel care se rupe primul.
+ *
+ * CINE SCHIMBĂ TITLUL DE LA „GAMA DE PRODUSE" schimbă și șirul de aici. Dacă
+ * noul titlu e mai scurt, toate secțiunile cresc; dacă e mai lung, toate scad.
+ * Asta e ideea, nu un efect secundar.
+ */
+const TITLU_ETALON = "Categoriile principale pentru casa și energia ta";
+
+/**
+ * Corpul unui titlu de secțiune. O singură treaptă pentru toată pagina.
+ *
+ * `dimensiuneTitlu` rămâne exportată separat pentru titluri care CHIAR trebuie
+ * să-și calculeze corpul din textul propriu — un titlu de categorie, de pildă,
+ * unde numele vine din catalog și poate avea orice lungime.
+ */
+export function dimensiuneTitluSectiune(plafonPx = 42): string {
+  return dimensiuneTitlu(TITLU_ETALON, plafonPx);
+}

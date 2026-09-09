@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CalendarDays, Phone, Tag, Truck } from "lucide-react";
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
@@ -164,6 +165,62 @@ import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
 
 
 const TITLU = "Categoriile principale pentru casa și energia ta";
+
+/**
+ * Facilitățile firmei — banda discretă de sub carduri.
+ *
+ * ─── REGULA DE PROVENIENȚĂ ────────────────────────────────────────────────
+ *
+ * Fiecare rând de aici trebuie să aibă o sursă ÎN PROIECT. Nu e o formalitate:
+ * o bandă de „facilități" e cel mai ușor loc din tot site-ul în care se strecoară
+ * o promisiune inventată — „livrare gratuită", „retur în 30 de zile", „garanție
+ * extinsă" — pe care n-o susține nimeni și pe care primul client o cere.
+ *
+ * Regula e cea scrisă deja în components/BannerB2B.tsx pentru mesajele lui:
+ * o cifră sau o promisiune care nu e deja afirmată undeva în proiect nu se pune.
+ *
+ *   Livrare în 24 de ore ..... slide-ul al treilea din HeroSlider.tsx:
+ *                              „24h · Livrare · Din depozite naționale"
+ *   Consiliere telefonică .... numărul e afișat în bara de contact din
+ *                              Navbar.tsx și în Footer.tsx (+40 721 233 544),
+ *                              alături de o adresă dedicată transportului
+ *   Prețuri de importator .... același slide: „B2B · Prețuri · Condiții de
+ *                              importator direct", plus toată secțiunea
+ *                              ConditiiB2B.tsx (Gold −10%, Platinum −15%)
+ *   Catalog actualizat lunar . perioada vine din WooCommerce prin
+ *                              lib/perioada.ts și se schimbă la fiecare import
+ *
+ * ─── CE NU E AICI, DEȘI AR FI ÎNCĂPUT ─────────────────────────────────────
+ *
+ * „Drept de retur" și „Garanție", deși footer-ul are linkuri către ele. Acele
+ * pagini nu există încă — comentariul din Footer.tsx o spune pe față, verificat
+ * cu 404. O bandă care promite un drept de retur, lângă un link care duce în
+ * gol, e mai rea decât o bandă cu trei rânduri.
+ *
+ * Nicio bancă și nicio opțiune de plată în rate. Verificat pe surse: solarone.ro
+ * are parteneriate cu TBI Bank și BT Leasing, avogrupinvest.ro nu are niciunul.
+ * Parteneriatele furnizorului nu se transferă distribuitorului.
+ */
+/**
+ * ─── DE CE E ÎMPĂRȚIT ÎN ETICHETĂ ȘI VALOARE ──────────────────────────────
+ *
+ * A fost „Livrare în / 24 de ore" — două jumătăți de propoziție, tăiate la
+ * mijloc. Se citea ca un text rupt pe două rânduri, nu ca informație
+ * structurată, iar îngroșarea celei de-a doua jumătăți nu ajuta: îngroșa o
+ * bucată de frază.
+ *
+ * Acum e ETICHETĂ + VALOARE, exact tiparul pe care site-ul îl folosește deja
+ * în trei locuri: ștampila „PREȚURI VALABILE / 01.09 – 30.09", blocul de preț
+ * din carduri („DE LA / 54 €") și antetul barei de filtre („CATALOG /
+ * Septembrie 2026"). Eticheta e un singur cuvânt, majuscule mici; valoarea
+ * duce înțelesul și primește toată greutatea.
+ */
+const FACILITATI = [
+  { icon: Truck, eticheta: "Livrare", valoare: "24 de ore" },
+  { icon: Phone, eticheta: "Consiliere", valoare: "telefonică" },
+  { icon: Tag, eticheta: "Prețuri", valoare: "de importator" },
+  { icon: CalendarDays, eticheta: "Catalog", valoare: "actualizat lunar" },
+];
 
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
@@ -405,12 +462,80 @@ export default async function GamaProduse() {
           })}
         </div>
 
-        {/* ── Subsol ─────────────────────────────────────────── */}
-        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <p className="text-xs text-gray-500 max-w-xl leading-relaxed">
-            Prețurile sunt exprimate în EUR, fără TVA. Taxa verde DEEE nu este inclusă
-            (0,7 RON / kg). Disponibilitatea se confirmă la plasarea comenzii.
-          </p>
+        {/* ── Facilitățile firmei ──────────────────────────────
+            Discretă din construcție, fiindcă asta i s-a cerut: fără culoare,
+            fără fundal propriu, fără chenar în jur. Singurul lucru care o
+            desparte de grilă e linia de 1px de deasupra — aceeași cu cea de sub
+            titlul secțiunii, deci nu introduce nicio muchie nouă în pagină.
+
+            Ierarhia e cea din bandă: rândul de sus e contextul, cel de jos e
+            informația, iar greutatea o poartă doar al doilea. Așa banda se
+            citește dintr-o privire fără să concureze nici cardurile de
+            deasupra, nici butonul de dedesubt.
+
+            ICONIȚELE SUNT `gray-500`, nu `gray-400`. Pare exagerat pentru un
+            desen, dar pragul de 3:1 al elementelor negrafice cade la fel peste
+            ele, iar gray-400 dă 2,60 pe alb. `strokeWidth` scăzut la 1,5 face
+            treaba pe care ar fi făcut-o o culoare mai deschisă: le subțiază,
+            fără să le scoată sub prag.
+
+            Nu e listă de linkuri. Niciuna dintre cele patru n-are unde duce —
+            paginile de livrare și de contact nu există încă — iar un rând
+            aparent apăsabil care nu face nimic e mai rău decât unul care nu
+            pare apăsabil deloc. */}
+        {/* Banda și butonul stau pe ACELAȘI rând, nu unul sub altul.
+
+            Banda ia tot ce rămâne (`flex-1`), butonul stă la dreapta și nu se
+            strânge. Așa cele patru facilități se întind exact până în buton, iar
+            rândul închide secțiunea dintr-o margine în alta, cu aceeași linie de
+            1px deasupra ca despărțire.
+
+            AICI ERA NOTA DE TVA ȘI DEEE. A plecat, și nu se pierde nimic din ea:
+            aceeași condiție e scrisă în „Condiții B2B", mai jos pe aceeași
+            pagină, și pe fiecare fișă de produs. Verificat, nu presupus —
+            singura care rămâne fără duplicat nicăieri ar fi fost taxa DEEE, iar
+            ea e în amândouă locurile.
+
+            SE STIVUIESC ABIA SUB `lg`. Cele patru facilități plus un buton de
+            ~200px n-au unde încăpea pe un rând sub lățimea aia; acolo banda trece
+            pe două coloane, iar butonul coboară pe toată lățimea, ca înainte. */}
+        <div className="mt-8 sm:mt-10 flex flex-col gap-6 border-t border-gray-200 pt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+          <ul className="grid flex-1 grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4 sm:gap-x-6">
+            {FACILITATI.map((f) => (
+              <li key={f.valoare} className="flex items-center gap-3">
+                {/* Plăcuța: 44×44, cât o țintă de atins cu degetul și cât
+                    butoanele din site, cu iconița la `strokeWidth` 2. Era 40 cu
+                    grosime 1,75 — corectă, dar prea firavă lângă un text îngroșat.
+                    Linia mai groasă e echivalentul „iconițelor pline" fără să
+                    schimbăm setul: rămân vectori, deci rămân clare la orice zoom
+                    și pe orice ecran, și nu adaugă niciun fișier.
+
+                    `avo-50` sub `avo-600` dă 7,92 — de peste două ori pragul de
+                    3:1 cerut pentru elemente negrafice. */}
+                <span
+                  aria-hidden
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-avo-50 text-avo-600"
+                >
+                  <f.icon size={22} strokeWidth={2} />
+                </span>
+
+                {/* Eticheta ia rețeta etichetelor din tot site-ul — 10px, bold,
+                    majuscule, `tracking-wider`, gray-500 — iar valoarea urcă la
+                    15px extrabold. Raportul dintre ele e ce face banda să se
+                    citească dintr-o privire: ochiul sare peste etichete și
+                    culege doar valorile. */}
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    {f.eticheta}
+                  </span>
+                  <span className="mt-0.5 block text-[15px] font-extrabold leading-tight text-gray-900">
+                    {f.valoare}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+
           {/* Acțiunea principală a secțiunii. Aceeași rețetă ca butoanele din
               carduri — se deosebește doar prin poziție și prin lățimea completă
               pe telefon, nu printr-un desen propriu.
@@ -419,10 +544,7 @@ export default async function GamaProduse() {
               „la hover se schimbă doar culoarea": o săgeată care se mișcă e
               exact genul de mișcare pe care regula o exclude, iar textul spune
               deja unde duce butonul. */}
-          <Link
-            href="/catalog"
-            className={`${BUTON_PLIN} w-full sm:w-auto`}
-          >
+          <Link href="/catalog" className={`${BUTON_PLIN} w-full shrink-0 sm:w-auto`}>
             Vezi catalogul complet
           </Link>
         </div>

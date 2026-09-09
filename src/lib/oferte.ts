@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { fetchGraphQL } from "./graphql-client";
-import { GET_OFERTE_QUERY } from "./queries";
+import { GET_OFERTE_QUERY, GET_TOATE_OFERTELE_QUERY } from "./queries";
 
 /**
  * Ofertele lunii.
@@ -325,4 +325,178 @@ export const incarcaOferte = cache(async (): Promise<Oferta[]> => {
   const dinWoo = noduri.map(mapeaza).filter((o): o is Oferta => o !== null);
 
   return dinWoo.length > 0 ? dinWoo : OFERTE;
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CELE MAI BUNE OFERTE — selecție calculată, nu preluată
+   ──────────────────────────────────────────────────────────────────────────
+   Secțiunea „Ofertele lunii" arăta cele patru produse pe care furnizorul le
+   pune pe coperta catalogului. Acum arată produsele cu cea mai bună reducere
+   la pragul de volum, calculate din tot catalogul.
+
+   REDUCEREA e diferența dintre prețul de listă și prețul de la prag, ca
+   procent din cel de listă. Nu se poate cere din GraphQL: WooGraphQL nu știe
+   să filtreze după o expresie între două câmpuri, deci se aduc toate produsele
+   și se filtrează aici (vezi GET_TOATE_OFERTELE_QUERY).
+
+   ─── DE CE TREI PRAGURI, NU DOUĂ ─────────────────────────────────────────
+
+   Un prag PUR PROCENTUAL dă o bandă de șuruburi, și asta nu e o presupunere
+   — e măsurat pe cele 88 de produse din catalogul curent care au preț de
+   volum:
+
+       mediana reducerii ....  1,75%
+       percentila 75 ........  3,80%
+       percentila 90 ........ 10,54%
+       maximul .............. 25,49%
+
+   Iar vârful clasamentului procentual e ocupat EXCLUSIV de accesorii ieftine:
+
+       25,49%  Paravant L2350 ......... 21,50 → 16,02 EUR   (economie 5,48)
+       12,33%  Clemă de mijloc ......... 1,46 →  1,28 EUR   (economie 0,18)
+       12,33%  Clemă de capăt .......... 1,46 →  1,28 EUR   (economie 0,18)
+       11,96%  Cârlig montaj țiglă ..... 7,94 →  6,99 EUR   (economie 0,95)
+
+   „Cea mai bună ofertă a lunii: clemă de capăt, economisești 18 cenți." Cel
+   mai mare procent stă pe cel mai mic preț, fiindcă la produse de un euro
+   rotunjirea la două zecimale E deja un procent.
+
+   Ofertele care contează comercial arată invers — procent mic, economie mare:
+
+        7,32%  SUN-16K-SG01LP1 ...... 1680 → 1557 EUR   (economie 123)
+        3,80%  Deye SE-F16 C ........ 1580 → 1520 EUR   (economie  60)
+        2,27%  SUN-30K-SG02HP3 ...... 2250 → 2199 EUR   (economie  51)
+
+   De-aia ECONOMIA ABSOLUTĂ e a treia condiție. Ea e cea care transformă
+   „procent" în „ofertă".
+
+   ─── DE CE ARE ȘI PLAFON ─────────────────────────────────────────────────
+
+   Nu ca să taie oferte bune, ci ca să prindă date greșite. O reducere de volum
+   de 40% la un distribuitor de echipamente nu e o promoție, e o coloană citită
+   strâmb la import. Plafonul e o plasă, nu o politică: pe catalogul curent nu
+   elimină niciun produs care ar fi trecut oricum de pragul de economie.
+
+   ─── CE SE ÎNTÂMPLĂ CÂND SE SCHIMBĂ CATALOGUL ────────────────────────────
+
+   Cifrele de mai sus sunt ale ediției Septembrie 2026. Ele nu sunt scrise în
+   cod ca adevăruri permanente, ci ca justificare a celor trei constante. La o
+   ediție în care structura reducerilor se schimbă mult, constantele se
+   recalculează rulând aceeași măsurătoare pe noul CSV — nu se ghicesc din nou.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** Sub asta reducerea e zgomot de rotunjire: mediana catalogului e 1,75%. */
+export const PROCENT_MIN = 2;
+
+/** Peste asta, pe un catalog B2B, e mai probabil o eroare de import decât o ofertă. */
+export const PROCENT_MAX = 15;
+
+/** Ce desparte o ofertă de o rotunjire. Vezi tabelele de mai sus. */
+export const ECONOMIE_MINIMA = 20;
+
+/** Plafon de siguranță: o bandă cu zeci de carduri devine o listă, nu o selecție. */
+const CATE_CEL_MULT = 24;
+
+/**
+ * Reducerea la prag, în procente. `null` când produsul n-are preț de volum —
+ * jumătate din catalog e în situația asta, deci nu e un caz de excepție.
+ */
+export function reducere(o: Oferta): number | null {
+  if (typeof o.pretVolum !== "number" || o.pretVolum <= 0) return null;
+  if (o.pretVolum >= o.pret) return null;
+  return ((o.pret - o.pretVolum) / o.pret) * 100;
+}
+
+/** Economia în euro, pe unitate, la pragul de volum. */
+export function economie(o: Oferta): number {
+  return typeof o.pretVolum === "number" ? o.pret - o.pretVolum : 0;
+}
+
+/**
+ * Trece cele trei praguri. Scrisă separat de încărcător ca să poată fi
+ * aplicată și listei de rezervă, cu exact aceeași regulă.
+ */
+function eOfertaBuna(o: Oferta): boolean {
+  const r = reducere(o);
+  if (r === null) return false;
+  return r >= PROCENT_MIN && r <= PROCENT_MAX && economie(o) >= ECONOMIE_MINIMA;
+}
+
+/**
+ * Cele mai bune oferte din catalog, ordonate după cât economisești.
+ *
+ * ORDINEA E DUPĂ ECONOMIE, NU DUPĂ PROCENT, din același motiv pentru care
+ * economia e un prag: în bandă, primul produs — cel văzut fără să derulezi —
+ * trebuie să fie cel mai convingător, iar 123 EUR convinge mai mult decât
+ * 7,32%.
+ *
+ * Rezerva nu e lista `OFERTE` întreagă, ci `OFERTE` trecută prin ACELEAȘI
+ * praguri. Altfel, într-o zi în care WordPress nu răspunde, secțiunea ar arăta
+ * produse care n-au nicio treabă cu regula scrisă în titlul ei.
+ */
+export const incarcaCeleMaiBuneOferte = cache(async (): Promise<Oferta[]> => {
+  const date = await fetchGraphQL(GET_TOATE_OFERTELE_QUERY, {}, {
+    optional: true,
+    tags: ["produse"],
+  });
+
+  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  const dinWoo = noduri.map(mapeaza).filter((o): o is Oferta => o !== null);
+
+  const sursa = dinWoo.length > 0 ? dinWoo : OFERTE;
+
+  return sursa
+    .filter(eOfertaBuna)
+    .sort((a, b) => economie(b) - economie(a))
+    .slice(0, CATE_CEL_MULT);
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LICHIDARE DE STOC
+   ──────────────────────────────────────────────────────────────────────────
+   Bara din stânga arată de mult „Lichidare stoc — 15", scris îngroșat, cu
+   pastilă închisă. Era singura cifră din tot panoul care CHEMA la clic și nu
+   ducea nicăieri: comentariul din BaraFiltre.tsx recunoștea de ce — „/catalog
+   nu știe azi să filtreze după disponibilitate, iar un link către o pagină care
+   ignoră filtrul e mai rău decât niciun link".
+
+   Acum știe. Restul comentariului rămâne valabil ca istorie, dar condiția lui
+   s-a schimbat: există o pagină care chiar arată cele 15.
+
+   DE CE STĂ ÎN FIȘIERUL ĂSTA, deși nu e o „ofertă a lunii". Fiindcă e aceeași
+   formă de date — `Oferta`, adică produs cu preț, preț de volum, prag și stare
+   — și se citește cu același `mapeaza()`. Mutată în alt fișier, ar fi cerut fie
+   exportarea lui `mapeaza` și a tipului de nod, fie o a doua funcție de mapare
+   care s-ar fi desincronizat de prima la primul câmp adăugat.
+
+   Numele fișierului descrie ce conține: produse cu datele de preț din catalog.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Produsele scoase la lichidare, ordonate după cât de mult se economisește.
+ *
+ * Filtrarea se face AICI, nu în GraphQL. WooGraphQL poate filtra după termeni
+ * de taxonomie, dar starea vine dintr-un atribut global (`pa_disponibilitate`),
+ * iar interogarea aceea are o sintaxă diferită de restul și s-ar fi rupt tăcut
+ * dacă atributul lipsește pe un WordPress proaspăt. Cu 172 de produse în
+ * catalog, aducerea întregii liste și filtrarea în cod costă o cerere pe care
+ * o facem oricum pentru „Ofertele lunii" — iar `cache` din React o reunește.
+ *
+ * Ordinea: întâi cele cu preț de volum, după economie descrescătoare; apoi
+ * restul, după preț. Un produs de lichidare fără a doua coloană de preț nu e
+ * mai puțin real, doar nu are cu ce fi comparat.
+ */
+export const incarcaLichidareStoc = cache(async (): Promise<Oferta[]> => {
+  const date = await fetchGraphQL(GET_TOATE_OFERTELE_QUERY, {}, {
+    optional: true,
+    tags: ["produse"],
+  });
+
+  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  const dinWoo = noduri.map(mapeaza).filter((o): o is Oferta => o !== null);
+  const sursa = dinWoo.length > 0 ? dinWoo : OFERTE;
+
+  return sursa
+    .filter((o) => o.disponibilitate === "Lichidare stoc")
+    .sort((a, b) => economie(b) - economie(a) || b.pret - a.pret);
 });

@@ -4,6 +4,7 @@ import GamaProduse from "@/components/GamaProduse";
 import OferteleLunii from "@/components/OferteleLunii";
 import ConditiiB2B from "@/components/ConditiiB2B";
 import BaraFiltre from "@/components/BaraFiltre";
+import BaraReclame from "@/components/BaraReclame";
 
 /**
  * Pagina e prerandată static, iar perioada catalogului vine acum din WooCommerce.
@@ -59,6 +60,10 @@ export default function Home() {
             în sus, unde marja lăsată de `max-w-7xl` e destul de lată cât s-o
             țină fără să atingă conținutul. Calculul e în globals.css. */}
         <BaraFiltre />
+
+        {/* Coloana de reclame, în marja liberă din dreapta — oglinda barei de
+            filtre, cu aceleași variabile și același prag de 1760px. */}
+        <BaraReclame />
 
         {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
         <GamaProduse />

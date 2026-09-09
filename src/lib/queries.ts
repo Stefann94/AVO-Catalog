@@ -271,6 +271,73 @@ export const GET_OFERTE_QUERY = `
 `;
 
 /**
+ * TOT catalogul, cu aceleași câmpuri ca interogarea de mai sus.
+ *
+ * Există fiindcă „ofertele lunii" nu mai sunt cele patru produse pe care
+ * furnizorul le-a pus pe copertă, ci cele pe care le calculăm din reducerea de
+ * volum (vezi PROCENT_MIN / PROCENT_MAX / ECONOMIE_MINIMA din lib/oferte.ts).
+ * Selecția nu se poate face în GraphQL: reducerea e o diferență între `price`
+ * și meta `_pret_volum`, iar WooGraphQL nu știe să filtreze după o expresie
+ * între două câmpuri. Se aduc toate și se filtrează la noi.
+ *
+ * `first: 200` nu e o cifră rotundă la întâmplare: catalogul curent are 172 de
+ * produse, iar 200 lasă loc pentru două-trei ediții de creștere fără să atingă
+ * nimeni fișierul. Peste plafon, WPGraphQL taie tăcut — de-aia e scris cu
+ * margine, nu exact.
+ *
+ * Setul de câmpuri e IDENTIC cu al lui GET_OFERTE_QUERY, ca `mapeaza()` din
+ * lib/oferte.ts să poată citi și de aici, fără o a doua funcție de mapare care
+ * s-ar desincroniza la prima modificare.
+ */
+export const GET_TOATE_OFERTELE_QUERY = `
+  query GetToateOfertele {
+    products(first: 200) {
+      nodes {
+        id
+        name
+        slug
+        image {
+          sourceUrl
+          altText
+        }
+        productCategories(first: 3) {
+          nodes {
+            slug
+            parent {
+              node {
+                slug
+              }
+            }
+          }
+        }
+        ... on SimpleProduct {
+          sku
+          price(format: RAW)
+          attributes {
+            nodes {
+              name
+              ... on GlobalProductAttribute {
+                terms(first: 1) {
+                  nodes {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+        dateCatalog {
+          pretVolum
+          pragVolum
+          unitatePret
+          capacitateKwh
+        }
+      }
+    }
+  }
+`;
+
+/**
  * Perioada de valabilitate a catalogului curent.
  *
  * Câmpul `perioadaCatalog` nu face parte din WooGraphQL: e adăugat de extensia
