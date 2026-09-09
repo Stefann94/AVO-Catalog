@@ -85,7 +85,20 @@ export default function BaraReclame() {
           <Link
             key={r.href}
             href={r.href}
-            className="pointer-events-auto block overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-avo-600 hover:ring-1 hover:ring-avo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+            /* FĂRĂ CHENAR ȘI FĂRĂ UMBRĂ ÎN REPAUS. O reclamă își aduce
+               propriul cadru — are fundal, margini și un buton desenate în
+               imagine. Un chenar de card pe deasupra ar fi ramă peste ramă, iar
+               `bg-white` sub o fotografie opacă nu se vede niciodată.
+
+               Toată suprafața e apăsabilă: linkul e `block` și înconjoară
+               imaginea, deci ținta e imaginea întreagă, nu o zonă din ea.
+
+               RĂMÂNE DOAR HOVER-UL, ca `ring`, nu ca `border`: fără o grosime
+               de chenar în repaus, `hover:border-*` n-ar avea ce îngroșa.
+               Inelul se desenează în afara cutiei, deci imaginea nu se
+               deplasează cu un pixel când treci cu mouse-ul. E singurul semn
+               că suprafața duce undeva. */
+            className="pointer-events-auto block overflow-hidden transition-[box-shadow] duration-200 hover:ring-2 hover:ring-avo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
           >
             <Image
               src={r.imagine}

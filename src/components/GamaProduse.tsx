@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CalendarDays, Phone, Tag, Truck } from "lucide-react";
+import { ArrowRight, CalendarDays, Phone, Tag, Truck } from "lucide-react";
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
@@ -536,16 +536,57 @@ export default async function GamaProduse() {
             ))}
           </ul>
 
-          {/* Acțiunea principală a secțiunii. Aceeași rețetă ca butoanele din
-              carduri — se deosebește doar prin poziție și prin lățimea completă
-              pe telefon, nu printr-un desen propriu.
+          {/* ── Butonul de secțiune ─────────────────────────────
+              REȚETĂ PROPRIE, ȚINUTĂ AICI, NU ÎN components/stiluri.ts. Nu din
+              lene: a fost cerut ca ACEST buton să arate altfel decât restul, iar
+              o rețetă exportată ar fi invitat pe oricine s-o refolosească, adică
+              ar fi devenit tăcut al doilea standard. Cât timp stă în fișierul
+              care o folosește, „unul singur" se vede din structură.
 
-              A avut o săgeată care se deplasa la hover. A căzut odată cu regula
-              „la hover se schimbă doar culoarea": o săgeată care se mișcă e
-              exact genul de mișcare pe care regula o exclude, iar textul spune
-              deja unde duce butonul. */}
-          <Link href="/catalog" className={`${BUTON_PLIN} w-full shrink-0 sm:w-auto`}>
-            Vezi catalogul complet
+              ─── CE A FOST ÎNAINTE ȘI DE CE A CĂZUT ─────────────────────────
+
+              O primă variantă avea un CAPĂT PĂTRAT ÎNTUNECAT, `avo-800`, cu
+              săgeata în el, și textul cu majuscule și `tracking-wide`. Arăta
+              bine, dar arăta a 2015: butonul împărțit în două compartimente de
+              culori diferite e semnătura interfețelor de-atunci, iar majusculele
+              late o întăreau. Nu era greșit, era datat.
+
+              ─── CE ÎL FACE ACTUAL ──────────────────────────────────────────
+
+              O SINGURĂ SUPRAFAȚĂ, nu două. Despărțirea dintre text și săgeată o
+              face acum o linie de 1px la `white/20` — un fir, nu un bloc. Ideea
+              rămâne (butonul are un capăt care spune „duce undeva"), dar greutatea
+              ei scade de la un dreptunghi întreg la o dungă.
+
+              MUCHIE INTERIOARĂ, `ring-inset` la `white/15`. Ăsta e detaliul care
+              deosebește un dreptunghi plat de o suprafață: dă adâncime dintr-o
+              linie, nu dintr-o umbră. E singura cale de a obține relief pe un
+              site care interzice umbrele — și e exact ce fac interfețele bune
+              acum, în locul degradeurilor de altădată.
+
+              CORP DE FRAZĂ, NU MAJUSCULE. Majusculele cu `tracking` larg citesc
+              a buton de formular vechi. Semibold la 14px, spațiere normală, e
+              ce se poartă și, mai important, e ce se citește mai repede.
+
+              SĂGEATA E SUBȚIRE ȘI MICĂ — 16px la `strokeWidth` 2, nu 18 la 2,5.
+              Un semn, nu un simbol.
+
+              ─── CE NU FACE ────────────────────────────────────────────────
+
+              Nicio umbră, nicio ridicare, nicio săgeată care alunecă. La hover
+              se schimbă doar culoarea: fundalul coboară o treaptă și muchia
+              interioară se întărește de la 15% la 25%. Regula aia e ce ține
+              site-ul să nu pară că tremură sub cursor.
+
+              Contraste: alb pe avo-600 dă 8,61, pe avo-700 10,93. Muchia și
+              despărțitorul sunt decor, nu informație, deci nu au prag. */}
+          <Link
+            href="/catalog"
+            className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-3 whitespace-nowrap bg-avo-600 pl-5 pr-4 text-white ring-1 ring-white/15 ring-inset transition-[background-color,box-shadow] duration-200 hover:bg-avo-700 hover:ring-white/25 active:bg-avo-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600 sm:w-auto"
+          >
+            <span className="shrink-0 text-[14px] font-semibold">Vezi catalogul complet</span>
+            <span aria-hidden className="h-5 w-px shrink-0 bg-white/20" />
+            <ArrowRight aria-hidden size={16} strokeWidth={2} className="shrink-0" />
           </Link>
         </div>
       </div>
