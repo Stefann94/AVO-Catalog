@@ -131,7 +131,10 @@ function ceaMaiMareSubcategorie(nod: NodCategorie): { eticheta: string; valoare:
   if (copii.length === 0) return undefined;
 
   const max = copii.reduce((a, b) => ((b!.count ?? 0) > (a!.count ?? 0) ? b : a))!;
-  return { eticheta: max.name!, valoare: String(max.count ?? 0) };
+  // „Produse K2 Systems", nu doar „K2 Systems": cifra stă pe locul în care
+  // celelalte carduri au prețul, iar fără substantiv „28" se citea ca un preț
+  // căruia îi lipsește moneda.
+  return { eticheta: `Produse ${max.name!}`, valoare: String(max.count ?? 0) };
 }
 
 /**
@@ -253,7 +256,7 @@ export const GAMA_REZERVA: CategorieGama[] = [
     slug: "sisteme-de-montaj",
     nume: "Sisteme de Montaj",
     produse: 51,
-    statistica: { eticheta: "K2 Systems", valoare: "28" },
+    statistica: { eticheta: "Produse K2 Systems", valoare: "28" },
     imagineLocala: imgMontaj,
   },
 ];

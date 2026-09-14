@@ -542,55 +542,39 @@ export default async function GamaProduse() {
           </div>
 
           {/* ── Butonul de secțiune ─────────────────────────────
-              REȚETĂ PROPRIE, ȚINUTĂ AICI, NU ÎN components/stiluri.ts. Nu din
-              lene: a fost cerut ca ACEST buton să arate altfel decât restul, iar
-              o rețetă exportată ar fi invitat pe oricine s-o refolosească, adică
-              ar fi devenit tăcut al doilea standard. Cât timp stă în fișierul
-              care o folosește, „unul singur" se vede din structură.
+              FRATE CU „CERE OFERTĂ", NU EXCEPȚIE. Aceeași formă — 44px
+              înălțime, rază de 8px, padding, literă, săgeată la aceeași
+              distanță — și o singură diferență: suprafața.
 
               ─── CE A FOST ÎNAINTE ȘI DE CE A CĂZUT ─────────────────────────
 
-              O primă variantă avea un CAPĂT PĂTRAT ÎNTUNECAT, `avo-800`, cu
-              săgeata în el, și textul cu majuscule și `tracking-wide`. Arăta
-              bine, dar arăta a 2015: butonul împărțit în două compartimente de
-              culori diferite e semnătura interfețelor de-atunci, iar majusculele
-              late o întăreau. Nu era greșit, era datat.
+              Albastru plin, COLȚURI DREPTE, linie despărțitoare de 1px între
+              text și săgeată, muchie interioară `white/15`. Luat separat, arăta
+              bine. Dar era SINGURUL element cu colțuri drepte de pe pagină:
+              cardurile au 12px, „Accesează" și ștampila 8px, iar „Cere ofertă",
+              chiar alături, tot 8px. Două butoane pe același rând, cu raze și
+              detalii diferite, citeau ca luate din două seturi de componente.
 
-              ─── CE ÎL FACE ACTUAL ──────────────────────────────────────────
+              Înaintea lui a fost o variantă cu capăt pătrat întunecat
+              `avo-800` și majuscule late — căzută fiindcă arăta a 2015.
 
-              O SINGURĂ SUPRAFAȚĂ, nu două. Despărțirea dintre text și săgeată o
-              face acum o linie de 1px la `white/20` — un fir, nu un bloc. Ideea
-              rămâne (butonul are un capăt care spune „duce undeva"), dar greutatea
-              ei scade de la un dreptunghi întreg la o dungă.
+              A trecut scurt și printr-o variantă de sticlă gri, rețeta
+              navbarului (`slate-300/60`), ca să nu fie două butoane pline pe
+              același rând. A căzut la vedere: albastrul e culoarea tuturor
+              butoanelor de acțiune din site, iar un buton gri ieșea din familie
+              la fel de tare cum ieșeau colțurile drepte.
 
-              MUCHIE INTERIOARĂ, `ring-inset` la `white/15`. Ăsta e detaliul care
-              deosebește un dreptunghi plat de o suprafață: dă adâncime dintr-o
-              linie, nu dintr-o umbră. E singura cale de a obține relief pe un
-              site care interzice umbrele — și e exact ce fac interfețele bune
-              acum, în locul degradeurilor de altădată.
+              ─── REȚETA ────────────────────────────────────────────────────
 
-              CORP DE FRAZĂ, NU MAJUSCULE. Majusculele cu `tracking` larg citesc
-              a buton de formular vechi. Semibold la 14px, spațiere normală, e
-              ce se poartă și, mai important, e ce se citește mai repede.
-
-              SĂGEATA E SUBȚIRE ȘI MICĂ — 16px la `strokeWidth` 2, nu 18 la 2,5.
-              Un semn, nu un simbol.
-
-              ─── CE NU FACE ────────────────────────────────────────────────
-
-              Nicio umbră, nicio ridicare, nicio săgeată care alunecă. La hover
-              se schimbă doar culoarea: fundalul coboară o treaptă și muchia
-              interioară se întărește de la 15% la 25%. Regula aia e ce ține
-              site-ul să nu pară că tremură sub cursor.
-
-              Contraste: alb pe avo-600 dă 8,61, pe avo-700 10,93. Muchia și
-              despărțitorul sunt decor, nu informație, deci nu au prag. */}
+              E `BUTON_PLIN` din components/stiluri.ts, aceeași cu „Accesează"
+              din carduri — deci contrastele și treptele de hover sunt cele
+              verificate acolo. Se adaugă doar ce ține de locul lui: pe toată
+              lățimea sub `sm` și fără rupere de rând. */}
           <Link
             href="/catalog"
-            className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-3 whitespace-nowrap bg-avo-600 pl-5 pr-4 text-white ring-1 ring-white/15 ring-inset transition-[background-color,box-shadow] duration-200 hover:bg-avo-700 hover:ring-white/25 active:bg-avo-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600 sm:w-auto"
+            className={`${BUTON_PLIN} w-full whitespace-nowrap sm:w-auto`}
           >
-            <span className="shrink-0 text-[14px] font-semibold">Vezi catalogul complet</span>
-            <span aria-hidden className="h-5 w-px shrink-0 bg-white/20" />
+            Vezi catalogul complet
             <ArrowRight aria-hidden size={16} strokeWidth={2} className="shrink-0" />
           </Link>
         </div>

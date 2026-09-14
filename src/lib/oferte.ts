@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { fetchGraphQL } from "./graphql-client";
 import { GET_OFERTE_QUERY, GET_TOATE_OFERTELE_QUERY } from "./queries";
+import { gasesteBrand } from "./branduri";
 
 /**
  * Ofertele lunii.
@@ -60,7 +61,15 @@ export type Oferta = {
   sku: string;
   nume: string;
   brand: string;
-  /** Slug de categorie nivel 1, pentru linkul din card. Vezi lib/categorii.ts. */
+  /**
+   * Slug-ul produsului din WooCommerce — ținta cardului: /catalog/produs/<slug>.
+   *
+   * Opțional doar fiindcă lista de rezervă scrisă în cod (`OFERTE`) nu-l are:
+   * slug-ul îl dă WordPress la import, nu catalogul, deci nu există o valoare
+   * reală de copiat. Fără el, cardul cade pe pagina categoriei, ca înainte.
+   */
+  slug?: string;
+  /** Slug de categorie nivel 1, pentru linkul de rezervă al cardului. Vezi lib/categorii.ts. */
   categorie: string;
   /**
    * Fotografia produsului, din biblioteca media WordPress.
@@ -259,9 +268,34 @@ function categorieDin(nod: NodProdus): string | null {
 
 const DISPONIBILITATI = ["În stoc", "Lichidare stoc", "La comandă"] as const;
 
+/**
+ * Starea scrisă ÎN DENUMIRE, de furnizor.
+ *
+ * Catalogul are un singur rând de felul ăsta: „LICHIDARE STOC - PYTES V16 -
+ * 16kWh, cu încălzire, IP66". Importatorul l-a păstrat fidel, iar de aici au
+ * pornit trei defecte pe card, toate din același loc:
+ *
+ *   denumirea ... începea cu „LICHIDARE STOC -", repetând eticheta de pe poză
+ *   brandul ..... gol: importatorul îl recunoaște după începutul numelui
+ *                 (`BRAND_PREFIX` în tools/catalog-import/overrides.js,
+ *                 `/^PYTES/`), iar numele începea cu altceva
+ *   codul ....... inventat din denumire, cu tot cu prefix:
+ *                 „LICHIDARE-STOC-PYTES-V16-16KWH-CU-INCALZIRE-IP66"
+ *
+ * Starea nu se pierde scoțând prefixul: importatorul a pus-o deja în atributul
+ * Disponibilitate, de unde vine eticheta „Lichidare stoc".
+ *
+ * REPARAȚIA E AICI, LA AFIȘARE, fiindcă datele din WordPress sunt deja
+ * importate așa. Locul ei definitiv e importatorul, care ar trebui să scoată
+ * prefixul înainte să caute brandul și să construiască codul; până la un nou
+ * import, asta ține cardul corect.
+ */
+const PREFIX_LICHIDARE_NUME = /^LICHIDARE\s+STOC\s*[-–—]\s*/i;
+const PREFIX_LICHIDARE_SKU = /^LICHIDARE-STOC-/i;
+
 function mapeaza(nod: NodProdus): Oferta | null {
-  const nume = nod.name?.trim();
-  const sku = nod.sku?.trim();
+  const nume = nod.name?.trim().replace(PREFIX_LICHIDARE_NUME, "");
+  const sku = nod.sku?.trim().replace(PREFIX_LICHIDARE_SKU, "");
   const pret = Number(nod.price);
   const categorie = categorieDin(nod);
 
@@ -281,6 +315,7 @@ function mapeaza(nod: NodProdus): Oferta | null {
   return {
     sku,
     nume,
+    slug: nod.slug?.trim() || undefined,
     // `altText` gol devine `undefined`, nu șir vid: în WooCommerce câmpul e
     // adesea necompletat, iar un `alt=""` explicit înseamnă „imagine
     // decorativă", ceea ce o fotografie de produs nu e. Componenta decide ce
@@ -288,7 +323,15 @@ function mapeaza(nod: NodProdus): Oferta | null {
     imagine: nod.image?.sourceUrl
       ? { url: nod.image.sourceUrl, alt: nod.image.altText?.trim() || undefined }
       : undefined,
-    brand: atribut(nod, "pa_brand") ?? "",
+    // Fără atribut, brandul se caută după primul cuvânt din denumire, în lista
+    // din lib/branduri.ts — nu într-o a doua listă scrisă aici. Prinde exact
+    // cazul de mai sus („PYTES V16…" → Pytes). Un cuvânt care nu e brand
+    // („Sistem", „Șină") nu găsește nimic, iar banda rămâne fără brand, ca
+    // până acum.
+    brand:
+      atribut(nod, "pa_brand") ??
+      gasesteBrand(nume.split(/\s+/)[0])?.nume ??
+      "",
     categorie,
     spec: specDin(nod),
     pret,

@@ -57,6 +57,31 @@ export default function CardOferta({ o }: { o: Oferta }) {
     <div
       className={`relative ${CADRU_FOTO_CARD} ${o.imagine ? "" : "rounded-t-[11px] bg-avo-50"}`}
     >
+      {/* ECONOMIA, adică motivul pentru care un preț de volum contează.
+
+          E scrisă în EURO, nu în procent: la un invertor de 1.680 €, „7,3%" e
+          o abstracție, „−123 €" e o sumă. Badge închis, nu colorat: aceeași
+          rețetă ca „Lichidare stoc" din colțul opus, iar un verde de reducere
+          ar fi fost al doilea accent pe un site care are unul singur.
+
+          A STAT ÎN CORPUL CARDULUI, sub „600 € de la 12 buc", și de-acolo
+          venea un card mai înalt decât vecinii. Coloana prețului avea trei
+          rânduri — preț, preț de volum, badge — adică vreo 74px, lângă un
+          buton de 44. Într-o bandă în care majoritatea produselor n-au preț de
+          volum, cardul care îl avea ieșea cu 30px mai jos decât toate
+          celelalte. Aici sus nu ocupă înălțime: preț plus preț de volum fac
+          exact 44px (22 + 4 + 18), cât butonul, deci cardul are aceeași
+          înălțime cu sau fără a doua cifră.
+
+          Apare DOAR unde există economie. Pe pagina de lichidare nu o
+          garantează nimic, iar fără condiție un produs fără a doua coloană de
+          preț ar fi afișat „−0 € / buc". */}
+      {economie(o) > 0 ? (
+        <span className="absolute top-3 left-3 z-10 inline-flex items-center h-7 px-2.5 rounded-md bg-gray-900 text-[11px] font-bold text-white">
+          −{eur(Math.round(economie(o)))} € / {o.unitate}
+        </span>
+      ) : null}
+
       {/* Badge în exact poziția badge-ului „N produse". */}
       {o.disponibilitate === "Lichidare stoc" ? (
         <span className="absolute top-3 right-3 z-10 inline-flex items-center h-7 px-2.5 rounded-md bg-gray-900 text-[11px] font-bold uppercase tracking-wide text-white">
@@ -133,7 +158,13 @@ export default function CardOferta({ o }: { o: Oferta }) {
           aceea SKU-ul e pe mono, singurul loc din secțiune unde
           cifrele de lățime egală chiar contează. */}
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 border-t border-gray-200 bg-white/70 px-3 py-2">
-        <span className="truncate text-[13px] font-bold text-gray-900">
+        {/* CINE CEDEAZĂ LOCUL, când rândul nu ajunge: codul, nu brandul.
+            Era invers — brandul `truncate`, codul `shrink-0` — iar la un cod
+            construit din denumire („PYTES-V16-16KWH-CU-INCALZIRE-IP66") brandul
+            ajungea „P". Brandul e scurt și e ce identifică produsul dintr-o
+            privire; codul lung se poate tăia cu „…", fiindcă întreg stă oricum
+            în fișa produsului. */}
+        <span className="shrink-0 text-[13px] font-bold text-gray-900">
           {o.brand}
         </span>
         {/* SKU-ul apare aici DOAR când sus NU stă el însuși. Când e
@@ -143,7 +174,7 @@ export default function CardOferta({ o }: { o: Oferta }) {
             Deci apare și când sus e o fotografie — atunci codul chiar
             lipsește din cadru, iar el e ce se dictează la telefon. */}
         {o.imagine || o.spec ? (
-          <span className="shrink-0 font-mono text-[11px] text-gray-600">
+          <span className="min-w-0 truncate font-mono text-[11px] text-gray-600">
             {o.sku}
           </span>
         ) : null}
@@ -161,7 +192,10 @@ export default function CardOferta({ o }: { o: Oferta }) {
   
       <div className="mt-auto flex items-end justify-between gap-2 pt-4">
         <div className="flex shrink-0 flex-col justify-end">
-          <span className="flex items-baseline gap-1">
+          {/* `leading-none` pe rând, nu doar pe cifră: „€" (16px) și „/ buc"
+              moșteneau înălțimea de rând 1,5, deci rândul ieșea de 24px, nu 22,
+              iar cardul cu preț de volum rămânea cu 2px mai înalt decât vecinii. */}
+          <span className="flex items-baseline gap-1 leading-none">
             <span className="text-[22px] font-extrabold text-gray-900 leading-none">
               {eur(o.pret)}
             </span>
@@ -175,42 +209,30 @@ export default function CardOferta({ o }: { o: Oferta }) {
               și e exact ce deosebește un preț de distribuitor de unul
               de magazin. Lipsește la produsele fără coloana a doua. */}
           {o.pretVolum && o.prag ? (
-            <span className="mt-1 text-[12px] font-medium text-gray-500 whitespace-nowrap">
+            /* `leading-4` (16px) ține coloana prețului sub înălțimea butonului:
+               22 + 4 + 16 = 42px, lângă 44. Cu înălțimea de rând moștenită,
+               18px, ieșea 44 plus rotunjiri, iar cardul cu preț de volum
+               rămânea cu 4px mai înalt decât vecinii — măsurat pe bandă. */
+            <span className="mt-1 text-[12px] leading-4 font-medium text-gray-500 whitespace-nowrap">
               {eur(o.pretVolum)} € de la {o.prag}
             </span>
           ) : null}
 
-          {/* ECONOMIA, adică motivul pentru care produsul e în secțiune.
-              Secțiunea nu mai arată ce a pus furnizorul pe copertă, ci ce
-              are cea mai bună reducere la prag (vezi lib/oferte.ts). Dacă
-              regula selectează după economie, cardul trebuie s-o și scrie
-              — altfel omul vede patru cifre și niciun motiv.
-
-              E scrisă în EURO, nu în procent, din același motiv pentru care
-              ordonarea e după euro: la un invertor de 1.680 €, „7,3%" e o
-              abstracție, „−123 €" e o sumă. Procentul rămâne regula de
-              selecție; euro e ce se comunică.
-
-              Badge închis, nu colorat: e aceeași rețetă ca „Lichidare
-              stoc" de pe fotografie, iar un verde de reducere ar fi fost
-              al doilea accent pe un site care are unul singur. */}
-          {/* Badge-ul apare DOAR unde există economie. Cardul se folosește acum
-              în două locuri: la „Ofertele lunii", unde selecția garantează un
-              prag de volum, și pe pagina de lichidare, unde nu-l garantează
-              nimic. Fără condiția asta, un produs de lichidare fără a doua
-              coloană de preț ar fi afișat „−0 € / buc". */}
-          {economie(o) > 0 ? (
-            <span className="mt-1.5 inline-flex w-fit items-center rounded-md bg-gray-900 px-2 py-0.5 text-[11px] font-bold text-white">
-              −{eur(Math.round(economie(o)))} € / {o.unitate}
-            </span>
-          ) : null}
+          {/* Aici era badge-ul de economie. S-a mutat în colțul stâng de sus
+              al fotografiei — motivul e scris acolo. */}
         </div>
   
-        {/* Ținta e categoria, nu produsul: /catalog/produs/<slug> nu
-            există încă. Când apare fișa de produs, se schimbă doar
-            calea. */}
+        {/* Ținta e FIȘA PRODUSULUI. A fost categoria, cu motivul că
+            /catalog/produs/<slug> nu exista; între timp există, iar un clic pe
+            „HOPE 5.0L-B1" care deschide lista tuturor acumulatorilor îl punea
+            pe om să-l caute a doua oară.
+
+            Categoria rămâne doar rezerva pentru lista scrisă în cod, care n-are
+            slug (vezi `slug` în lib/oferte.ts). `after:absolute after:inset-0`
+            întinde linkul pe tot cardul, deci și clicul pe poză sau pe nume duce
+            tot acolo. */}
         <Link
-          href={`/catalog/${o.categorie}`}
+          href={o.slug ? `/catalog/produs/${o.slug}` : `/catalog/${o.categorie}`}
           className={`${BUTON_PLIN} after:absolute after:inset-0`}
         >
           Vezi
