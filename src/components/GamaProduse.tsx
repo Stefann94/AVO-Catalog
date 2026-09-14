@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowRight, CalendarDays, Phone, Tag, Truck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
@@ -167,60 +167,64 @@ import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
 const TITLU = "Categoriile principale pentru casa și energia ta";
 
 /**
- * Facilitățile firmei — banda discretă de sub carduri.
+ * Îndemnul de la finalul secțiunii — „Ai un proiect?".
  *
- * ─── REGULA DE PROVENIENȚĂ ────────────────────────────────────────────────
+ * ─── CE A FOST AICI ȘI DE CE A CĂZUT ──────────────────────────────────────
  *
- * Fiecare rând de aici trebuie să aibă o sursă ÎN PROIECT. Nu e o formalitate:
- * o bandă de „facilități" e cel mai ușor loc din tot site-ul în care se strecoară
- * o promisiune inventată — „livrare gratuită", „retur în 30 de zile", „garanție
- * extinsă" — pe care n-o susține nimeni și pe care primul client o cere.
+ * O bandă de patru facilități, fiecare cu iconiță într-o plăcuță `avo-50`:
+ * „Livrare / 24 de ore", „Consiliere / telefonică", „Prețuri / de importator",
+ * „Catalog / actualizat lunar". A picat din trei motive, în ordinea gravității:
  *
- * Regula e cea scrisă deja în components/BannerB2B.tsx pentru mesajele lui:
- * o cifră sau o promisiune care nu e deja afirmată undeva în proiect nu se pune.
+ *   1. LIVRAREA ÎN 24 DE ORE NU ERA ADEVĂRATĂ. O adusesem din slide-ul al
+ *      treilea din HeroSlider.tsx („24h · Livrare · Din depozite naționale"),
+ *      crezând că e o afirmație a firmei — dar acel slide e text de schelet.
+ *      Termenele reale: 2–3 zile lucrătoare prin curier, 3–14 cu flota proprie,
+ *      15–90 de la furnizor. AFIRMAȚIA E ȘI ACUM ÎN HeroSlider.tsx și trebuie
+ *      scoasă și de-acolo.
  *
- *   Livrare în 24 de ore ..... slide-ul al treilea din HeroSlider.tsx:
- *                              „24h · Livrare · Din depozite naționale"
- *   Consiliere telefonică .... numărul e afișat în bara de contact din
- *                              Navbar.tsx și în Footer.tsx (+40 721 233 544),
- *                              alături de o adresă dedicată transportului
- *   Prețuri de importator .... același slide: „B2B · Prețuri · Condiții de
- *                              importator direct", plus toată secțiunea
- *                              ConditiiB2B.tsx (Gold −10%, Platinum −15%)
- *   Catalog actualizat lunar . perioada vine din WooCommerce prin
- *                              lib/perioada.ts și se schimbă la fiecare import
+ *      Lecția, fiindcă regula de proveniență a acestui fișier o trecuse:
+ *      „scris în proiect" nu înseamnă „verificat". Un text-șablon e scris în
+ *      proiect. Regula cere o sursă, dar sursa trebuie să fie o afirmație a
+ *      firmei, nu un rând rămas din primul schelet al site-ului.
  *
- * ─── CE NU E AICI, DEȘI AR FI ÎNCĂPUT ─────────────────────────────────────
+ *   2. DOUĂ DIN PATRU NU SPUNEAU NIMIC. „Consiliere telefonică" e adevărată și
+ *      goală — orice firmă are telefon; nu e o facilitate, e o condiție de
+ *      existență. „Prețuri de importator" era un adjectiv fără cifră în spate.
  *
- * „Drept de retur" și „Garanție", deși footer-ul are linkuri către ele. Acele
- * pagini nu există încă — comentariul din Footer.tsx o spune pe față, verificat
- * cu 404. O bandă care promite un drept de retur, lângă un link care duce în
- * gol, e mai rea decât o bandă cu trei rânduri.
+ *   3. PLĂCUȚA CU ICONIȚĂ E CLIȘEUL. Fundal deschis, colț rotunjit, iconiță de
+ *      contur: tiparul „feature list" din orice șablon din ultimii opt ani. Nu
+ *      iconița era greșită — faptul că exista o plăcuță cu iconiță era.
  *
- * Nicio bancă și nicio opțiune de plată în rate. Verificat pe surse: solarone.ro
- * are parteneriate cu TBI Bank și BT Leasing, avogrupinvest.ro nu are niciunul.
- * Parteneriatele furnizorului nu se transferă distribuitorului.
+ * ─── DE CE UN ÎNDEMN, ȘI DE CE ĂSTA ───────────────────────────────────────
+ *
+ * Locul ăsta e închiderea secțiunii, iar cine ajunge la el a trecut prin toate
+ * patru categoriile: e cel mai calificat cititor de pe pagină. Îi arătam un
+ * rezumat. Acum îi cerem ceva.
+ *
+ * În fotovoltaice nu se cumpără un panou, se cumpără un PROIECT — panouri plus
+ * invertor plus acumulator plus structură. De aceea îndemnul nu e „vezi
+ * produsul", ci „trimite lista". Iar promisiunea din el, „prețul tău de volum",
+ * e chiar diferențiatorul catalogului: a doua coloană de preț, de la 4 paleți
+ * la panouri și 12 bucăți la invertoare (vezi ConditiiB2B.tsx).
+ *
+ * Nu e o acțiune inventată de noi: „Cerere de ofertă" e deja în navigația
+ * proprie a firmei, în Footer.tsx.
+ *
+ * ─── UNDE DUCE ACUM ───────────────────────────────────────────────────────
+ *
+ * La `mailto:`, nu la o pagină, fiindcă PAGINA NU EXISTĂ ÎNCĂ — aplicația are
+ * cinci rute, toate de catalog. Un îndemn care duce în 404 e mai rău decât
+ * banda pe care a înlocuit-o; e chiar greșeala reparată o dată în proiect,
+ * când bara de filtre scria „Lichidare stoc — 15" fără să ducă undeva.
+ *
+ * Adresa e cea verificată de pe avogrupinvest.ro/contact, aceeași ca în
+ * Footer.tsx. Când se face `/cerere-oferta`, se schimbă `ADRESA_OFERTA` cu
+ * ruta și `<a>` redevine `<Link>` — două rânduri.
  */
-/**
- * ─── DE CE E ÎMPĂRȚIT ÎN ETICHETĂ ȘI VALOARE ──────────────────────────────
- *
- * A fost „Livrare în / 24 de ore" — două jumătăți de propoziție, tăiate la
- * mijloc. Se citea ca un text rupt pe două rânduri, nu ca informație
- * structurată, iar îngroșarea celei de-a doua jumătăți nu ajuta: îngroșa o
- * bucată de frază.
- *
- * Acum e ETICHETĂ + VALOARE, exact tiparul pe care site-ul îl folosește deja
- * în trei locuri: ștampila „PREȚURI VALABILE / 01.09 – 30.09", blocul de preț
- * din carduri („DE LA / 54 €") și antetul barei de filtre („CATALOG /
- * Septembrie 2026"). Eticheta e un singur cuvânt, majuscule mici; valoarea
- * duce înțelesul și primește toată greutatea.
- */
-const FACILITATI = [
-  { icon: Truck, eticheta: "Livrare", valoare: "24 de ore" },
-  { icon: Phone, eticheta: "Consiliere", valoare: "telefonică" },
-  { icon: Tag, eticheta: "Prețuri", valoare: "de importator" },
-  { icon: CalendarDays, eticheta: "Catalog", valoare: "actualizat lunar" },
-];
+const ADRESA_OFERTA =
+  "mailto:contact@avogrupinvest.ro" +
+  "?subject=" +
+  encodeURIComponent("Cerere de ofertă — listă echipamente");
 
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
@@ -462,33 +466,23 @@ export default async function GamaProduse() {
           })}
         </div>
 
-        {/* ── Facilitățile firmei ──────────────────────────────
-            Discretă din construcție, fiindcă asta i s-a cerut: fără culoare,
-            fără fundal propriu, fără chenar în jur. Singurul lucru care o
-            desparte de grilă e linia de 1px de deasupra — aceeași cu cea de sub
-            titlul secțiunii, deci nu introduce nicio muchie nouă în pagină.
+        {/* ── Îndemnul și butonul de secțiune ──────────────────
+            Stau pe ACELAȘI rând, nu unul sub altul. Îndemnul ia tot ce rămâne
+            (`flex-1`), butonul stă la dreapta și nu se strânge. Rândul închide
+            secțiunea dintr-o margine în alta, cu aceeași linie de 1px deasupra
+            ca despărțire — cea de sub titlul secțiunii, deci nicio muchie nouă
+            în pagină.
 
-            Ierarhia e cea din bandă: rândul de sus e contextul, cel de jos e
-            informația, iar greutatea o poartă doar al doilea. Așa banda se
-            citește dintr-o privire fără să concureze nici cardurile de
-            deasupra, nici butonul de dedesubt.
+            ÎNĂLȚIMEA RÂNDULUI E NEATINSĂ, ȘI E O CERINȚĂ, NU O ÎNTÂMPLARE.
+            Banda de facilități care era aici măsura 917×44 la 1440px, iar 44
+            veneau de la plăcuțele cu iconiță — exact cât butonul de alături.
+            Înlocuirea trebuie să încapă în aceiași 44px, altfel rândul crește
+            și coboară tot ce urmează în pagină. De-aia textul are DOUĂ rânduri,
+            nu trei: 15px cu `leading-tight` plus 13px cu `leading-snug` fac 37px
+            și rămân 7 de rezervă. Al treilea rând ar fi ieșit din buget.
 
-            ICONIȚELE SUNT `gray-500`, nu `gray-400`. Pare exagerat pentru un
-            desen, dar pragul de 3:1 al elementelor negrafice cade la fel peste
-            ele, iar gray-400 dă 2,60 pe alb. `strokeWidth` scăzut la 1,5 face
-            treaba pe care ar fi făcut-o o culoare mai deschisă: le subțiază,
-            fără să le scoată sub prag.
-
-            Nu e listă de linkuri. Niciuna dintre cele patru n-are unde duce —
-            paginile de livrare și de contact nu există încă — iar un rând
-            aparent apăsabil care nu face nimic e mai rău decât unul care nu
-            pare apăsabil deloc. */}
-        {/* Banda și butonul stau pe ACELAȘI rând, nu unul sub altul.
-
-            Banda ia tot ce rămâne (`flex-1`), butonul stă la dreapta și nu se
-            strânge. Așa cele patru facilități se întind exact până în buton, iar
-            rândul închide secțiunea dintr-o margine în alta, cu aceeași linie de
-            1px deasupra ca despărțire.
+            Măsurat, nu estimat: `tools/captura` cu `--selector`, apoi citite
+            dimensiunile din antetul PNG-ului.
 
             AICI ERA NOTA DE TVA ȘI DEEE. A plecat, și nu se pierde nimic din ea:
             aceeași condiție e scrisă în „Condiții B2B", mai jos pe aceeași
@@ -496,45 +490,56 @@ export default async function GamaProduse() {
             singura care rămâne fără duplicat nicăieri ar fi fost taxa DEEE, iar
             ea e în amândouă locurile.
 
-            SE STIVUIESC ABIA SUB `lg`. Cele patru facilități plus un buton de
-            ~200px n-au unde încăpea pe un rând sub lățimea aia; acolo banda trece
-            pe două coloane, iar butonul coboară pe toată lățimea, ca înainte. */}
+            SE STIVUIESC ABIA SUB `lg`, ca înainte. */}
         <div className="mt-8 sm:mt-10 flex flex-col gap-6 border-t border-gray-200 pt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-          <ul className="grid flex-1 grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4 sm:gap-x-6">
-            {FACILITATI.map((f) => (
-              <li key={f.valoare} className="flex items-center gap-3">
-                {/* Plăcuța: 44×44, cât o țintă de atins cu degetul și cât
-                    butoanele din site, cu iconița la `strokeWidth` 2. Era 40 cu
-                    grosime 1,75 — corectă, dar prea firavă lângă un text îngroșat.
-                    Linia mai groasă e echivalentul „iconițelor pline" fără să
-                    schimbăm setul: rămân vectori, deci rămân clare la orice zoom
-                    și pe orice ecran, și nu adaugă niciun fișier.
+          {/* Textul și butonul lui sunt un bloc, nu două elemente ale rândului
+              mare: sub `sm` se stivuiesc între ele, iar de la `sm` în sus stau
+              alături, cu butonul lipit de sfârșitul textului. Așa „Cere ofertă"
+              rămâne lângă fraza care îl explică, în loc să plutească la celălalt
+              capăt al rândului, la un metru de motivul lui. */}
+          <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <p className="min-w-0">
+              {/* Întrebarea poartă greutatea, fraza o explică. E aceeași
+                  ierarhie ca la etichetă + valoare din restul site-ului, doar
+                  că aici valoarea vine prima: o întrebare directă oprește
+                  privirea mai bine decât un substantiv. */}
+              <span className="block text-[15px] font-extrabold leading-tight text-gray-900">
+                Ai un proiect?
+              </span>
+              <span className="mt-0.5 block text-[13px] leading-snug text-gray-600">
+                Trimite-ne lista de echipamente și primești ofertă cu prețul tău
+                de volum.
+              </span>
+            </p>
 
-                    `avo-50` sub `avo-600` dă 7,92 — de peste două ori pragul de
-                    3:1 cerut pentru elemente negrafice. */}
-                <span
-                  aria-hidden
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-avo-50 text-avo-600"
-                >
-                  <f.icon size={22} strokeWidth={2} />
-                </span>
+            {/* ── „Cere ofertă" ────────────────────────────────
+                GRAY-900 PLIN, NU ALBASTRU. Butonul de alături e avo-600 și
+                rămâne neatins; două butoane albastru plin pe același rând s-ar
+                fi bătut între ele, iar unul cu contur ar fi spus că cererea de
+                ofertă e acțiunea de rangul doi — exact pe dos față de ce
+                valorează pentru firmă. Închis, are toată greutatea fără să
+                atingă albastrul.
 
-                {/* Eticheta ia rețeta etichetelor din tot site-ul — 10px, bold,
-                    majuscule, `tracking-wider`, gray-500 — iar valoarea urcă la
-                    15px extrabold. Raportul dintre ele e ce face banda să se
-                    citească dintr-o privire: ochiul sare peste etichete și
-                    culege doar valorile. */}
-                <span className="min-w-0">
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    {f.eticheta}
-                  </span>
-                  <span className="mt-0.5 block text-[15px] font-extrabold leading-tight text-gray-900">
-                    {f.valoare}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
+                Nu e o culoare nouă în site: bara de contact din navbar, subsolul
+                și „Condiții B2B" sunt deja pe suprafețe închise.
+
+                Aceeași înălțime, aceeași rază, aceeași greutate de literă ca
+                butonul de catalog — sunt frați, nu rude îndepărtate.
+
+                  alb pe gray-900 #101828 ... 17,75 ✓
+                  alb pe gray-800 #1E2939 ... 14,68 ✓  (hover)
+
+                `<a>`, nu `<Link>`: `mailto:` nu e o rută internă, iar Link l-ar
+                trata ca navigare. Se schimbă amândouă când apare
+                `/cerere-oferta`. */}
+            <a
+              href={ADRESA_OFERTA}
+              className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-lg bg-gray-900 px-5 text-[14px] font-semibold text-white transition-colors duration-200 hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 sm:w-auto"
+            >
+              Cere ofertă
+              <ArrowRight aria-hidden size={16} strokeWidth={2} className="shrink-0" />
+            </a>
+          </div>
 
           {/* ── Butonul de secțiune ─────────────────────────────
               REȚETĂ PROPRIE, ȚINUTĂ AICI, NU ÎN components/stiluri.ts. Nu din
