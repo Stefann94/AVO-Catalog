@@ -1,7 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { economie, type Oferta } from "@/lib/oferte";
-import { BUTON_PLIN, CADRU_FOTO_CARD, CARD } from "../stiluri";
+import { economie, formatEconomie, type Oferta } from "@/lib/oferte";
+import {
+  BADGE,
+  BADGE_CARD,
+  BADGE_ECONOMIE,
+  BADGE_LICHIDARE,
+  BADGE_OFERTA,
+  BUTON_PLIN,
+  CADRU_FOTO_CARD,
+  CARD,
+} from "../stiluri";
 
 /**
  * Cardul unei oferte.
@@ -22,7 +31,18 @@ import { BUTON_PLIN, CADRU_FOTO_CARD, CARD } from "../stiluri";
  */
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
-export default function CardOferta({ o }: { o: Oferta }) {
+export default function CardOferta({
+  o,
+  oferta = false,
+}: {
+  o: Oferta;
+  /**
+   * Produsul e pe pagina „OFERTELE LUNII" a catalogului — primește badge-ul
+   * roșu „Ofertă". Îl dă secțiunea, nu datele: cardul se folosește și în banda
+   * de lichidare și pe pagina ei, unde nu are ce căuta.
+   */
+  oferta?: boolean;
+}) {
   return (
   <article
     className={`${CARD} group relative flex flex-col overflow-hidden`}
@@ -76,15 +96,43 @@ export default function CardOferta({ o }: { o: Oferta }) {
           Apare DOAR unde există economie. Pe pagina de lichidare nu o
           garantează nimic, iar fără condiție un produs fără a doua coloană de
           preț ar fi afișat „−0 € / buc". */}
-      {economie(o) > 0 ? (
-        <span className="absolute top-3 left-3 z-10 inline-flex items-center h-7 px-2.5 rounded-md bg-gray-900 text-[11px] font-bold text-white">
-          −{eur(Math.round(economie(o)))} € / {o.unitate}
-        </span>
+      {/* ─── „OFERTĂ", ROȘU ────────────────────────────────────────────
+          Singura excepție de la regula unui singur accent, și e cerută: pe
+          „Ofertele lunii" cardurile trebuie să se citească dintr-o privire ca
+          fiind la ofertă, iar un al treilea badge închis s-ar fi pierdut lângă
+          celelalte două.
+
+          FĂRĂ CIFRĂ. Catalogul nu dă un preț anterior pentru ofertele lunii,
+          doar prețul de ofertă, deci un „−15%" ar fi inventat. Badge-ul spune
+          exact ce spune catalogul — eticheta „OFERTĂ" de pe pagina lui.
+
+          `#DC2626` scris ca valoare, nu `red-600`: în Tailwind v4 treapta aceea
+          e oklch și iese #E7000B, altă nuanță decât cea măsurată.
+            alb pe #DC2626 .... 4,83 ✓  (AA text normal 4,5)
+
+          Stă primul în grup, în stânga, înaintea economiei: e motivul pentru
+          care produsul e în secțiune; economia la volum e un detaliu de preț.
+          Grupul se așază pe rând (`flex gap-1.5`) ca două badge-uri să nu se
+          suprapună; la 280px, „Ofertă" + „−60 € / buc" ocupă ~150px, iar în
+          dreapta rămâne loc pentru „Lichidare stoc". */}
+      {oferta || economie(o) > 0 ? (
+        <div className="absolute top-3 left-3 z-10 flex gap-1.5">
+          {oferta ? (
+            <span className={`${BADGE} ${BADGE_CARD} ${BADGE_OFERTA}`}>
+              Ofertă
+            </span>
+          ) : null}
+          {economie(o) > 0 ? (
+            <span className={`${BADGE} ${BADGE_CARD} ${BADGE_ECONOMIE}`}>
+              −{formatEconomie(economie(o))} € / {o.unitate}
+            </span>
+          ) : null}
+        </div>
       ) : null}
 
       {/* Badge în exact poziția badge-ului „N produse". */}
       {o.disponibilitate === "Lichidare stoc" ? (
-        <span className="absolute top-3 right-3 z-10 inline-flex items-center h-7 px-2.5 rounded-md bg-gray-900 text-[11px] font-bold uppercase tracking-wide text-white">
+        <span className={`absolute top-3 right-3 z-10 ${BADGE} ${BADGE_CARD} ${BADGE_LICHIDARE}`}>
           Lichidare stoc
         </span>
       ) : null}
@@ -196,13 +244,24 @@ export default function CardOferta({ o }: { o: Oferta }) {
               moșteneau înălțimea de rând 1,5, deci rândul ieșea de 24px, nu 22,
               iar cardul cu preț de volum rămânea cu 2px mai înalt decât vecinii. */}
           <span className="flex items-baseline gap-1 leading-none">
-            <span className="text-[22px] font-extrabold text-gray-900 leading-none">
-              {eur(o.pret)}
-            </span>
-            <span className="text-[16px] font-bold text-gray-900">€</span>
-            <span className="text-[12px] font-medium text-gray-500 whitespace-nowrap">
-              / {o.unitate}
-            </span>
+            {/* „LA CERERE" în catalog, deci nicio cifră de arătat. Scris la 16px,
+                nu la 22 ca prețul: la 1024px cardul are ~200px, iar rândul îl
+                împarte cu butonul „Vezi". Aceeași formulare ca în PDF. */}
+            {o.pretLaCerere ? (
+              <span className="text-[16px] font-extrabold text-gray-900 leading-none whitespace-nowrap">
+                La cerere
+              </span>
+            ) : (
+              <>
+                <span className="text-[22px] font-extrabold text-gray-900 leading-none">
+                  {eur(o.pret)}
+                </span>
+                <span className="text-[16px] font-bold text-gray-900">€</span>
+                <span className="text-[12px] font-medium text-gray-500 whitespace-nowrap">
+                  / {o.unitate}
+                </span>
+              </>
+            )}
           </span>
   
           {/* Pragul de volum e singura a doua cifră reală din catalog

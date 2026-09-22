@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { incarcaBaraFiltre } from "@/lib/panou";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
-import { SUPRAFATA } from "./stiluri";
 
 /**
  * Bara de filtre — cuprinsul catalogului, în stânga paginii.
@@ -141,7 +140,9 @@ import { SUPRAFATA } from "./stiluri";
  * că se citea ca un widget lipit peste pagină. Argumentul de atunci — că bara
  * chiar plutește peste conținutul care se derulează pe dedesubt — nu se
  * verifică pe pagina randată: bara stă în marja goală, iar pe sub ea nu trece
- * nimic. Acum folosește `SUPRAFATA`, aceeași rețetă ca panourile din fișa de
+ * nimic. (Între timp a trecut pe desenul meniului din /catalog — colțuri
+ * drepte, linie de 2px sus —, vezi app/catalog/page.tsx.) A folosit întâi
+ * `SUPRAFATA`, aceeași rețetă ca panourile din fișa de
  * produs și ca ștampila „Prețuri valabile" de alături.
  *
  * PANOUL E ALB PESTE TOT. Antetul și nota erau pe #F8F9FA, adică exact culoarea
@@ -167,8 +168,8 @@ import { SUPRAFATA } from "./stiluri";
  *   gray-900 #101828 pe alb ... 17,75 ✓  nume de categorie, titlul barei
  *   gray-600 #4A5565 pe alb .... 7,56 ✓  nume de subcategorie
  *   gray-500 #6A7282 pe alb .... 4,84 ✓  etichete, cifre, nota de subsol
- *   avo-700  #003B7D pe avo-50 . 10,06 ✓  numele și cifra, la hover
- *   gray-900 #101828 pe avo-50 . 16,73 ✓  vecinii rândului atins
+ *   avo-700  #003B7D pe alb .... 10,93 ✓  categoria, la hover
+ *   avo-600  #004A99 pe alb ..... 8,61 ✓  subcategoria, la hover
  *
  * ─── CE ARATĂ ─────────────────────────────────────────────────────────────
  *
@@ -227,6 +228,9 @@ export default async function BaraFiltre() {
   // una singură descrie lista de dedesubt — iar dacă vreodată nu se mai
   // potrivesc, cifra din subsol trebuie să fie cea a listei pe care o închide.
   const totalProduse = categorii.reduce((s, c) => s + c.produse, 0);
+  // Reperul riglelor de pondere: categoria cea mai mare are rigla plină. `1`
+  // ca plasă, ca o listă goală să nu împartă la zero.
+  const maxProduse = Math.max(1, ...categorii.map((c) => c.produse));
 
   return (
     <div
@@ -267,7 +271,13 @@ export default async function BaraFiltre() {
          * derularea — aia e pe etajul din mijloc, ca bara nativă să înceapă sub
          * antet și să se oprească deasupra notei.
          */
-        className={`${SUPRAFATA} pointer-events-auto sticky top-[calc(var(--inaltime-navbar)+1.5rem)] flex max-h-[min(100%,calc(100vh-var(--inaltime-navbar)-3.5rem))] flex-col overflow-hidden`}
+        /*
+         * DESENUL E CEL AL MENIULUI DIN /catalog (app/catalog/page.tsx, unde e
+         * explicat pe larg): colțuri drepte, fără umbră, chenar gray-200 și sus
+         * o linie de 2px gray-900. Cele două meniuri descriu același cuprins,
+         * deci arată ca același obiect.
+         */
+        className="pointer-events-auto sticky top-[calc(var(--inaltime-navbar)+1.5rem)] flex max-h-[min(100%,calc(100vh-var(--inaltime-navbar)-3.5rem))] flex-col overflow-hidden border border-gray-200 border-t-2 border-t-gray-900 bg-white"
       >
         {/* ── ETAJUL 1: antetul ──
             În afara zonei derulabile, deci nemișcat orice s-ar întâmpla în
@@ -280,7 +290,7 @@ export default async function BaraFiltre() {
         <div className="shrink-0 px-5 pt-4">
           <Eticheta>Catalog</Eticheta>
           {perioada.eticheta ? (
-            <span className="mt-1.5 block text-[17px] leading-tight font-extrabold text-gray-900">
+            <span className="mt-1 block text-[20px] leading-tight font-extrabold tracking-tight text-gray-900">
               {perioada.eticheta}
             </span>
           ) : null}
@@ -304,9 +314,11 @@ export default async function BaraFiltre() {
               disponibilitate, iar un link către o pagină care ignoră filtrul e
               mai rău decât niciun link. Devin linkuri fără altă modificare aici
               în ziua în care paginile de catalog primesc filtrare pe atribute. */}
-          <div className="px-5 pt-4 pb-4">
-            <Eticheta>Disponibilitate</Eticheta>
-            <ul className="mt-2.5 flex flex-col gap-1.5">
+          <div className="pt-4 pb-3">
+            <div className="px-5">
+              <Eticheta>Disponibilitate</Eticheta>
+            </div>
+            <ul className="mt-1.5 flex flex-col">
               {stari.map((s) => {
                 /* Starea perisabilă e scrisă în gray-900, restul în gray-600.
                    Nu e o culoare nouă: e aceeași ierarhie de tonuri ca
@@ -330,15 +342,19 @@ export default async function BaraFiltre() {
                     <span
                       className={`text-[13px] leading-snug ${
                         urgent
-                          ? "font-semibold text-gray-900 transition-colors group-hover:text-avo-700"
+                          ? "font-bold text-gray-900 transition-colors group-hover:text-avo-700"
                           : "text-gray-600"
                       }`}
                     >
                       {s.eticheta}
                     </span>
+                    {/* Fără pastile, ca în meniul din /catalog: cifrele stau pe
+                        o coloană aliniată la dreapta. */}
                     <span
-                      className={`shrink-0 rounded-md px-1.5 text-center text-[12px] font-bold ${
-                        urgent ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
+                      className={`min-w-[2.25ch] shrink-0 text-right text-[12px] ${
+                        urgent
+                          ? "font-semibold text-gray-900 transition-colors group-hover:text-avo-700"
+                          : "text-gray-500"
                       }`}
                     >
                       {s.produse}
@@ -351,12 +367,12 @@ export default async function BaraFiltre() {
                     {urgent ? (
                       <Link
                         href="/catalog/lichidare-stoc"
-                        className="group -mx-2 flex items-baseline justify-between gap-3 rounded-md px-2 py-1 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                        className="group relative flex items-baseline justify-between gap-3 px-5 py-1.5 transition-colors before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-transparent before:transition-colors hover:before:bg-avo-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-avo-600"
                       >
                         {continut}
                       </Link>
                     ) : (
-                      <span className="flex items-baseline justify-between gap-3">
+                      <span className="flex items-baseline justify-between gap-3 px-5 py-1.5">
                         {continut}
                       </span>
                     )}
@@ -376,31 +392,22 @@ export default async function BaraFiltre() {
           {/* ── Categoriile, cu subcategoriile lor ──
               Asta E structura catalogului. Vezi comentariul din capul
               fișierului pentru de ce nu doar cele opt de nivel 1. */}
-          <div className="px-5 pt-4 pb-4">
-            <Eticheta>Categorii</Eticheta>
+          <div className="pt-4">
+            <div className="px-5">
+              <Eticheta>Categorii</Eticheta>
+            </div>
 
-            <ul className="mt-2.5 flex flex-col gap-3.5">
+            <ul className="mt-1.5 divide-y divide-gray-200">
               {categorii.map((c) => (
                 <li key={c.slug}>
-                  {/* Rândul se lățește cu 8px în afara coloanei de text
-                      (`-mx-2 px-2`), ca fundalul de hover să depășească literele
-                      și să arate ca un rând, nu ca o etichetă lipită pe text.
-
-                      Cifra se colorează odată cu numele. Lăsată gri, la hover
+                  {/* Cifra se colorează odată cu numele. Lăsată gri, la hover
                       rândul se rupea în două: jumătatea din stânga albastră,
                       jumătatea din dreapta nu.
 
-                      FUNDALUL DE HOVER E `avo-50`, NU UN GRI. A fost #F8F9FA
-                      — adică exact culoarea paginii de sub panou, aceeași
-                      greșeală pe care capul fișierului o descrie pentru antet
-                      și notă: „două benzi care păreau găurite în panou". Un
-                      rând care la hover ia culoarea paginii nu se aprinde, se
-                      găurește.
-
-                      Pe `avo-50` accentul apare NUMAI la interacțiune, nicăieri
-                      în repaus — ceea ce e chiar regula site-ului: culoarea o
-                      primesc elementele de decizie, iar un rând devine decizie
-                      abia când e atins.
+                      FĂRĂ FUNDAL DE HOVER. A fost #F8F9FA — culoarea paginii,
+                      deci rândul se „găurea" —, apoi `avo-50`. Acum hover-ul e
+                      dunga de 2px din stânga plus culoarea, ca pe /catalog.
+                      Accentul apare tot NUMAI la interacțiune.
 
                       CIFRELE AU COLOANĂ PROPRIE, prin `min-w` plus aliniere la
                       dreapta. Erau lipite de marginea rândului, fiecare unde o
@@ -409,36 +416,56 @@ export default async function BaraFiltre() {
                       (vezi app/layout.tsx), deci `tabular-nums` n-ar fi ajutat;
                       o lățime minimă, da. */}
 
+                  {/* ACUM: rețeta rândului din meniul de pe /catalog, copiată
+                      clasă cu clasă — rând din margine în margine, dungă de 2px
+                      la hover, rigla de pondere sub nume. Motivele sunt scrise
+                      acolo, în app/catalog/page.tsx. */}
                   <Link
                     href={`/catalog/${c.slug}`}
-                    className="group -mx-2 flex items-baseline justify-between gap-3 rounded-md px-2 py-1 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                    className="group relative block px-5 pt-3 pb-3 transition-colors before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-transparent before:transition-colors hover:before:bg-avo-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-avo-600"
                   >
-                    <span className="text-[13px] leading-snug font-bold text-gray-900 transition-colors group-hover:text-avo-700">
-                      {c.nume}
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="text-[13px] leading-snug font-bold text-gray-900 transition-colors group-hover:text-avo-700">
+                        {c.nume}
+                      </span>
+                      <span className="min-w-[2.25ch] shrink-0 text-right text-[12px] font-semibold text-gray-600 transition-colors group-hover:text-avo-700">
+                        {c.produse}
+                      </span>
                     </span>
-                    <span className="shrink-0 rounded-md bg-gray-100 px-1.5 text-center text-[12px] font-bold text-gray-600 transition-colors group-hover:bg-white group-hover:text-avo-700">
-                      {c.produse}
+                    {/* Rigla de pondere: lungă cât partea categoriei din cea
+                        mai mare dintre ele, minimum 3%. */}
+                    <span aria-hidden className="mt-2 block h-0.5">
+                      <span
+                        className="block h-full bg-gray-300 transition-colors group-hover:bg-avo-600"
+                        style={{ width: `${Math.max(3, Math.round((c.produse / maxProduse) * 100))}%` }}
+                      />
                     </span>
                   </Link>
 
-                  {/* Subcategoriile, retrase și mai mici.
+                  {/* Subcategoriile. Linia de ghidaj cade sub marginea din
+                      stânga a numelui categoriei (20px): numele lungi se rup pe
+                      două rânduri, iar fără linie ierarhia s-ar pierde exact
+                      acolo unde e mai greu de citit.
 
-                      Retragerea o face o linie verticală, nu un padding gol:
-                      numele lungi se rup pe două rânduri, iar fără linie al
-                      doilea rând ar începe din marginea din stânga și ierarhia
-                      s-ar pierde exact acolo unde e mai greu de citit. */}
+                      La hover numele și cifra trec pe bold și avo-600, iar
+                      segmentul de ghidaj pe 2px. Numele își rezervă din start
+                      lățimea variantei bold (`::after` invizibil cu același
+                      text), ca îngroșarea să nu-l rupă pe alt rând sub mouse. */}
                   {c.subcategorii.length > 0 ? (
-                    <ul className="mt-1 ml-2 flex flex-col border-l border-gray-200 pl-3">
+                    <ul className="relative -mt-1 pb-2.5 before:absolute before:top-0 before:bottom-2.5 before:left-5 before:w-px before:bg-gray-200">
                       {c.subcategorii.map((s) => (
                         <li key={s.slug}>
                           <Link
                             href={`/catalog/${c.slug}/${s.slug}`}
-                            className="group -mx-1.5 flex items-baseline justify-between gap-3 rounded-md px-1.5 py-[3px] transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                            className="group relative flex items-baseline justify-between gap-3 py-[5px] pr-5 pl-9 transition-colors before:absolute before:inset-y-0 before:left-5 before:w-px before:bg-transparent before:transition-colors hover:before:w-0.5 hover:before:bg-avo-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-avo-600"
                           >
-                            <span className="text-[12px] leading-snug text-gray-600 transition-colors group-hover:text-avo-700">
+                            <span
+                              data-nume={s.nume}
+                              className="grid text-[12px] leading-snug text-gray-600 transition-colors after:invisible after:h-0 after:overflow-hidden after:font-bold after:content-[attr(data-nume)] group-hover:font-bold group-hover:text-avo-600"
+                            >
                               {s.nume}
                             </span>
-                            <span className="shrink-0 min-w-[2.25ch] text-right text-[11px] text-gray-500 transition-colors group-hover:text-avo-700">
+                            <span className="min-w-[2.25ch] shrink-0 text-right text-[11px] text-gray-500 transition-colors group-hover:font-bold group-hover:text-avo-600">
                               {s.produse}
                             </span>
                           </Link>

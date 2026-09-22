@@ -2,6 +2,7 @@ import HeroSlider from "@/components/HeroSlider";
 import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
 import LichidareStoc from "@/components/LichidareStoc";
+import ReclamaPytes from "@/components/ReclamaPytes";
 import OferteleLunii from "@/components/OferteleLunii";
 import ConditiiB2B from "@/components/ConditiiB2B";
 import BaraFiltre from "@/components/BaraFiltre";
@@ -73,7 +74,13 @@ export default function Home() {
       {/* Lichidare de stoc — banda derulantă cu săgeți. A fost „Ofertele
           lunii", cu o selecție calculată; acum arată secțiunile „LICHIDARE
           STOC" din catalog, cu același design. */}
-      <LichidareStoc />
+      {/* `relative` e reperul reclamei înalte din marja dreaptă: se așază
+          față de secțiunea de lichidare, nu față de toată pagina. Același
+          tipar ca învelișul de mai sus, al barei de filtre. */}
+      <div className="relative">
+        <ReclamaPytes />
+        <LichidareStoc />
+      </div>
 
       {/* Ofertele lunii — cele patru produse de pe pagina de oferte a
           catalogului, coborâte cu o secțiune sub banda de lichidare. */}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from "../../public/logo.png";
-import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { Search, User, ChevronDown, Award, Package, Menu, X, Phone, Mail, MapPin } from "lucide-react";
 
 /* ══════════════════════════════════════════════════════════════════════════
    CELE PATRU STĂRI ALE BAREI
@@ -19,7 +19,7 @@ import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone
        Parteneri B2B ............. 155px
        Sisteme Industriale ....... 190px
        Cont B2B .................. 125px
-       Coș ........................ 91px
+       Coș ........................ 91px  (scos între timp — vezi mai jos)
        câmpul de căutare ......... 256px
 
    Adunate cu spațiile dintre ele și cu `lg:px-12`, forma completă cere 1428px.
@@ -35,10 +35,14 @@ import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone
      lg  1024–1279 ... meniul complet, dar strâns: sigla la `h-11`, butoanele cu
                        `px-3.5` și 13px, căutarea și contul doar cu iconița.
                        Cere ~900px din cei 976 disponibili.
-     xl  1280–1535 ... contul și coșul își recapătă eticheta, butoanele respiră
+     xl  1280–1535 ... contul își recapătă eticheta, butoanele respiră
                        la `px-4`. Cere ~1060px din 1184.
      2xl 1536+ ....... forma completă: sigla la `h-12`, `px-5`, câmp de căutare.
                        Cere ~1350px din 1440.
+
+   BUTONUL „COȘ" (91px) A FOST SCOS: site-ul nu are coș, iar butonul cu bulina
+   „0" nu ducea nicăieri. Cifrele de mai sus îl includ încă, deci fiecare
+   treaptă are acum ~90px de rezervă în plus.
 
    REGULA DE ÎNTREȚINERE. Fiecare treaptă are cel puțin 75px de rezervă față de
    lățimea la care începe. Cine adaugă un element în bară verifică întâi dacă
@@ -52,7 +56,7 @@ import { Search, User, ShoppingCart, ChevronDown, Award, Package, Menu, X, Phone
    ══════════════════════════════════════════════════════════════════════════ */
 
 /**
- * Rețeta butoanelor din bară — meniu, cont, coș.
+ * Rețeta butoanelor din bară — meniu, căutare, cont.
  *
  * Ca șir comun, nu copiată de patru ori: erau patru variante ale aceleiași
  * rețete, iar la restrângerea barei fiecare ar fi trebuit strânsă separat.
@@ -342,9 +346,10 @@ export default function Navbar() {
         </div>
 
         {/* ── Acțiunile din dreapta ────────────────────────────────────
-            Trei elemente care se dezbracă pe rând, în ordinea în care le scade
+            Două elemente care se dezbracă pe rând, în ordinea în care le scade
             utilitatea odată cu spațiul: întâi câmpul de căutare devine buton cu
-            lupă, apoi contul și coșul rămân doar cu iconița. */}
+            lupă, apoi contul rămâne doar cu iconița. Coșul, al treilea, a fost
+            scos. */}
         <div className="hidden lg:flex lg:grow lg:justify-end items-center gap-2 xl:gap-3 2xl:gap-5">
           {/* Câmpul de căutare, doar de la 2xl. Sub el ar fi trebuit să scadă
               la ~150px, adică sub lungimea textului „Caută produse…" pe care
@@ -374,13 +379,10 @@ export default function Navbar() {
               <User size={16} className="group-hover:scale-110 transition-transform" />
               <span className="hidden xl:inline text-xs uppercase tracking-wider">Cont B2B</span>
             </button>
-            <button type="button" className={BUTON_BARA + " group relative h-11 w-11 xl:w-auto xl:gap-2 xl:px-4"}>
-              <div className="relative">
-                <ShoppingCart size={16} className="group-hover:scale-110 transition-transform" />
-                <span className="absolute -top-2.5 -right-2.5 bg-avo-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
-              </div>
-              <span className="hidden xl:inline text-xs uppercase tracking-wider ml-1">Coș</span>
-            </button>
+            {/* AICI ERA BUTONUL „COȘ", cu o bulină „0". Scos la cerere: site-ul
+                nu are coș — prețurile se ofertează, nu se plătesc online —, iar
+                butonul nu ducea nicăieri. Un coș mereu gol promitea o funcție
+                care nu există. */}
           </div>
         </div>
 

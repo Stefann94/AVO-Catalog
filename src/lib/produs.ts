@@ -16,18 +16,6 @@ import {
 } from "./queries";
 import { cifraDeTitlu, type Atribut, type CifraTitlu } from "./spec";
 
-/**
- * Un statut afișat ca badge.
- *
- * `ton` e ROLUL, nu culoarea. Culoarea o alege componenta care randează — vezi
- * comentariul de la `STATUTURI` pentru de ce aspectul nu are ce căuta aici,
- * și cu atât mai puțin în baza de date.
- */
-export type Statut = {
-  eticheta: string;
-  ton: "oferta" | "urgent" | "neutru";
-};
-
 export type Produs = {
   nume: string;
   slug: string;
@@ -64,41 +52,27 @@ export type Produs = {
   subcategorie?: { nume: string; slug: string };
   /** Perechile din tabelul de specificații, fără cele afișate deja aiurea. */
   specificatii: Atribut[];
-  statuturi: Statut[];
-};
-
-/* ══════════════════════════════════════════════════════════════════════════
-   Statuturile
-   ──────────────────────────────────────────────────────────────────────────
-   Vin din două locuri, cu regimuri diferite, iar diferența e ce face sistemul
-   să funcționeze luna viitoare:
-
-   AUTOMAT, din catalog. „Ofertă specială" iese din `featured`, pe care
-   importatorul îl pune citind pagina de oferte de pe coperta PDF-ului.
-   „Lichidare stoc" iese din atributul Disponibilitate, scris tot de importator
-   din titlul secțiunii. Nimeni nu le bifează; se recalculează la fiecare import.
-
-   MANUAL, din WooCommerce. Etichetele de produs (Products → Tags): „Recomandat",
-   „Stoc limitat", orice apare. Importatorul NU scrie coloana `Tags`, deci ce
-   pune un om acolo supraviețuiește reimportului lunar. Ăsta era tot rostul
-   alegerii lor.
-
-   DE CE ASPECTUL NU STĂ ÎN BAZA DE DATE. Baza spune CE e adevărat — „ofertă
-   specială". Cum arată badge-ul decide codul. Dacă am ține culoarea în
-   WooCommerce, cineva ar alege un portocaliu care cade sub pragul de contrast
-   și nimeni n-ar afla; iar un al patrulea accent ar strica exact regula de un
-   singur accent pe care am impus-o peste tot.
-
-   Un tag necunoscut primește tonul neutru și se afișează cu numele lui. Așa,
-   un statut nou funcționează din prima, fără cod — doar că arată sobru până
-   îi dăm un ton anume aici.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-const TONURI: Record<string, Statut["ton"]> = {
-  "oferta-speciala": "oferta",
-  "lichidare-stoc": "urgent",
-  "stoc-limitat": "urgent",
-  recomandat: "oferta",
+  /**
+   * Produsul e pe pagina „OFERTELE LUNII" a catalogului — `featured` în
+   * WooCommerce, pus de importator. Dă badge-ul roșu „Ofertă" de pe fișă, la
+   * fel ca pe card.
+   *
+   * A ÎNLOCUIT `statuturi`, o listă de etichete text: „Ofertă specială" din
+   * `featured`, disponibilitatea când nu era „În stoc" și etichetele puse de
+   * mână în WooCommerce (Products → Tags). Fișa arată acum exact badge-urile
+   * cardului — ofertă, economie la volum, lichidare — iar celelalte două surse
+   * nu aveau corespondent pe card:
+   *
+   *   disponibilitatea ... „Lichidare stoc" rămâne badge (se citește din
+   *                        `disponibilitate`); „La comandă" apare deja pe
+   *                        rândul de disponibilitate de lângă preț
+   *   etichetele manuale . nu exista niciuna în WooCommerce la momentul
+   *                        schimbării (verificat prin GraphQL: 0)
+   *
+   * Economia și lichidarea nu au câmp propriu: se calculează din `pret`,
+   * `pretVolum` și `disponibilitate`, care există deja.
+   */
+  oferta: boolean;
 };
 
 type NodProdus = {
@@ -157,32 +131,6 @@ function atributeDin(nod: NodProdus): Atribut[] {
 function textSimplu(html?: string | null): string | undefined {
   const t = html?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   return t ? t : undefined;
-}
-
-function statuturiDin(nod: NodProdus, atribute: Atribut[]): Statut[] {
-  const statuturi: Statut[] = [];
-
-  if (nod.featured) {
-    statuturi.push({ eticheta: "Ofertă specială", ton: "oferta" });
-  }
-
-  const disp = atribute.find((a) => a.nume === "pa_disponibilitate")?.valoare;
-  if (disp && disp !== "În stoc") {
-    statuturi.push({ eticheta: disp, ton: disp === "Lichidare stoc" ? "urgent" : "neutru" });
-  }
-
-  for (const t of nod.productTags?.nodes ?? []) {
-    const eticheta = t?.name?.trim();
-    const slug = t?.slug?.trim() ?? "";
-    if (!eticheta) continue;
-    // Tag-ul care repetă un statut automat se sare: importatorul pune deja
-    // „Ofertă specială" din `featured`, iar dacă cineva bifează și eticheta,
-    // badge-ul ar apărea de două ori.
-    if (statuturi.some((s) => s.eticheta.toLowerCase() === eticheta.toLowerCase())) continue;
-    statuturi.push({ eticheta, ton: TONURI[slug] ?? "neutru" });
-  }
-
-  return statuturi;
 }
 
 /**
@@ -274,7 +222,7 @@ function mapeaza(nod: NodProdus): Produs | null {
     specificatii: atribute.filter(
       (a) => a.nume !== "pa_brand" && a.nume !== "pa_disponibilitate"
     ),
-    statuturi: statuturiDin(nod, atribute),
+    oferta: Boolean(nod.featured),
   };
 }
 
@@ -339,6 +287,19 @@ async function construiesteHarta(): Promise<Map<string, Produs>> {
 function toateProdusele(): Promise<Map<string, Produs>> {
   hartaProduse ??= construiesteHarta();
   return hartaProduse;
+}
+
+/**
+ * Toate produsele, ca listă — din aceeași hartă pe care o folosesc fișele.
+ *
+ * Există pentru dropdown-ul rândului de categorii de pe /catalog
+ * (components/catalog/MeniuCategorii.tsx), care arată câte un produs din
+ * fiecare categorie. Pagina /catalog aduce doar primele 50 de produse, iar
+ * dintre ele unele categorii lipsesc cu totul; harta le are pe toate 172, în
+ * pagini de câte 50, și e deja construită o singură dată per proces.
+ */
+export async function incarcaToateProdusele(): Promise<Produs[]> {
+  return [...(await toateProdusele()).values()];
 }
 
 /**

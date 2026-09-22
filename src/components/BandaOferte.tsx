@@ -158,16 +158,37 @@ export default function BandaOferte({ children }: { children: React.ReactNode })
   return (
     <div>
       {/* Pista.
-          `-mx-4 px-4` (și perechile de la praguri) o lasă să atingă marginile
-          ecranului pe telefon, unde altfel ar fi rămas un jgheab gol în care
-          cardurile se opresc înainte de margine. Padding-ul readuce primul card
-          în coloana de text, iar `scroll-px` face ca și oprirea de snap să cadă
-          tot acolo — fără el, primul card s-ar fi lipit de marginea ferestrei
-          la prima derulare înapoi. */}
+          `-mx-4 px-4` și `sm:-mx-6 sm:px-6` o lasă să atingă marginile
+          ecranului pe telefon și pe tabletă, unde altfel ar fi rămas un jgheab
+          gol în care cardurile se opresc înainte de margine. Padding-ul readuce
+          primul card în coloana de text, iar `scroll-px` face ca și oprirea de
+          snap să cadă tot acolo — fără el, primul card s-ar fi lipit de
+          marginea ferestrei la prima derulare înapoi.
+
+          DE LA `lg` NU MAI IESE DIN SECȚIUNE. A fost `lg:-mx-12 lg:px-12`, adică
+          aceeași ieșire până la marginea containerului, cu 48px dincolo de
+          coloana de text. Pe telefon ieșirea atinge ecranul; pe desktop atingea
+          doar un gol, iar cardul tăiat din dreapta trecea cu 48px de marginea
+          conținutului din secțiunea de deasupra — se vedea ca o bandă scăpată
+          din pagină. Și, de când în marja dreaptă stă reclama Pytes, cardul
+          ajungea lipit de ea.
+
+          Acum pista se oprește EXACT la marginea coloanei de text — aceeași
+          muchie pe care se termină butonul „Vezi catalogul complet" din
+          secțiunea de deasupra. O vreme au rămas 4px (`lg:-mx-1 lg:px-1`), ca
+          inelul de hover al cardului de la margine să nu fie retezat de
+          `overflow-x-auto`; dar cei 4px se vedeau ca o bandă care tot trece de
+          buton, iar cerința a fost muchia exactă.
+
+          Prețul, asumat: la hover, cardul lipit de margine are inelul exterior
+          tăiat pe latura dinspre ea. Conturul lui de 1px se colorează oricum în
+          avo-600 — acela e în interiorul cutiei —, deci starea de hover rămâne
+          vizibilă; pe latura aceea e doar mai subțire. Pe verticală rămâne
+          `py-1 -my-1`, unde nu costă nimic din aliniere. */}
       <div
         ref={pista}
         onScroll={masoara}
-        className="fara-bara-derulare -my-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 py-1 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:-mx-12 lg:scroll-px-12 lg:px-12"
+        className="fara-bara-derulare -my-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 py-1 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0"
       >
         {children}
       </div>

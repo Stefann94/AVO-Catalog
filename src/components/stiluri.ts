@@ -133,6 +133,38 @@ export const CARD =
 export const CADRU_FOTO_CARD = "aspect-[4/3] max-h-[260px]";
 
 /**
+ * Badge-urile unui produs — aceleași pe card și pe fișa produsului.
+ *
+ * DE CE STAU AICI. Fișa scria statuturile ca text colorat („OFERTĂ SPECIALĂ"
+ * albastru), iar cardul le desena ca pastile — două limbaje pentru aceeași
+ * informație, ba chiar două denumiri („Ofertă specială" pe fișă, „Ofertă" pe
+ * card). Cine dădea clic pe un card cu „OFERTĂ" roșu ajungea pe o pagină unde
+ * nu mai găsea nimic roșu. Acum ambele iau culorile și textele de aici.
+ *
+ * Doar CULOAREA și FORMA sunt comune. Mărimea o alege locul: pe card
+ * `BADGE_CARD` (28px, 11px), pe fișă puțin mai mare, fiindcă stă sub un titlu
+ * de 34px, nu peste o fotografie de 260px.
+ *
+ * Raza e 6px (`rounded-md`), treapta etichetelor din scara de trei raze.
+ *
+ * Contraste (prag AA text normal 4,5:1):
+ *   alb pe #DC2626 ............ 4,83 ✓  „Ofertă"
+ *   alb pe gray-900 #101828 .. 17,75 ✓  economia la volum, „Lichidare stoc"
+ *
+ * `#DC2626` scris ca valoare, nu `red-600`: în Tailwind v4 treapta aceea e
+ * oklch și iese #E7000B, altă nuanță decât cea măsurată. E singura excepție de
+ * la regula unui singur accent și e cerută: ofertele trebuie să se vadă.
+ */
+export const BADGE = "inline-flex items-center rounded-md font-bold text-white whitespace-nowrap";
+export const BADGE_CARD = "h-7 px-2.5 text-[11px]";
+/** Produsul e pe pagina „OFERTELE LUNII" a catalogului (`featured` în WooCommerce). */
+export const BADGE_OFERTA = "bg-[#DC2626] uppercase tracking-wide";
+/** Economia pe unitate la prețul de volum: „−60 € / buc". */
+export const BADGE_ECONOMIE = "bg-gray-900";
+/** Disponibilitatea „Lichidare stoc", din secțiunile de lichidare ale catalogului. */
+export const BADGE_LICHIDARE = "bg-gray-900 uppercase tracking-wide";
+
+/**
  * Dimensiunea unui titlu de secțiune, calculată din lungimea lui.
  *
  * PROBLEMA. Titlurile de secțiune trebuie să stea pe un singur rând, dar

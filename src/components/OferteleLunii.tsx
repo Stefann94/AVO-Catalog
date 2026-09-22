@@ -49,7 +49,10 @@ export default async function OferteleLunii() {
   const titlu = `Ofertele lunii${perioada.eticheta ? ` ${perioada.eticheta}` : ""}`;
 
   return (
-    <section className="bg-white pb-16 lg:pb-20">
+    /* `id` pentru butonul „Vezi ofertele" din bannerul paginii /catalog
+       (components/catalog/HeroCatalog.tsx). `scroll-mt` coboară oprirea sub
+       bara fixă, altfel titlul ar ajunge ascuns sub ea. */
+    <section id="ofertele-lunii" className="scroll-mt-(--inaltime-navbar) bg-white pb-16 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div
           className="@container mb-8 sm:mb-10"
@@ -62,7 +65,7 @@ export default async function OferteleLunii() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 sm:gap-5">
           {lista.map((o) => (
-            <CardOferta key={o.sku} o={o} />
+            <CardOferta key={o.sku} o={o} oferta />
           ))}
         </div>
       </div>

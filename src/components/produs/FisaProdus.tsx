@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Package, Truck, FileText } from "lucide-react";
-import type { Produs, Statut } from "@/lib/produs";
+import type { Produs } from "@/lib/produs";
 import { gasesteBrand } from "@/lib/branduri";
+import { BADGE, BADGE_ECONOMIE, BADGE_LICHIDARE, BADGE_OFERTA } from "@/components/stiluri";
+import { formatEconomie } from "@/lib/oferte";
 import CantitateProdus from "./CantitateProdus";
 
 /**
@@ -37,7 +39,7 @@ import CantitateProdus from "./CantitateProdus";
  * ─── AȘEZAREA ─────────────────────────────────────────────────────────────
  *
  *   titlul .......... pe toată lățimea, deasupra amândurora
- *   rândul de sub ... statuturile în stânga, codul de produs în dreapta
+ *   rândul de sub ... badge-urile în stânga, codul de produs în dreapta
  *   stânga (7/12) ... cifra care ține locul fotografiei, apoi specificațiile
  *   dreapta (5/12) .. prețul și condițiile de cumpărare, lipicioase la derulare
  *
@@ -90,11 +92,18 @@ import CantitateProdus from "./CantitateProdus";
  * deschise. Aici se folosește al doilea. Brandurile fără fișier cad pe numele
  * scris, în același loc.
  *
- * ─── STATUTURILE, CA TEXT ─────────────────────────────────────────────────
+ * ─── BADGE-URILE, CA PE CARD ──────────────────────────────────────────────
  *
- * „Ofertă specială", „Lichidare stoc" — erau pastile cu fundal. Aici sunt text
- * majuscul colorat, despărțit de linii verticale subțiri. Aceeași informație,
- * fără încă o cutie mică pe un ecran din care tocmai am scos cutiile mari.
+ * Sub titlu stau exact badge-urile de pe cardul produsului: „Ofertă" roșu,
+ * economia la volum („−60 € / buc") și „Lichidare stoc". Rețetele sunt comune,
+ * în components/stiluri.ts.
+ *
+ * AU FOST TEXT, nu pastile: „OFERTĂ SPECIALĂ" majuscul albastru, despărțit de
+ * linii subțiri, cu argumentul că o pagină fără chenare nu mai vrea cutii mici.
+ * A căzut fiindcă rupea legătura cu cardul — pe prima pagină produsul era
+ * „OFERTĂ" pe roșu, iar după clic devenea „Ofertă specială" pe albastru, deci
+ * altă denumire și altă culoare pentru același lucru. Economia la volum nici
+ * nu apărea. Pastilele de aici sunt singurele cutii de pe fișă, și sunt mici.
  *
  * Contraste (prag WCAG AA text normal 4,5:1):
  *   gray-900 #101828 pe alb ........ 17,75 ✓  titlu, preț, valori
@@ -108,18 +117,10 @@ import CantitateProdus from "./CantitateProdus";
 const eur = (n: number) => n.toLocaleString("ro-RO");
 
 /**
- * Statutul, redus la culoarea textului.
- *
- * `ton` rămâne rolul, venit din lib/produs.ts; aici se decide doar cum arată.
- * Motivul pentru care aspectul nu stă în baza de date e scris acolo: cineva ar
- * alege în administrare un portocaliu sub pragul de contrast și nimeni n-ar
- * afla.
+ * Mărimea badge-urilor pe fișă: 32px, 12px. Cu o treaptă peste card (28px,
+ * 11px), fiindcă aici stau sub un titlu de 34px, nu peste o fotografie.
  */
-const TON: Record<Statut["ton"], string> = {
-  oferta: "text-avo-700",
-  urgent: "text-gray-900",
-  neutru: "text-gray-500",
-};
+const BADGE_FISA = "h-8 px-3 text-[12px]";
 
 /**
  * Un rând de condiție: iconiță, ce e, ce scrie.
@@ -161,6 +162,13 @@ export default function FisaProdus({
 }) {
   const caleCategorie = p.categorie ? `/catalog/${p.categorie.slug}` : "/catalog";
   const sigla = gasesteBrand(p.brand);
+
+  // Aceleași trei condiții ca pe card (components/oferte/CardOferta.tsx).
+  // Nerotunjită aici: `formatEconomie` decide zecimalele, ca pe card. Rotunjită
+  // de mână, un șurub cu 0,20 € economie la volum ieșea „−0 € / buc".
+  const economie =
+    p.pret && p.pretVolum && p.pretVolum < p.pret ? p.pret - p.pretVolum : 0;
+  const lichidare = p.disponibilitate === "Lichidare stoc";
 
   return (
     /* Distanța de sus e înălțimea reală a barei fixe plus aerul paginii.
@@ -216,9 +224,13 @@ export default function FisaProdus({
         </h1>
 
         {/* ── Rândul de identificare ─────────────────────────────
-            Statuturile în stânga, codul în dreapta. Fără chenare: statuturile
-            sunt text majuscul colorat, despărțit de linii de un pixel, iar
-            codul e mono fiindcă se dictează la telefon.
+            Badge-urile în stânga, codul în dreapta. Badge-urile sunt ale
+            cardului (vezi capul fișierului), în ordinea de acolo: ofertă,
+            economie, lichidare. Codul e mono fiindcă se dictează la telefon.
+
+            Containerul din stânga rămâne și când nu e niciun badge: altfel
+            `justify-between` ar muta codul de produs în stânga. */}
+        {/*
 
             SIGLA A STAT AICI și a plecat în capul coloanei de preț. Motivul e
             spațiul: rândul ăsta ține două lucruri scurte la capetele lui, iar
@@ -227,20 +239,18 @@ export default function FisaProdus({
             drept marcă, nu de un loc între o etichetă de statut și o linie
             despărțitoare. */}
         <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            {p.statuturi.map((s, i) => (
-              <span key={s.eticheta} className="flex items-center gap-3">
-                {/* Linia desparte două statuturi, deci apare doar de la al
-                    doilea. Condiția a inclus și `p.brand`, cât timp sigla
-                    stătea în stânga lor. */}
-                {i > 0 ? (
-                  <span aria-hidden className="h-3 w-px bg-gray-200" />
-                ) : null}
-                <span className={`text-[12px] font-bold uppercase tracking-wider ${TON[s.ton]}`}>
-                  {s.eticheta}
-                </span>
+          <div className="flex flex-wrap items-center gap-2">
+            {p.oferta ? (
+              <span className={`${BADGE} ${BADGE_FISA} ${BADGE_OFERTA}`}>Ofertă</span>
+            ) : null}
+            {economie > 0 ? (
+              <span className={`${BADGE} ${BADGE_FISA} ${BADGE_ECONOMIE}`}>
+                −{formatEconomie(economie)} € / {p.unitate}
               </span>
-            ))}
+            ) : null}
+            {lichidare ? (
+              <span className={`${BADGE} ${BADGE_FISA} ${BADGE_LICHIDARE}`}>Lichidare stoc</span>
+            ) : null}
           </div>
 
           {p.sku ? (

@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { fetchGraphQL } from "./graphql-client";
-import { GET_OFERTE_QUERY, GET_TOATE_OFERTELE_QUERY } from "./queries";
+import { GET_ALL_PRODUCTS_QUERY, GET_OFERTE_QUERY, GET_TOATE_OFERTELE_QUERY } from "./queries";
 import { gasesteBrand } from "./branduri";
 
 /**
@@ -102,7 +102,49 @@ export type Oferta = {
   prag?: string;
   unitate: string;
   disponibilitate: "În stoc" | "Lichidare stoc" | "La comandă";
+  /**
+   * Produsul e pe pagina „OFERTELE LUNII" a catalogului — `featured` în
+   * WooCommerce. Vine doar din interogările care cer câmpul (acum, pagina
+   * /catalog); în rest e `undefined`, iar badge-ul roșu îl dă secțiunea, prin
+   * proprietatea `oferta` a cardului.
+   */
+  laOferta?: boolean;
+  /**
+   * Catalogul scrie „LA CERERE" în locul prețului (PB-068.1, PB-062.1). Atunci
+   * `pret` e 0 și nu se afișează; cardul scrie „La cerere".
+   *
+   * Doar pagina /catalog primește astfel de produse (`mapeazaCatalog`). Ofertele
+   * și lichidarea rămân pe regula strictă — un produs fără preț nu are ce căuta
+   * într-o selecție făcută tocmai după preț.
+   */
+  pretLaCerere?: boolean;
 };
+
+/**
+ * Economia pe unitate, scrisă pentru badge.
+ *
+ * ZECIMALE DOAR SUB 10 € ȘI DOAR CÂND EXISTĂ BANI. Badge-ul rotunjea mereu la
+ * euro întreg, ceea ce la produsele ieftine din catalog dădea „−0 € / buc": un
+ * șurub de 3,99 € cu 3,79 € la volum economisește 0,20 €, adică o sumă reală,
+ * afișată ca nimic.
+ *
+ * Prima reparație punea două zecimale pe tot ce era sub 10 €, iar panoul
+ * Canadian Solar de pe prima pagină a trecut din „−1 € / panou" în
+ * „−1,00 € / panou" — zecimale care nu spun nimic. Acum o sumă întreagă rămâne
+ * întreagă, oricât de mică: „−1 €", „−0,20 €", „−123 €".
+ *
+ * Banii se compară rotunjiți la cent, nu direct: 3,99 − 3,79 dă în virgulă
+ * mobilă 0,20000000000000018, iar 65 − 64 dă exact 1 — fără rotunjire, o
+ * diferență de zecimi de miliardimi ar decide formatul.
+ *
+ * O singură funcție, folosită de card și de fișa produsului, ca badge-ul să
+ * scrie aceeași sumă în ambele locuri.
+ */
+export function formatEconomie(n: number): string {
+  const bani = Math.round(n * 100);
+  if (n >= 10 || bani % 100 === 0) return Math.round(n).toLocaleString("ro-RO");
+  return (bani / 100).toLocaleString("ro-RO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 /**
  * Ofertele lunii Septembrie 2026 — DATE REALE.
@@ -189,6 +231,7 @@ export const OFERTE: Oferta[] = [
 
 /** Forma nodului întors de GET_OFERTE_QUERY. Tot opțional: GraphQL poate omite. */
 type NodProdus = {
+  featured?: boolean | null;
   name?: string | null;
   slug?: string | null;
   sku?: string | null;
@@ -293,15 +336,35 @@ const DISPONIBILITATI = ["În stoc", "Lichidare stoc", "La comandă"] as const;
 const PREFIX_LICHIDARE_NUME = /^LICHIDARE\s+STOC\s*[-–—]\s*/i;
 const PREFIX_LICHIDARE_SKU = /^LICHIDARE-STOC-/i;
 
+/** Selecțiile (oferte, lichidare): un produs fără preț e sărit. */
 function mapeaza(nod: NodProdus): Oferta | null {
+  return mapeazaCu(nod, false);
+}
+
+/**
+ * Pagina /catalog: produsul fără preț rămâne, marcat „la cerere".
+ *
+ * Funcție separată, nu un al doilea parametru pe `mapeaza`: aceea se dă direct
+ * lui `.map()`, care trimite indexul ca al doilea argument — iar indexul 1, 2,
+ * 3… ar fi activat tăcut regula permisivă în oferte și lichidare.
+ */
+function mapeazaCatalog(nod: NodProdus): Oferta | null {
+  return mapeazaCu(nod, true);
+}
+
+function mapeazaCu(nod: NodProdus, permiteFaraPret: boolean): Oferta | null {
   const nume = nod.name?.trim().replace(PREFIX_LICHIDARE_NUME, "");
   const sku = nod.sku?.trim().replace(PREFIX_LICHIDARE_SKU, "");
   const pret = Number(nod.price);
   const categorie = categorieDin(nod);
+  // `Number("")` e 0, deci „LA CERERE" (preț gol în WooCommerce) cade tot aici.
+  const arePret = Number.isFinite(pret) && pret > 0;
 
-  // Fără denumire, SKU, preț sau categorie, cardul n-are ce arăta și linkul
-  // n-are unde duce. Produsul e sărit, restul secțiunii rămâne întreagă.
-  if (!nume || !sku || !categorie || !Number.isFinite(pret) || pret <= 0) return null;
+  // Fără denumire, SKU sau categorie, cardul n-are ce arăta și linkul n-are
+  // unde duce. Produsul e sărit, restul secțiunii rămâne întreagă. Fără preț e
+  // sărit doar în selecții; în catalog e o poziție reală, „la cerere".
+  if (!nume || !sku || !categorie) return null;
+  if (!arePret && !permiteFaraPret) return null;
 
   const stare = atribut(nod, "pa_disponibilitate");
   const disponibilitate =
@@ -334,12 +397,16 @@ function mapeaza(nod: NodProdus): Oferta | null {
       "",
     categorie,
     spec: specDin(nod),
-    pret,
+    pret: arePret ? pret : 0,
+    ...(arePret ? {} : { pretLaCerere: true }),
     // Cele două merg împreună: un preț fără prag n-ar putea fi scris pe card
     // („1.450 € de la …" ce?), iar un prag fără preț n-ar spune nimic.
     ...(pretVolum && prag ? { pretVolum, prag } : {}),
     unitate: dc?.unitatePret?.trim() || "buc",
     disponibilitate,
+    // Doar unde interogarea a cerut câmpul; altfel rămâne nedefinit, nu `false`,
+    // ca să nu pară că am verificat și produsul nu e la ofertă.
+    ...(typeof nod.featured === "boolean" ? { laOferta: nod.featured } : {}),
   };
 }
 
@@ -542,4 +609,38 @@ export const incarcaLichidareStoc = cache(async (): Promise<Oferta[]> => {
   return sursa
     .filter((o) => o.disponibilitate === "Lichidare stoc")
     .sort((a, b) => economie(b) - economie(a) || b.pret - a.pret);
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGINA /catalog
+   ──────────────────────────────────────────────────────────────────────────
+   Grila de acolo desena un card propriu: fond slate-100, eticheta categoriei
+   în blue-600, poza care se mărea la hover, „Fără Imagine" scris în gol. Al
+   doilea desen pentru același produs, exact greșeala pe care CardOferta.tsx o
+   numește în capul lui. Acum pagina folosește cardul de pe prima pagină, deci
+   are nevoie de aceeași formă de date — și o primește prin același `mapeaza()`,
+   cu tot ce s-a reparat acolo (prefixul „LICHIDARE STOC -", brandul lipsă).
+
+   STĂ ÎN FIȘIERUL ĂSTA din același motiv ca lichidarea: e aceeași formă,
+   `Oferta`, citită cu aceeași funcție.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Produsele paginii /catalog, în forma cardului.
+ *
+ * Fără rezervă scrisă în cod: o listă de patru oferte în locul catalogului
+ * întreg ar fi mai înșelătoare decât starea goală pe care pagina o are deja.
+ * `optional: true` fiindcă `dateCatalog` vine din extensia noastră — fără ea,
+ * interogarea pică întreagă, iar pagina arată starea goală în loc de o eroare.
+ */
+export const incarcaProduseCatalog = cache(async (): Promise<Oferta[]> => {
+  const date = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, {}, {
+    optional: true,
+    tags: ["produse"],
+  });
+
+  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  // `mapeazaCatalog`, nu `mapeaza`: cu regula strictă, PB-068.1 și PB-062.1
+  // („LA CERERE" în catalog) dispăreau de pe pagină — 48 de carduri din 50.
+  return noduri.map(mapeazaCatalog).filter((o): o is Oferta => o !== null);
 });

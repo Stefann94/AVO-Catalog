@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, PackageSearch } from "lucide-react";
+import { ArrowLeft, PackageSearch, X } from "lucide-react";
 import { CARD } from "@/components/stiluri";
 import { fetchGraphQL } from "@/lib/graphql-client";
 import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
 import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
+import { incarcaToateProdusele } from "@/lib/produs";
+import { BRANDURI, gasesteBrand } from "@/lib/branduri";
 
 /**
  * Pagina de categorie, rută catch-all ca să acopere și ierarhia pe două
@@ -42,20 +44,46 @@ export async function generateStaticParams() {
   ];
 }
 
+/*
+ * ─── FILTRUL PE BRAND: `?brand=<slug>` ────────────────────────────────────
+ *
+ * Există pentru ferestrele rândului de categorii de pe /catalog
+ * (components/catalog/MeniuCategorii.tsx): la categoriile fără subcategorii,
+ * fereastra listează brandurile, iar fiecare duce aici, filtrat.
+ *
+ * DE UNDE VIN PRODUSELE FILTRATE. Nu din GET_CATEGORY_PAGE_QUERY: aceea nu
+ * cere brandul și se oprește la 48 de produse — la „Sisteme de Montaj", cu 51,
+ * filtrul ar fi putut rata tocmai produsele căutate. Vin din harta tuturor
+ * produselor (`incarcaToateProdusele`, lib/produs.ts), care are brandul și
+ * categoria fiecăruia și e deja construită pentru fișele de produs. Brandul se
+ * compară prin `gasesteBrand`, ca „Felicity" de pe produs să corespundă
+ * slug-ului „felicity" din listă.
+ *
+ * COSTUL, asumat: citirea lui `searchParams` face pagina randată la cerere, nu
+ * prerandată (vezi ghidul Next, file-conventions/page.md). Datele din
+ * WordPress rămân în cache-ul lui `fetchGraphQL`, deci cererea nu mai așteaptă
+ * WordPress-ul după prima vizită.
+ */
 export default async function PaginaCategorie({
   params,
+  searchParams,
 }: {
   params: Promise<{ categorie: string[] }>;
+  searchParams: Promise<{ [cheie: string]: string | string[] | undefined }>;
 }) {
-  const { categorie } = await params;
+  const [{ categorie }, { brand: brandParam }] = await Promise.all([params, searchParams]);
   const slug = categorie[categorie.length - 1];
   const cunoscuta = gasesteCategorie(slug);
 
-  const date = await fetchGraphQL(
-    GET_CATEGORY_PAGE_QUERY,
-    { slug, categorySlug: slug },
-    { tags: ["produse"] }
-  );
+  // Un singur `?brand=`; o listă (`?brand=a&brand=b`) nu e un filtru pe care
+  // îl oferim, deci se ignoră.
+  const brandSlug = typeof brandParam === "string" && brandParam ? brandParam : undefined;
+  const brand = brandSlug ? BRANDURI.find((b) => b.slug === brandSlug) : undefined;
+
+  const [date, toateProdusele] = await Promise.all([
+    fetchGraphQL(GET_CATEGORY_PAGE_QUERY, { slug, categorySlug: slug }, { tags: ["produse"] }),
+    brandSlug ? incarcaToateProdusele() : Promise.resolve(null),
+  ]);
 
   const dinWoo = date?.productCategory ?? null;
   const produse: Produs[] = date?.products?.nodes ?? [];
@@ -65,6 +93,29 @@ export default async function PaginaCategorie({
 
   const nume = dinWoo?.name ?? cunoscuta!.nume;
   const descriere = dinWoo?.description ?? cunoscuta?.descriere ?? "";
+
+  // Cu filtru: produsele categoriei (sau subcategoriei) din harta completă, doar
+  // ale brandului cerut, aduse la forma pe care o desenează grila de mai jos.
+  const lista: Produs[] =
+    brandSlug && toateProdusele
+      ? toateProdusele
+          .filter(
+            (p) =>
+              (p.categorie?.slug === slug || p.subcategorie?.slug === slug) &&
+              gasesteBrand(p.brand)?.slug === brandSlug,
+          )
+          .map((p) => ({
+            id: p.slug,
+            name: p.nume,
+            slug: p.slug,
+            sku: p.sku,
+            price: p.pret ? String(p.pret) : null,
+            image: p.imagine ? { sourceUrl: p.imagine.url, altText: p.imagine.alt ?? null } : null,
+          }))
+      : produse;
+
+  const numeBrand = brand?.nume ?? brandSlug;
+  const caleCategorie = `/catalog/${categorie.join("/")}`;
 
   return (
     /* Înălțimea barei fixe vine din variabilă, nu dintr-o cifră proprie:
@@ -91,9 +142,45 @@ export default async function PaginaCategorie({
           />
         ) : null}
 
+        {/* ── Filtrul activ ──
+            O etichetă cu numele brandului și „×": tot eticheta e linkul care
+            scoate filtrul, înapoi la categoria întreagă. avo-600 cu alb (8,61 ✓),
+            raza 6px a etichetelor; la hover doar se închide culoarea. */}
+        {brandSlug ? (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-[13px] text-slate-500">Brand:</span>
+            <Link
+              href={caleCategorie}
+              aria-label={`Scoate filtrul ${numeBrand}`}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-avo-600 px-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+            >
+              {numeBrand}
+              <X size={14} aria-hidden />
+            </Link>
+          </div>
+        ) : null}
+
         <div aria-hidden className="mt-6 sm:mt-8 h-px w-full bg-slate-900/[0.09]" />
 
-        {produse.length === 0 ? (
+        {lista.length === 0 && brandSlug ? (
+          /* Filtru fără rezultate — un brand scris greșit în adresă sau unul care
+             nu mai are produse în categorie. Nu e starea „categorie goală", deci
+             nu primește textul aceleia: spune ce s-a căutat și dă drumul înapoi. */
+          <div className="mt-10 flex flex-col items-center text-center rounded-xl bg-white border border-gray-200 px-6 py-14">
+            <span className="flex items-center justify-center h-12 w-12 rounded-lg bg-avo-50 text-avo-600 mb-5">
+              <PackageSearch size={22} />
+            </span>
+            <p className="text-[15px] font-semibold text-gray-900 mb-1.5">
+              Nu sunt produse {numeBrand} în această categorie
+            </p>
+            <Link
+              href={caleCategorie}
+              className="mt-5 inline-flex h-11 items-center rounded-lg bg-avo-600 px-5 text-[14px] font-semibold text-white transition-colors hover:bg-avo-700"
+            >
+              Vezi toate produsele din {nume}
+            </Link>
+          </div>
+        ) : lista.length === 0 ? (
           <div className="mt-10 flex flex-col items-center text-center rounded-2xl bg-white ring-1 ring-slate-900/[0.08] px-6 py-14">
             <span className="flex items-center justify-center h-12 w-12 rounded-xl bg-slate-100 text-slate-400 mb-5">
               <PackageSearch size={22} />
@@ -115,11 +202,12 @@ export default async function PaginaCategorie({
         ) : (
           <>
             <p className="mt-6 text-[13px] text-slate-500">
-              {produse.length} {produse.length === 1 ? "produs" : "produse"}
+              {lista.length} {lista.length === 1 ? "produs" : "produse"}
+              {brandSlug ? <> {numeBrand}</> : null}
             </p>
 
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-              {produse.map((p) => (
+              {lista.map((p) => (
                 <Link
                   key={p.id}
                   href={`/catalog/produs/${p.slug}`}

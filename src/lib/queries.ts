@@ -9,28 +9,66 @@
  * apărea literal „675,00&nbsp;€". Formatarea o face front-end-ul, care știe și
  * moneda, și locale-ul — ca în toate celelalte interogări.
  */
+/*
+ * Pagina /catalog.
+ *
+ * CÂMPURILE SUNT ACUM ALE CARDULUI DE PE PRIMA PAGINĂ. Grila de aici a primit
+ * `CardOferta` (components/oferte/CardOferta.tsx), iar cardul acela are nevoie
+ * de brand, cod, atribute, preț de volum, prag, unitate și categoria de nivel 1
+ * — exact setul lui GET_TOATE_OFERTELE_QUERY, ca `mapeaza()` din lib/oferte.ts
+ * să citească și de aici. Înainte se cereau doar nume, preț, categorie și poză.
+ *
+ * `featured` în plus: dă badge-ul roșu „Ofertă", la fel ca pe fișa produsului.
+ * Stă în fragmentul `SimpleProduct`, ca în GET_PRODUS_QUERY.
+ *
+ * `first: 50` e NEATINS: schimbarea e de desen, nu de câte produse arată
+ * pagina. Plafonul real al WPGraphQL e 100 pe cerere; pentru toate cele 172
+ * ar trebui paginare, ca în GET_PRODUSE_TOATE_QUERY.
+ */
 export const GET_ALL_PRODUCTS_QUERY = `
   query GetAllProducts {
     products(first: 50) {
       nodes {
         id
-        databaseId
         name
         slug
-        type
-        ... on SimpleProduct {
-          price(format: RAW)
-          regularPrice(format: RAW)
-        }
-        productCategories {
-          nodes {
-            name
-            slug
-          }
-        }
         image {
           sourceUrl
           altText
+        }
+        productCategories(first: 3) {
+          nodes {
+            name
+            slug
+            parent {
+              node {
+                slug
+              }
+            }
+          }
+        }
+        ... on SimpleProduct {
+          sku
+          price(format: RAW)
+          featured
+          attributes {
+            nodes {
+              name
+              ... on GlobalProductAttribute {
+                terms(first: 1) {
+                  nodes {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+        dateCatalog {
+          pretVolum
+          pragVolum
+          unitatePret
+          capacitateKwh
         }
       }
     }
@@ -363,7 +401,7 @@ export const GET_PERIOADA_CATALOG_QUERY = `
 /**
  * Fișa unui produs.
  *
- * `featured` e ce alimentează badge-ul „Ofertă specială": importatorul îl pune
+ * `featured` e ce alimentează badge-ul roșu „Ofertă" de pe fișă: importatorul îl pune
  * citind pagina de oferte de pe coperta catalogului, deci nu trebuie bifat de
  * nimeni. `productTags` sunt statuturile puse de mână în WooCommerce, care
  * supraviețuiesc reimportului lunar fiindcă importatorul nu scrie coloana lor.
