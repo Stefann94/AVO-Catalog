@@ -1,0 +1,13 @@
+{
+  "name": "avo-masurare",
+  "private": true,
+  "description": "Măsurători de viteză și SEO, aceeași metodă pentru solarone.ro și pentru copia de test.",
+  "type": "module",
+  "scripts": {
+    "masoara": "node masoara.mjs"
+  },
+  "dependencies": {
+    "chrome-launcher": "1.2.1",
+    "lighthouse": "13.5.0"
+  }
+}

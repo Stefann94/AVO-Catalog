@@ -1,0 +1,12 @@
+[
+  { "eticheta": "Acasă", "tip": "acasa", "url": "https://www.solarone.ro/" },
+  { "eticheta": "Cat. Invertoare", "tip": "categorie", "url": "https://www.solarone.ro/invertoare" },
+  { "eticheta": "Cat. Panouri", "tip": "categorie", "url": "https://www.solarone.ro/panouri-fotovoltaice" },
+  { "eticheta": "Cat. Acumulatori Deye LV", "tip": "categorie", "url": "https://www.solarone.ro/acumulatori-deye-low-voltage" },
+  { "eticheta": "Cat. Montaj ISO", "tip": "categorie", "url": "https://www.solarone.ro/sisteme-de-montaj-iso" },
+  { "eticheta": "Brand Pytes", "tip": "brand", "url": "https://www.solarone.ro/producator-pytes" },
+  { "eticheta": "Prod. Deye SUN-10K-SG05LP3", "tip": "produs", "url": "https://www.solarone.ro/Invertor-hibrid-trifazat-DEYE-SUN-10K-SG05LP3-EU-SM2-10kW" },
+  { "eticheta": "Prod. Pytes V5a", "tip": "produs", "url": "https://www.solarone.ro/acumulator-pytes-litiu-lifepo4-v5a-48v-5-12kwh" },
+  { "eticheta": "Prod. Canadian 460W", "tip": "produs", "url": "https://www.solarone.ro/Panou-fotovoltaic-460W-Canadian-Solar-CS6.2-48TD-460-N-Type-TOPCon" },
+  { "eticheta": "Prod. Cârlig țiglă", "tip": "produs", "url": "https://www.solarone.ro/carlig-montaj-tigla-ajustabil-3-pozitii" }
+]
