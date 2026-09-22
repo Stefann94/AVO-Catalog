@@ -1,7 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import { Pause, Play } from "lucide-react";
 import { BRANDURI } from "@/lib/branduri";
 
 /**
@@ -50,8 +46,6 @@ import { BRANDURI } from "@/lib/branduri";
 const DURATA_SECUNDE = 60;
 
 export default function BandaBranduri() {
-  const [inPauza, setInPauza] = useState(false);
-
   return (
     <section
       aria-label="Branduri distribuite"
@@ -87,7 +81,6 @@ export default function BandaBranduri() {
             className="flex w-max items-center animate-[defilareBranduri_var(--durata)_linear_infinite]"
             style={{
               ["--durata" as string]: `${DURATA_SECUNDE}s`,
-              animationPlayState: inPauza ? "paused" : "running",
             }}
           >
             {[0, 1].map((set) => (
@@ -119,17 +112,11 @@ export default function BandaBranduri() {
           </div>
         </div>
 
-        {/* WCAG 2.2.2: conținutul care se mișcă singur mai mult de cinci
-            secunde trebuie să poată fi oprit. Oprirea la hover nu e suficientă
-            — nu ajută la tastatură și nici pe touch. */}
-        <button
-          type="button"
-          onClick={() => setInPauza((v) => !v)}
-          aria-label={inPauza ? "Pornește derularea brandurilor" : "Oprește derularea brandurilor"}
-          className="shrink-0 flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-          {inPauza ? <Play size={13} /> : <Pause size={13} />}
-        </button>
+        {/* AICI ERA UN BUTON DE PAUZĂ, scos la cerere: banda nu se oprește.
+            Singura oprire rămasă e cea din sistem — cu „reduce motion"
+            activat, banda stă (vezi `prefers-reduced-motion` în
+            app/globals.css). Fără buton componenta n-are stare, deci nu mai
+            e „use client". */}
       </div>
     </section>
   );

@@ -359,8 +359,8 @@ body {
 }
 
 /*
- * Cu „reduce motion" activat în sistem, banda stă. Butonul de pauză rămâne
- * funcțional, dar nu mai e nevoie să-l apese nimeni.
+ * Cu „reduce motion" activat în sistem, banda stă. E singura oprire: butonul
+ * de pauză de lângă bandă a fost scos la cerere.
  */
 @media (prefers-reduced-motion: reduce) {
   .animate-\[defilareBranduri_var\(--durata\)_linear_infinite\] {
