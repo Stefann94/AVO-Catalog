@@ -123,7 +123,7 @@ export default async function PaginaLichidareStoc() {
             {/* Aceeași grilă ca la „Ofertele lunii" pe lățimi mari, dar cu patru
                 coloane de la `xl` în loc de bandă derulantă: aici lista e
                 destinația, nu un rezumat, deci se vede toată deodată. */}
-            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5">
               {lista.map((o) => (
                 <CardOferta key={o.sku} o={o} />
               ))}

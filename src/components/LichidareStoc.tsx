@@ -153,11 +153,12 @@ export default async function LichidareStoc({
    * strâmt decât la `lg`, deci nu e nevoie de praguri suplimentare.
    */
   return (
-    <section className="bg-white py-16 lg:pt-12 lg:pb-20">
+    /* Pe telefon 40px sus și jos, în loc de 64; de la `sm`, exact ce era. */
+    <section className="bg-white py-10 sm:py-16 lg:pt-12 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
-        <div className="mb-8 sm:mb-10 lg:mb-12">
-          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
+        <div className="mb-5 sm:mb-10 lg:mb-12">
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 sm:gap-4 xl:gap-6">
             <div
               className="@container min-w-0 flex-1"
               /* CORPUL VINE DIN ETALONUL COMUN, nu din lungimea acestui titlu.
@@ -178,7 +179,7 @@ export default async function LichidareStoc({
                  ale celuilalt titlu. Singura diferență a fost treapta de corp. */
               style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
             >
-              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+              <h2 className="text-[22px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
                 {titlu}
               </h2>
             </div>
@@ -188,26 +189,26 @@ export default async function LichidareStoc({
                 ofertele". E aceeași valoare, citită o singură dată —
                 incarcaPerioadaCatalog e memoizat cu cache din React. */}
             {perioada.interval ? (
-              <div className="inline-flex items-center gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-4 rounded-lg bg-white border border-gray-200">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+              <div className="inline-flex items-center gap-2 sm:gap-3 shrink-0 self-start xl:self-auto h-8 sm:h-11 px-3 sm:px-4 rounded-lg bg-white border border-gray-200">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-500">
                   Valabile
                 </span>
-                <span aria-hidden className="h-4 w-px bg-gray-200" />
-                <span className="text-xs sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
+                <span aria-hidden className="h-3.5 sm:h-4 w-px bg-gray-200" />
+                <span className="text-[11px] sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
                   {perioada.interval}
                 </span>
               </div>
             ) : null}
           </div>
 
-          <p className="mt-4 max-w-2xl text-[14px] text-gray-500 leading-relaxed">
+          <p className="mt-3 sm:mt-4 max-w-2xl text-[13px] sm:text-[14px] text-gray-500 leading-relaxed">
             {/* Era „Produsele cu cea mai mare economie la pragul de volum…",
                 adică regula selecției vechi. Cu alte produse ar fi mințit. */}
             Produse scoase la lichidare din ediția curentă a catalogului.
             Cantitățile sunt limitate.
           </p>
 
-          <div aria-hidden className="mt-5 sm:mt-7 h-px w-full bg-gray-200" />
+          <div aria-hidden className="mt-4 sm:mt-7 h-px w-full bg-gray-200" />
         </div>
 
         {/* ── Banda de oferte ────────────────────────────────────
@@ -222,17 +223,23 @@ export default async function LichidareStoc({
 
             Lățimea cardului e 280px, adică exact cât avea în grila de patru
             coloane la `xl` — (1184 − 60) / 4. Banda nu introduce o a doua
-            dimensiune de card; o poartă pe aceeași. */}
+            dimensiune de card; o poartă pe aceeași.
+
+            PE TELEFON (sub `sm`) cardul e o fracțiune din ecran: lățimea
+            vizibilă a pistei (ecranul minus 16px de padding la stânga)
+            împărțită la 2,4. Se văd două carduri întregi și o bucată din al
+            treilea, semnul că banda continuă. Cu 280px fix, pe telefon intra
+            un card și o margine. */}
         <BandaOferte>
           {lista.map((o) => (
-            <div key={o.sku} className="w-[280px] shrink-0 snap-start pr-5">
+            <div key={o.sku} className="w-[calc((100vw-16px)/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
               <CardOferta o={o} />
             </div>
           ))}
         </BandaOferte>
 
         {/* ── Subsol ─────────────────────────────────────────── */}
-        <p className="mt-8 sm:mt-10 max-w-2xl text-xs text-gray-500 leading-relaxed">
+        <p className="mt-5 sm:mt-10 max-w-2xl text-[11px] sm:text-xs text-gray-500 leading-relaxed">
           Prețuri în EUR, fără TVA, valabile pentru perioada catalogului curent.
           Pragul de volum se aplică pe cantitatea comandată per produs.
           Disponibilitatea se confirmă la plasarea comenzii.

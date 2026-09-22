@@ -52,18 +52,20 @@ export default async function OferteleLunii() {
     /* `id` pentru butonul „Vezi ofertele" din bannerul paginii /catalog
        (components/catalog/HeroCatalog.tsx). `scroll-mt` coboară oprirea sub
        bara fixă, altfel titlul ar ajunge ascuns sub ea. */
-    <section id="ofertele-lunii" className="scroll-mt-(--inaltime-navbar) bg-white pb-16 lg:pb-20">
+    /* Pe telefon: 40px jos, titlu de 22px, două carduri pe rând. De la `sm`,
+       exact ce era. */
+    <section id="ofertele-lunii" className="scroll-mt-(--inaltime-navbar) bg-white pb-10 sm:pb-16 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div
-          className="@container mb-8 sm:mb-10"
+          className="@container mb-5 sm:mb-10"
           style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
         >
-          <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+          <h2 className="text-[22px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
             {titlu}
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 sm:gap-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4 sm:gap-5">
           {lista.map((o) => (
             <CardOferta key={o.sku} o={o} oferta />
           ))}

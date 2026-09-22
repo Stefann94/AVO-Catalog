@@ -193,8 +193,11 @@ export default function BandaOferte({ children }: { children: React.ReactNode })
         {children}
       </div>
 
-      {/* Comenzile, în stânga jos, sub carduri. */}
-      <div className="mt-6 flex items-center gap-2">
+      {/* Comenzile, în stânga jos, sub carduri.
+          ASCUNSE PE TELEFON (sub `sm`): acolo banda se glisează cu degetul, iar
+          cardul tăiat din dreapta arată deja că mai e. Două butoane de 44px sub
+          carduri ar fi fost doar un rând în plus de parcurs. */}
+      <div className="mt-6 hidden items-center gap-2 sm:flex">
         <button
           type="button"
           onClick={() => gliseaza(-1)}

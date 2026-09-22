@@ -297,7 +297,9 @@ export default async function CatalogPage() {
               Între 1024 și 1279 grila are două coloane, de la 1280 trei. Sub
               `lg` rămâne cum era: meniul nu stă alături, deci două coloane au
               ~290px. */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
+          {/* Pe telefon două pe rând, ca pe prima pagină: cardul are acolo o
+              variantă compactă (vezi components/oferte/CardOferta.tsx). */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
             {products.length === 0 ? (
               <div className="col-span-full py-20 text-center bg-white rounded-2xl border border-dashed border-slate-300">
                 <p className="text-lg text-slate-500 font-medium mb-2">Nu există produse în baza de date WooCommerce momentan.</p>

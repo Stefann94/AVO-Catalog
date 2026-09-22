@@ -7,8 +7,8 @@ import {
   BADGE_ECONOMIE,
   BADGE_LICHIDARE,
   BADGE_OFERTA,
-  BUTON_PLIN,
-  CADRU_FOTO_CARD,
+  BUTON_CARD,
+  CADRU_FOTO_PRODUS,
   CARD,
 } from "../stiluri";
 
@@ -75,7 +75,7 @@ export default function CardOferta({
         unui colț e cea exterioară minus grosimea conturului, iar aici conturul
         e de 1px. Cu 12 ar fi ieșit cu un pixel peste linie — exact ce reparăm. */}
     <div
-      className={`relative ${CADRU_FOTO_CARD} ${o.imagine ? "" : "rounded-t-[11px] bg-avo-50"}`}
+      className={`relative ${CADRU_FOTO_PRODUS} ${o.imagine ? "" : "rounded-t-[11px] bg-avo-50"}`}
     >
       {/* ECONOMIA, adică motivul pentru care un preț de volum contează.
 
@@ -115,8 +115,13 @@ export default function CardOferta({
           Grupul se așază pe rând (`flex gap-1.5`) ca două badge-uri să nu se
           suprapună; la 280px, „Ofertă" + „−60 € / buc" ocupă ~150px, iar în
           dreapta rămâne loc pentru „Lichidare stoc". */}
-      {oferta || economie(o) > 0 ? (
-        <div className="absolute top-3 left-3 z-10 flex gap-1.5">
+      {/* PE TELEFON TOATE BADGE-URILE STAU ÎN ACEST GRUP, cu `flex-wrap`: la
+          145–175px lățime, economia din stânga și „Lichidare" din dreapta se
+          călcau. Grupul e mărginit la dreapta (`right-2`), deci ce nu încape
+          trece pe rândul următor. De la `sm` grupul redevine cel de dinainte,
+          iar „Lichidare stoc" se întoarce în colțul din dreapta. */}
+      {oferta || economie(o) > 0 || o.disponibilitate === "Lichidare stoc" ? (
+        <div className="absolute top-2 right-2 left-2 z-10 flex flex-wrap gap-1 sm:top-3 sm:right-auto sm:left-3 sm:flex-nowrap sm:gap-1.5">
           {oferta ? (
             <span className={`${BADGE} ${BADGE_CARD} ${BADGE_OFERTA}`}>
               Ofertă
@@ -127,12 +132,22 @@ export default function CardOferta({
               −{formatEconomie(economie(o))} € / {o.unitate}
             </span>
           ) : null}
+          {/* Varianta de telefon a lui „Lichidare stoc", scurtată, în grup. */}
+          {o.disponibilitate === "Lichidare stoc" ? (
+            <span className={`sm:hidden ${BADGE} ${BADGE_CARD} ${BADGE_LICHIDARE}`}>
+              Lichidare
+            </span>
+          ) : null}
         </div>
       ) : null}
 
-      {/* Badge în exact poziția badge-ului „N produse". */}
+      {/* Badge în exact poziția badge-ului „N produse". De la `sm` în sus.
+          Clasele lui `BADGE` sunt scrise aici una câte una, fără `inline-flex`:
+          `hidden` și `inline-flex` în aceeași listă s-ar fi anulat după ordinea
+          din foaia de stil, deci imprevizibil. `sm:inline-flex` e cel din
+          `BADGE`, doar mutat după prag. */}
       {o.disponibilitate === "Lichidare stoc" ? (
-        <span className={`absolute top-3 right-3 z-10 ${BADGE} ${BADGE_CARD} ${BADGE_LICHIDARE}`}>
+        <span className={`absolute top-3 right-3 z-10 hidden items-center rounded-md font-bold text-white whitespace-nowrap sm:inline-flex ${BADGE_CARD} ${BADGE_LICHIDARE}`}>
           Lichidare stoc
         </span>
       ) : null}
@@ -151,13 +166,15 @@ export default function CardOferta({
           fișierului („SE-F16.webp") n-ar spune nimic unui cititor de
           ecran. */}
       {o.imagine ? (
-        <div className="absolute inset-0 p-4 pb-12">
+        <div className="absolute inset-0 px-2 pt-7 pb-8 sm:p-4 sm:pb-12">
           <div className="relative h-full w-full">
             <Image
               src={o.imagine.url}
               alt={o.imagine.alt ?? o.nume}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 330px"
+              /* Pe telefon cardul are o jumătate de ecran (grilă de două) sau
+                 mai puțin (banda de lichidare), deci 50vw ajunge. */
+              sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 330px"
               className="object-contain"
             />
           </div>
@@ -166,13 +183,13 @@ export default function CardOferta({
       /* Cifra care ține locul pozei. Baseline comun și leading-none:
           unitatea stă lipită de cifră, ca într-o fișă tehnică, nu ca
           două cuvinte alăturate. */
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 pb-10">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-2 pb-7 sm:px-4 sm:pb-10">
         {o.spec ? (
-          <span className="flex items-baseline gap-1 text-gray-900">
-            <span className="text-[44px] sm:text-[52px] font-extrabold leading-none">
+          <span className="flex items-baseline gap-0.5 text-gray-900 sm:gap-1">
+            <span className="text-[30px] sm:text-[52px] font-extrabold leading-none">
               {o.spec.valoare}
             </span>
-            <span className="text-[18px] font-bold text-gray-600">
+            <span className="text-[13px] sm:text-[18px] font-bold text-gray-600">
               {o.spec.unitate}
             </span>
           </span>
@@ -194,7 +211,7 @@ export default function CardOferta({
            *
            * Gramatica rămâne una singură: lucrul care identifică
            * produsul, scris mare. Se schimbă doar care e acela. */
-          <span className="text-center font-mono text-[26px] sm:text-[30px] font-semibold text-gray-900 leading-tight break-all">
+          <span className="text-center font-mono text-[15px] sm:text-[30px] font-semibold text-gray-900 leading-tight break-all">
             {o.sku}
           </span>
         )}
@@ -205,14 +222,14 @@ export default function CardOferta({
           Brandul identifică, SKU-ul e ce se dictează la telefon; de
           aceea SKU-ul e pe mono, singurul loc din secțiune unde
           cifrele de lățime egală chiar contează. */}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 border-t border-gray-200 bg-white/70 px-3 py-2">
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 border-t border-gray-200 bg-white/70 px-2 py-1.5 sm:px-3 sm:py-2">
         {/* CINE CEDEAZĂ LOCUL, când rândul nu ajunge: codul, nu brandul.
             Era invers — brandul `truncate`, codul `shrink-0` — iar la un cod
             construit din denumire („PYTES-V16-16KWH-CU-INCALZIRE-IP66") brandul
             ajungea „P". Brandul e scurt și e ce identifică produsul dintr-o
             privire; codul lung se poate tăia cu „…", fiindcă întreg stă oricum
             în fișa produsului. */}
-        <span className="shrink-0 text-[13px] font-bold text-gray-900">
+        <span className="shrink-0 text-[11px] font-bold text-gray-900 sm:text-[13px]">
           {o.brand}
         </span>
         {/* SKU-ul apare aici DOAR când sus NU stă el însuși. Când e
@@ -222,7 +239,7 @@ export default function CardOferta({
             Deci apare și când sus e o fotografie — atunci codul chiar
             lipsește din cadru, iar el e ce se dictează la telefon. */}
         {o.imagine || o.spec ? (
-          <span className="min-w-0 truncate font-mono text-[11px] text-gray-600">
+          <span className="min-w-0 truncate font-mono text-[9px] text-gray-600 sm:text-[11px]">
             {o.sku}
           </span>
         ) : null}
@@ -230,16 +247,23 @@ export default function CardOferta({
     </div>
   
     {/* ── Corpul cardului ── */}
-    <div className="flex flex-1 flex-col p-4">
+    {/* PE TELEFON (sub `sm`) cardul are ~170px, fiindcă stă câte două pe rând.
+        Corpurile scad (titlu 12px, preț 17px), iar butonul coboară sub preț,
+        pe toată lățimea: alături nu mai încape. De la `sm` fiecare clasă e cea
+        de dinainte, deci desktopul e neatins. */}
+    <div className="flex flex-1 flex-col p-2.5 sm:p-4">
       {/* Înălțime fixă pe două rânduri: denumirile din catalog au
           lungimi foarte diferite, iar fără ea blocul de preț ar sta la
           înălțimi diferite de la card la card. */}
-      <h3 className="h-10 text-[14px] font-semibold text-gray-900 leading-snug line-clamp-2">
+      <h3 className="h-8 text-[12px] leading-4 font-semibold text-gray-900 line-clamp-2 sm:h-10 sm:text-[14px] sm:leading-snug">
         {o.nume}
       </h3>
-  
-      <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-        <div className="flex shrink-0 flex-col justify-end">
+
+      <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:items-end sm:justify-between sm:gap-2 sm:pt-4">
+        {/* `min-h-8` pe telefon: 17 + 4 + 12 = 33px, cât prețul cu prag de
+            volum. Fără el, un card fără a doua cifră ar avea butonul mai sus
+            decât vecinul lui din grilă. */}
+        <div className="flex min-h-[33px] shrink-0 flex-col justify-end sm:min-h-0">
           {/* `leading-none` pe rând, nu doar pe cifră: „€" (16px) și „/ buc"
               moșteneau înălțimea de rând 1,5, deci rândul ieșea de 24px, nu 22,
               iar cardul cu preț de volum rămânea cu 2px mai înalt decât vecinii. */}
@@ -248,16 +272,16 @@ export default function CardOferta({
                 nu la 22 ca prețul: la 1024px cardul are ~200px, iar rândul îl
                 împarte cu butonul „Vezi". Aceeași formulare ca în PDF. */}
             {o.pretLaCerere ? (
-              <span className="text-[16px] font-extrabold text-gray-900 leading-none whitespace-nowrap">
+              <span className="text-[14px] font-extrabold text-gray-900 leading-none whitespace-nowrap sm:text-[16px]">
                 La cerere
               </span>
             ) : (
               <>
-                <span className="text-[22px] font-extrabold text-gray-900 leading-none">
+                <span className="text-[17px] font-extrabold text-gray-900 leading-none sm:text-[22px]">
                   {eur(o.pret)}
                 </span>
-                <span className="text-[16px] font-bold text-gray-900">€</span>
-                <span className="text-[12px] font-medium text-gray-500 whitespace-nowrap">
+                <span className="text-[12px] font-bold text-gray-900 sm:text-[16px]">€</span>
+                <span className="text-[10px] font-medium text-gray-500 whitespace-nowrap sm:text-[12px]">
                   / {o.unitate}
                 </span>
               </>
@@ -272,7 +296,7 @@ export default function CardOferta({
                22 + 4 + 16 = 42px, lângă 44. Cu înălțimea de rând moștenită,
                18px, ieșea 44 plus rotunjiri, iar cardul cu preț de volum
                rămânea cu 4px mai înalt decât vecinii — măsurat pe bandă. */
-            <span className="mt-1 text-[12px] leading-4 font-medium text-gray-500 whitespace-nowrap">
+            <span className="mt-1 truncate text-[10px] leading-3 font-medium text-gray-500 sm:overflow-visible sm:text-[12px] sm:leading-4 sm:whitespace-nowrap">
               {eur(o.pretVolum)} € de la {o.prag}
             </span>
           ) : null}
@@ -292,7 +316,7 @@ export default function CardOferta({
             tot acolo. */}
         <Link
           href={o.slug ? `/catalog/produs/${o.slug}` : `/catalog/${o.categorie}`}
-          className={`${BUTON_PLIN} after:absolute after:inset-0`}
+          className={`${BUTON_CARD} after:absolute after:inset-0`}
         >
           Vezi
         </Link>

@@ -54,6 +54,30 @@ export const BUTON_PLIN =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
 /**
+ * Butonul dintr-un card — `BUTON_PLIN` de la `sm` în sus, compact pe telefon.
+ *
+ * PE TELEFON CARDURILE STAU CÂTE DOUĂ PE RÂND, deci au ~170px. Acolo butonul
+ * nu mai încape lângă preț: coboară sub el, pe toată lățimea cardului, la 32px
+ * înălțime și 12px corp.
+ *
+ * 32px E SUB PRAGUL DE 44px pentru ținte atinse cu degetul, și e voit: ținta
+ * reală nu e butonul, ci tot cardul — linkul are `after:absolute after:inset-0`
+ * în ambele carduri care îl folosesc. Butonul spune doar unde duce.
+ *
+ * E scris separat, nu ca `BUTON_PLIN` plus clase în plus: fără tailwind-merge,
+ * `h-8` și `h-11` în aceeași listă nu se anulează după ordinea din șir, ci după
+ * ordinea din foaia de stil — adică imprevizibil. De la `sm` fiecare clasă e
+ * identică cu cea din `BUTON_PLIN`.
+ */
+export const BUTON_CARD =
+  "inline-flex items-center justify-center gap-2 shrink-0 " +
+  "h-8 w-full px-3 rounded-lg sm:h-11 sm:w-auto sm:px-5 " +
+  "bg-avo-600 text-white text-[12px] sm:text-[14px] font-semibold " +
+  "transition-colors duration-200 " +
+  "hover:bg-avo-700 active:bg-avo-800 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
+
+/**
  * Cardul — o singură suprafață, folosită de toate tipurile din site.
  *
  * Erau patru rețete pentru același obiect: cardurile de categorie și de ofertă
@@ -133,6 +157,21 @@ export const CARD =
 export const CADRU_FOTO_CARD = "aspect-[4/3] max-h-[260px]";
 
 /**
+ * Cadrul fotografiei dintr-un card de PRODUS: pătrat pe telefon, apoi exact
+ * `CADRU_FOTO_CARD`.
+ *
+ * Pe telefon cardul de produs are 145–175px lățime. La 4:3, din cei ~110–130px
+ * de înălțime rămâneau pentru poză vreo 30px, după badge-uri și banda cu brandul
+ * — un produs cât un timbru. Pătrat, poza primește de trei ori mai mult.
+ *
+ * Constantă separată, nu `aspect-square` adăugat lângă `CADRU_FOTO_CARD`: două
+ * clase `aspect-*` în aceeași listă se anulează după ordinea din foaia de stil,
+ * nu după cea din șir. Cardul de categorie rămâne pe 4:3, fiindcă fotografia
+ * lui umple cadrul (`object-cover`), iar un pătrat l-ar lungi fără câștig.
+ */
+export const CADRU_FOTO_PRODUS = "aspect-square sm:aspect-[4/3] max-h-[260px]";
+
+/**
  * Badge-urile unui produs — aceleași pe card și pe fișa produsului.
  *
  * DE CE STAU AICI. Fișa scria statuturile ca text colorat („OFERTĂ SPECIALĂ"
@@ -156,7 +195,8 @@ export const CADRU_FOTO_CARD = "aspect-[4/3] max-h-[260px]";
  * la regula unui singur accent și e cerută: ofertele trebuie să se vadă.
  */
 export const BADGE = "inline-flex items-center rounded-md font-bold text-white whitespace-nowrap";
-export const BADGE_CARD = "h-7 px-2.5 text-[11px]";
+/** Pe telefon 20px și 10px, fiindcă cardul are acolo ~170px; de la `sm`, 28px și 11px. */
+export const BADGE_CARD = "h-5 px-1.5 text-[10px] sm:h-7 sm:px-2.5 sm:text-[11px]";
 /** Produsul e pe pagina „OFERTELE LUNII" a catalogului (`featured` în WooCommerce). */
 export const BADGE_OFERTA = "bg-[#DC2626] uppercase tracking-wide";
 /** Economia pe unitate la prețul de volum: „−60 € / buc". */

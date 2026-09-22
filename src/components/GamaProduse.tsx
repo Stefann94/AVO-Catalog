@@ -4,7 +4,7 @@ import Link from "next/link";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaGamaProduse } from "@/lib/gama";
 import type { CSSProperties } from "react";
-import { BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
+import { BUTON_CARD, BUTON_PLIN, CADRU_FOTO_CARD, CARD, dimensiuneTitlu } from "./stiluri";
 
 /**
  * Gama de produse — categoriile, cu date agregate din catalog.
@@ -263,13 +263,16 @@ export default async function GamaProduse() {
    * lângă cealaltă jumătate a joncțiunii.
    */
   return (
-    <section className="bg-[#F8F9FA] py-16 sm:pt-20 lg:pt-28 lg:pb-20">
+    /* PE TELEFON (sub `sm`) secțiunea e strânsă: 40px sus și jos în loc de 64,
+       titlu de 22px, carduri câte două pe rând. De la `sm` fiecare clasă e cea
+       de dinainte — `sm:pb-16` readuce exact jumătatea de jos a lui `py-16`. */
+    <section className="bg-[#F8F9FA] py-10 sm:pt-20 sm:pb-16 lg:pt-28 lg:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
-        <div className="mb-8 sm:mb-10 lg:mb-12">
+        <div className="mb-5 sm:mb-10 lg:mb-12">
           {/* Ștampila trece lângă titlu abia de la xl: sub această lățime i-ar
               lăsa titlului ~574px, insuficient pentru un singur rând. */}
-          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 sm:gap-4 xl:gap-6">
             {/* Fără `tracking` negativ: aceeași spațiere ca titlul din hero.
                 La un font geometric, strângerea literelor schimbă vizibil
                 desenul și titlurile par a fi din fonturi diferite.
@@ -293,7 +296,7 @@ export default async function GamaProduse() {
               className="@container min-w-0 flex-1"
               style={{ "--dim-titlu": dimensiuneTitlu(TITLU) } as CSSProperties}
             >
-              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+              <h2 className="text-[22px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
                 {TITLU}
               </h2>
             </div>
@@ -301,23 +304,23 @@ export default async function GamaProduse() {
             {/* Ștampila e o dată tehnică, dar rămâne pe fontul global, ca tot
                 restul secțiunii. Fără umbră: contur de 1px. */}
             {perioada.interval ? (
-              <div className="inline-flex items-center gap-3 shrink-0 self-start xl:self-auto h-10 sm:h-11 px-4 rounded-lg bg-white border border-gray-200">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+              <div className="inline-flex items-center gap-2 sm:gap-3 shrink-0 self-start xl:self-auto h-8 sm:h-11 px-3 sm:px-4 rounded-lg bg-white border border-gray-200">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-500">
                   Prețuri valabile
                 </span>
-                <span aria-hidden className="h-4 w-px bg-gray-200" />
-                <span className="text-xs sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
+                <span aria-hidden className="h-3.5 sm:h-4 w-px bg-gray-200" />
+                <span className="text-[11px] sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
                   {perioada.interval}
                 </span>
               </div>
             ) : null}
           </div>
 
-          <div aria-hidden className="mt-5 sm:mt-7 h-px w-full bg-gray-200" />
+          <div aria-hidden className="mt-4 sm:mt-7 h-px w-full bg-gray-200" />
         </div>
 
         {/* ── Categorii ──────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5">
           {categorii.map((c) => {
             const cale = `/catalog/${c.slug}`;
             return (
@@ -387,7 +390,7 @@ export default async function GamaProduse() {
                        4 coloane), deci 300px e limita reală, nu o presupunere.
                        Se cere cu 10% peste, fiindcă la hover imaginea e mărită
                        la 105% și altfel s-ar vedea ușor moale. */
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 330px"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 330px"
                     {...(c.imagine ? {} : { placeholder: "blur" as const })}
                     /* Tranziția stă pe element, nu pe starea de hover, ca
                        ieșirea din zoom să fie la fel de lină ca intrarea.
@@ -398,7 +401,7 @@ export default async function GamaProduse() {
 
                   {/* Badge-ul stă pe aceeași sticlă ca banda de jos: două rețete
                       diferite pe aceeași fotografie s-ar vedea ca o scăpare. */}
-                  <span className="absolute top-3 right-3 inline-flex items-center h-7 px-2.5 rounded-md bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border border-white/50 text-[12px] font-bold text-gray-900">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 inline-flex items-center h-5 sm:h-7 px-1.5 sm:px-2.5 rounded-md bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border border-white/50 text-[10px] sm:text-[12px] font-bold text-gray-900">
                     {c.produse} produse
                   </span>
 
@@ -421,33 +424,36 @@ export default async function GamaProduse() {
                       Titlul e centrat și banda e subțire — o singură linie de
                       text, `truncate` în loc de două rânduri, ca grosimea benzii
                       să fie identică pe toate cardurile. */}
-                  <div className="absolute inset-x-0 bottom-0 bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border-t border-white/50 px-3 py-2">
-                    <h3 className="text-center text-[15px] font-bold text-gray-900 leading-tight truncate">
+                  <div className="absolute inset-x-0 bottom-0 bg-white/45 backdrop-blur-2xl backdrop-saturate-200 border-t border-white/50 px-2 py-1.5 sm:px-3 sm:py-2">
+                    <h3 className="text-center text-[12px] sm:text-[15px] font-bold text-gray-900 leading-tight truncate">
                       {c.nume}
                     </h3>
                   </div>
                 </div>
 
                 {/* Piciorul cardului: ancora de preț și îndemnul. */}
-                <div className="flex items-end justify-between gap-2 p-4">
+                {/* Pe telefon butonul coboară sub preț, pe toată lățimea
+                    cardului (~170px): alături nu încape. De la `sm`, rândul de
+                    dinainte. */}
+                <div className="flex flex-1 flex-col justify-end gap-2 p-2.5 sm:flex-initial sm:flex-row sm:items-end sm:justify-between sm:gap-2 sm:p-4">
                   {c.deLa ? (
-                    <div className="flex shrink-0 flex-col justify-end">
-                      <span className="text-[12px] font-medium text-gray-500 mb-0.5">De la</span>
-                      <span className="flex items-baseline gap-1">
-                        <span className="text-[22px] font-extrabold text-gray-900 leading-none">
+                    <div className="flex min-w-0 shrink-0 flex-col justify-end">
+                      <span className="text-[10px] sm:text-[12px] font-medium text-gray-500 mb-0.5">De la</span>
+                      <span className="flex items-baseline gap-0.5 sm:gap-1">
+                        <span className="text-[17px] sm:text-[22px] font-extrabold text-gray-900 leading-none">
                           {eur(c.deLa)}
                         </span>
-                        <span className="text-[16px] font-bold text-gray-900">€</span>
-                        <span className="text-[12px] font-medium text-gray-500 whitespace-nowrap">
+                        <span className="text-[12px] sm:text-[16px] font-bold text-gray-900">€</span>
+                        <span className="text-[10px] sm:text-[12px] font-medium text-gray-500 whitespace-nowrap">
                           / {c.unitate}
                         </span>
                       </span>
                     </div>
                   ) : c.statistica ? (
-                    <div className="flex shrink-0 flex-col justify-end">
-                      <span className="text-[12px] font-medium text-gray-500 mb-0.5">{c.statistica.eticheta}</span>
+                    <div className="flex min-w-0 shrink-0 flex-col justify-end">
+                      <span className="truncate text-[10px] sm:text-[12px] font-medium text-gray-500 mb-0.5">{c.statistica.eticheta}</span>
                       <span className="flex items-baseline gap-1">
-                        <span className="text-[22px] font-extrabold text-gray-900 leading-none">
+                        <span className="text-[17px] sm:text-[22px] font-extrabold text-gray-900 leading-none">
                           {c.statistica.valoare}
                         </span>
                       </span>
@@ -456,7 +462,7 @@ export default async function GamaProduse() {
 
                   <Link
                     href={cale}
-                    className={`${BUTON_PLIN} after:absolute after:inset-0`}
+                    className={`${BUTON_CARD} after:absolute after:inset-0`}
                   >
                     Accesează
                   </Link>
@@ -491,13 +497,13 @@ export default async function GamaProduse() {
             ea e în amândouă locurile.
 
             SE STIVUIESC ABIA SUB `lg`, ca înainte. */}
-        <div className="mt-8 sm:mt-10 flex flex-col gap-6 border-t border-gray-200 pt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+        <div className="mt-6 sm:mt-10 flex flex-col gap-4 sm:gap-6 border-t border-gray-200 pt-5 sm:pt-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           {/* Textul și butonul lui sunt un bloc, nu două elemente ale rândului
               mare: sub `sm` se stivuiesc între ele, iar de la `sm` în sus stau
               alături, cu butonul lipit de sfârșitul textului. Așa „Cere ofertă"
               rămâne lângă fraza care îl explică, în loc să plutească la celălalt
               capăt al rândului, la un metru de motivul lui. */}
-          <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
             <p className="min-w-0">
               {/* Întrebarea poartă greutatea, fraza o explică. E aceeași
                   ierarhie ca la etichetă + valoare din restul site-ului, doar
