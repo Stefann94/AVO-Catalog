@@ -82,13 +82,14 @@ export default function CantitateProdus({
       {/* Rândul de comandă.
 
           Stepper și buton pe același rând, ca în orice fișă de produs: mâna
-          alege cantitatea și continuă spre dreapta. Sub `sm` trec unul sub
-          altul, cu butonul lat — pe telefon e ținta care contează.
+          alege cantitatea și continuă spre dreapta. Și pe telefon: stepper-ul
+          are 152px, deci la 360px rămân ~170px pentru buton — lat destul ca
+          țintă, iar rândul unic ține prețul și butonul în primul ecran.
 
           Stepper-ul are 44px, ca butonul: e aceeași înălțime de comandă
           folosită peste tot în proiect, iar minus/plus rămân ținte atingibile
           cu degetul. */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-row gap-2 sm:gap-3">
         <div className="inline-flex h-11 shrink-0 items-center rounded-lg border border-gray-300 bg-white">
           <button
             type="button"
@@ -125,7 +126,7 @@ export default function CantitateProdus({
           </button>
         </div>
 
-        <Link href={hrefOferta} className={`${BUTON_PLIN} flex-1`}>
+        <Link href={hrefOferta} className={`${BUTON_PLIN} flex-1 min-w-0`}>
           Cere ofertă
         </Link>
       </div>

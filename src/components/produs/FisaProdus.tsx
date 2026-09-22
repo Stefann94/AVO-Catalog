@@ -175,7 +175,7 @@ export default function FisaProdus({
        `pt-28 sm:pt-32` era o cifră potrivită din ochi, care nu nimerea
        niciuna dintre cele trei înălțimi ale navbarului — vezi
        app/globals.css. */
-    <div className="bg-white pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
+    <div className="bg-white pt-[calc(var(--inaltime-navbar)+1rem)] sm:pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Firul Ariadnei ─────────────────────────────────── */}
         <nav aria-label="Navigare" className="text-[13px] text-gray-500">
@@ -219,7 +219,7 @@ export default function FisaProdus({
 
             `text-balance` împarte cuvintele egal între rânduri, în loc să lase
             unul singur atârnând jos. */}
-        <h1 className="mt-4 text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-gray-900 leading-tight text-balance">
+        <h1 className="mt-2.5 sm:mt-4 text-[22px] sm:text-[30px] lg:text-[34px] font-bold text-gray-900 leading-tight text-balance">
           {p.nume}
         </h1>
 
@@ -238,7 +238,9 @@ export default function FisaProdus({
             coloanei din dreapta. O marcă are nevoie de aer ca să se citească
             drept marcă, nu de un loc între o etichetă de statut și o linie
             despărțitoare. */}
-        <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6">
+        {/* Pe telefon badge-urile și codul împart un singur rând (`flex-wrap`),
+            nu două: fiecare rând câștigat aduce prețul mai sus în primul ecran. */}
+        <div className="mt-2.5 sm:mt-3 flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-1.5 sm:gap-6">
           <div className="flex flex-wrap items-center gap-2">
             {p.oferta ? (
               <span className={`${BADGE} ${BADGE_FISA} ${BADGE_OFERTA}`}>Ofertă</span>
@@ -261,16 +263,24 @@ export default function FisaProdus({
           ) : null}
         </div>
 
-        <div aria-hidden className="mt-5 h-px w-full bg-gray-200" />
+        <div aria-hidden className="mt-3.5 sm:mt-5 h-px w-full bg-gray-200" />
 
         {/* ── Cele două coloane ──────────────────────────────────
             7 + 5, nu 8 + 4: coloana din dreapta ține un rând de comandă cu
             stepper și buton alături, care sub ~320px se rupe pe două rânduri.
             `gap-12` la lg — spațiul e singurul lucru care le desparte acum, iar
-            unul strâmt le-ar face să pară o singură coloană dezordonată. */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+            unul strâmt le-ar face să pară o singură coloană dezordonată.
+
+            SUB `lg` ORDINEA SE SCHIMBĂ, fără să se dubleze nimic în HTML:
+            coloana din stânga devine `contents`, deci poza, descrierea și
+            specificațiile ajung frați cu coloana de preț, iar `order` le
+            așază: poză → preț și „Cere ofertă" → specificații. Înainte,
+            specificațiile stăteau între poză și preț, iar prețul cădea sub
+            primul ecran al telefonului, butonul cu încă 450px mai jos. De la
+            `lg` stânga redevine bloc și `order` nu mai contează. */}
+        <div className="mt-4 sm:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 lg:gap-12">
           {/* ── Stânga: identitatea și datele ───────────────── */}
-          <div className="lg:col-span-7 min-w-0">
+          <div className="contents lg:block lg:col-span-7 min-w-0">
             {/* Zona vizuală: fotografia dacă există, altfel cifra.
 
                 ORDINEA E FOTOGRAFIE ÎNTÂI, și rămâne așa chiar dacă acum doar
@@ -284,7 +294,7 @@ export default function FisaProdus({
                 `sizes` e calculat, nu ghicit: coloana are 7 din 12 dintr-un
                 container de 1280px cu 96px de padding, adică ~660px la xl. Sub
                 `lg` coloana e cât ecranul. */}
-            <div className="flex flex-col items-center justify-center py-6 lg:py-14">
+            <div className="order-1 flex flex-col items-center justify-center sm:py-6 lg:py-14">
               {p.imagine ? (
                 /* PLAFONUL CREȘTE ODATĂ CU AȘEZAREA, nu e unul singur.
                    De la `lg` fotografia stă lângă panoul de preț, deci cei
@@ -292,15 +302,21 @@ export default function FisaProdus({
                    așază una peste alta, iar un pătrat de 520px plus padding
                    însemna 632px de fotografie înaintea prețului: pe o fereastră
                    de 900×900 nu se vedea nici cifra, nici butonul, doar poza.
-                   La 400px, panoul de preț ajunge în prima vizualizare. */
-                <div className="relative aspect-square w-full max-w-[400px] lg:max-w-[520px]">
+                   La 400px, panoul de preț ajunge în prima vizualizare.
+
+                   Pe telefon, plafonul e pe ÎNĂLȚIMEA ecranului: 28svh, adică
+                   ~235px pe 844 și ~220px pe 780 — cât să rămână loc dedesubt
+                   pentru preț și butonul de ofertă în primul ecran. `svh`, nu
+                   `vh`: nu se recalculează când bara browserului dispare la
+                   derulare. */
+                <div className="relative aspect-square w-full max-w-[min(100%,28svh)] sm:max-w-[400px] lg:max-w-[520px]">
                   <Image
                     src={p.imagine.url}
                     /* Fără `alt` din WooCommerce, denumirea produsului e
                        descrierea corectă a pozei — nu „imagine produs". */
                     alt={p.imagine.alt ?? p.nume}
                     fill
-                    sizes="(max-width: 1024px) 400px, 520px"
+                    sizes="(max-width: 640px) 240px, (max-width: 1024px) 400px, 520px"
                     className="object-contain"
                     /* Elementul LCP al fișei. `priority` e depreciat în Next
                        16; echivalentul recomandat e perechea de mai jos. */
@@ -333,7 +349,7 @@ export default function FisaProdus({
             {/* Descrierea apare doar dacă există. Pe catalogul de acum e goală
                 peste tot — PDF-ul e o listă de prețuri, nu fișe tehnice. */}
             {p.descriere ? (
-              <p className="max-w-2xl text-[15px] text-gray-600 leading-relaxed">
+              <p className="order-3 max-w-2xl text-[15px] text-gray-600 leading-relaxed">
                 {p.descriere}
               </p>
             ) : null}
@@ -348,7 +364,7 @@ export default function FisaProdus({
                 despart date de același fel, deci trebuie să se vadă mai puțin
                 decât o schimbare de subiect. */}
             {p.specificatii.length > 0 ? (
-              <section className={p.descriere ? "mt-10" : ""}>
+              <section className={`order-4 ${p.descriere ? "lg:mt-10" : ""}`}>
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
                   Specificații tehnice
                 </h2>
@@ -378,7 +394,10 @@ export default function FisaProdus({
               Distanța de sus e înălțimea reală a barei fixe, din variabila
               definită în app/globals.css. `top-28` era o cifră fixă peste o
               bară care are trei înălțimi. */}
-          <aside className="lg:col-span-5 lg:sticky lg:top-[calc(var(--inaltime-navbar)+1.5rem)] lg:self-start">
+          {/* Sub `lg`, coloana e `flex` ca `order` să poată aduce rândul de
+              comandă imediat sub preț, înaintea stocului și a livrării. De la
+              `lg` redevine bloc, în ordinea din HTML — cea de pe desktop. */}
+          <aside className="order-2 flex flex-col lg:block lg:col-span-5 lg:sticky lg:top-[calc(var(--inaltime-navbar)+1.5rem)] lg:self-start">
             {/* ── Capul coloanei: prețul și marca ──────────────
                 Cele două se împart la capetele rândului. E singurul loc din
                 fișă unde ceva stă lipit de marginea din dreapta, și e
@@ -395,7 +414,7 @@ export default function FisaProdus({
                 `items-start`: sigla se aliniază la marginea de sus a cifrei,
                 nu la mijlocul ei. Ancorată sus, continuă linia codului de
                 produs; centrată, ar pluti între preț și nimic. */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="order-1 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 {p.pret ? (
                   /* Cifra și unitățile ei.
@@ -487,7 +506,7 @@ export default function FisaProdus({
                     distribuitor de unul de magazin. O are jumătate din catalog.
                     Era într-o pastilă `avo-50`; acum e text colorat, atât. */}
                 {p.pretVolum && p.prag ? (
-                  <p className="mt-2.5 text-[15px] leading-snug">
+                  <p className="order-1 mt-2 sm:mt-2.5 text-[15px] leading-snug">
                     <span className="font-extrabold text-avo-700">
                       {eur(p.pretVolum)} €
                     </span>
@@ -498,7 +517,7 @@ export default function FisaProdus({
                 ) : null}
 
                 {p.pretContainer ? (
-                  <p className="mt-1.5 text-[13px] text-gray-500">
+                  <p className="order-1 mt-1.5 text-[13px] text-gray-500">
                     Comenzi container: preț {p.pretContainer}.
                   </p>
                 ) : null}
@@ -508,7 +527,7 @@ export default function FisaProdus({
                     interval întreg l-ar pune să extragă singur partea care îl
                     interesează. */}
                 {perioada?.pana ? (
-                  <p className="mt-3 text-[13px] text-gray-500 leading-relaxed">
+                  <p className="order-1 mt-2 sm:mt-3 text-[13px] text-gray-500 leading-snug sm:leading-relaxed">
                     Prețul este valabil până la {perioada.pana}, în limita stocului
                     disponibil.
                   </p>
@@ -517,16 +536,16 @@ export default function FisaProdus({
             ) : (
               /* „Preț la cerere" e scris sus, pe rândul siglei, exact acolo
                  unde ar fi stat cifra. Aici rămâne doar explicația. */
-              <p className="mt-2.5 text-[13px] text-gray-500 leading-relaxed">
+              <p className="order-1 mt-2.5 text-[13px] text-gray-500 leading-relaxed">
                 Poziția se ofertează separat, în funcție de cantitate.
               </p>
             )}
 
             {/* Linie: de aici încolo nu mai e vorba de cât costă, ci de cum
                 ajunge la tine. Singura schimbare de registru din coloană. */}
-            <div aria-hidden className="my-6 h-px w-full bg-gray-200" />
+            <div aria-hidden className="order-3 my-5 lg:my-6 h-px w-full bg-gray-200" />
 
-            <div className="flex flex-col gap-4">
+            <div className="order-3 flex flex-col gap-4">
               {p.disponibilitate ? (
                 <Rand
                   icon={Package}
@@ -546,11 +565,12 @@ export default function FisaProdus({
               ) : null}
             </div>
 
-            <p className="mt-6 text-[13px] text-gray-500">
+            {/* Pe telefon (order-2) rândul de comandă urcă imediat sub preț. */}
+            <p className="order-2 mt-4 lg:mt-6 text-[13px] text-gray-500">
               Se comandă la: <span className="font-semibold text-gray-900">{p.unitate}</span>
             </p>
 
-            <div className="mt-3">
+            <div className="order-2 mt-2 lg:mt-3">
               <CantitateProdus
                 unitate={p.unitate}
                 pretVolum={p.pretVolum}
@@ -563,7 +583,7 @@ export default function FisaProdus({
                 Distribuie". Niciuna dintre ele nu există în proiect, iar un
                 buton care nu face nimic e mai rău decât lipsa lui. Rămâne
                 singura acțiune reală: întoarcerea în categorie. */}
-            <p className="mt-5 text-[13px]">
+            <p className="order-4 mt-5 text-[13px]">
               <Link
                 href={caleCategorie}
                 className="font-semibold text-avo-700 transition-colors hover:text-avo-800"
@@ -573,7 +593,7 @@ export default function FisaProdus({
               </Link>
             </p>
 
-            <p className="mt-6 text-xs text-gray-500 leading-relaxed">
+            <p className="order-4 mt-6 text-xs text-gray-500 leading-relaxed">
               Preț în EUR, fără TVA. Taxa verde DEEE nu este inclusă (0,7 RON / kg).
               Reducerea de partener (Gold −10%, Platinum −15%) se aplică separat,
               prețului de catalog.
