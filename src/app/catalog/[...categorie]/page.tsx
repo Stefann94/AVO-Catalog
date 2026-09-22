@@ -131,7 +131,7 @@ export default async function PaginaCategorie({
           Catalog
         </Link>
 
-        <h1 className="text-[26px] sm:text-[34px] md:text-[40px] font-extrabold text-slate-900 leading-tight">
+        <h1 className="text-[22px] sm:text-[34px] md:text-[40px] font-extrabold text-slate-900 leading-tight">
           {nume}
         </h1>
 
@@ -206,12 +206,15 @@ export default async function PaginaCategorie({
               {brandSlug ? <> {numeBrand}</> : null}
             </p>
 
-            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            {/* PE TELEFON (sub `sm`) două carduri pe rând, ca pe prima pagină:
+                cardul are acolo ~170px, deci poza devine pătrată, titlul 12px,
+                prețul 16px. De la `sm` fiecare clasă e cea de dinainte. */}
+            <div className="mt-4 sm:mt-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
               {lista.map((p) => (
                 <Link
                   key={p.id}
                   href={`/catalog/produs/${p.slug}`}
-                  className={`${CARD} group flex flex-col p-3`}
+                  className={`${CARD} group flex flex-col p-2 sm:p-3`}
                 >
                   {/* Plafon de înălțime peste proporție, aceeași idee ca la
                       cardurile de pe prima pagină (vezi CADRU_FOTO_CARD din
@@ -220,7 +223,7 @@ export default async function PaginaCategorie({
                       768 și 1024, cardul ajunge la 416px lățime și fotografia
                       la 260 — cu produsul tot atât de mic, doar cu mai mult gri
                       în jur. `max-h` o oprește la 200px. */}
-                  <div className="relative aspect-[16/10] max-h-[200px] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
+                  <div className="relative aspect-square sm:aspect-[16/10] max-h-[200px] rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.image?.sourceUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -233,15 +236,15 @@ export default async function PaginaCategorie({
                     )}
                   </div>
 
-                  <div className="flex flex-col flex-1 px-3 pt-4 pb-2">
-                    <h2 className="h-11 text-[14px] font-bold text-slate-900 leading-snug line-clamp-2">
+                  <div className="flex flex-col flex-1 px-1 pt-2.5 pb-1 sm:px-3 sm:pt-4 sm:pb-2">
+                    <h2 className="h-8 text-[12px] leading-4 sm:h-11 sm:text-[14px] sm:leading-snug font-bold text-slate-900 line-clamp-2">
                       {p.name}
                     </h2>
-                    <p className="h-4 mt-1 font-mono text-[10px] text-slate-400 truncate">
+                    <p className="h-3.5 sm:h-4 mt-1 font-mono text-[9px] sm:text-[10px] text-slate-400 truncate">
                       {p.sku ?? ""}
                     </p>
-                    <div className="mt-auto pt-4 border-t border-slate-900/[0.07]">
-                      <span className="text-[20px] font-extrabold text-slate-900 tabular-nums">
+                    <div className="mt-auto pt-2.5 sm:pt-4 border-t border-slate-900/[0.07]">
+                      <span className="text-[16px] sm:text-[20px] font-extrabold text-slate-900 tabular-nums">
                         {eur(p.price)}
                       </span>
                     </div>

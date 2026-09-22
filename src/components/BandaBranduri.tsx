@@ -51,11 +51,15 @@ export default function BandaBranduri() {
       aria-label="Branduri distribuite"
       className="shrink-0 border-t border-white/10 bg-slate-950"
     >
-      <div className="flex items-center gap-4 sm:gap-6 px-4 sm:px-6 lg:pl-16 xl:pl-24 lg:pr-6 py-4">
+      {/* PE TELEFON (sub `sm`) banda e mai scundă și siglele mai mici și mai
+          dese: la 20px înălțime și 48px între ele încăpeau abia trei sigle pe
+          ecran, dintre care una tăiată. La 14px și 28px intră cinci-șase. De la
+          `sm` fiecare clasă e cea de dinainte. */}
+      <div className="flex items-center gap-3 sm:gap-6 px-4 sm:px-6 lg:pl-16 xl:pl-24 lg:pr-6 py-2.5 sm:py-4">
         {/* Eticheta rămâne fixă; doar siglele se mișcă. Fără ea, un perete de
             sigle nu spune ce reprezintă — ar putea fi la fel de bine clienți,
             certificări sau parteneri de transport. */}
-        <p className="shrink-0 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 leading-tight max-w-[7.5rem] sm:max-w-none">
+        <p className="shrink-0 text-[9px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 leading-tight max-w-[7.5rem] sm:max-w-none">
           Branduri
           <span className="hidden sm:inline"> distribuite</span>
         </p>
@@ -88,7 +92,7 @@ export default function BandaBranduri() {
                 {BRANDURI.map((b) => (
                   <span
                     key={b.slug}
-                    className="flex shrink-0 items-center justify-center px-6 sm:px-8"
+                    className="flex shrink-0 items-center justify-center px-3.5 sm:px-8"
                   >
                     {/* `<img>`, nu `next/image`: siglele au lățimi foarte
                         diferite la aceeași înălțime, iar aici contează doar
@@ -101,7 +105,7 @@ export default function BandaBranduri() {
                       src={`/branduri/${b.slug}.png`}
                       alt={set === 0 ? b.nume : ""}
                       height={24}
-                      className="h-5 sm:h-6 w-auto opacity-60 transition-opacity duration-300 hover:opacity-100"
+                      className="h-3.5 sm:h-6 w-auto opacity-60 transition-opacity duration-300 hover:opacity-100"
                       loading="eager"
                       decoding="async"
                     />
