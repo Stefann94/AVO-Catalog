@@ -285,11 +285,18 @@ export default function Navbar() {
               adresă care conține un hash al conținutului. La orice modificare a
               siglei se schimbă adresa, deci browserele și optimizatorul de
               imagini nu mai pot servi versiunea veche din cache. Tot de aici
-              vin și dimensiunile reale, fără să le scriem de mână. */}
+              vin și dimensiunile reale, fără să le scriem de mână.
+
+              ÎNĂLȚIMILE SUNT ALESE DUPĂ LĂȚIME. Sigla de acum (AVO cu O roșu,
+              „grup invest") e 8,6:1, cea veche, cu triunghi, era 5,7:1. La
+              înălțimile vechi (36 → 48px) noua ar fi avut 310px lățime pe
+              telefon, cât să împingă butonul de meniu afară din bară. Scrise
+              la ~75% din cele vechi, iese cu doar ~12% mai lată: 232px pe
+              telefon, 310px de la 2xl. */}
           <Image
             src={logo}
             alt="Avo Grup Invest"
-            className="h-9 sm:h-10 md:h-11 2xl:h-12 w-auto max-w-full object-contain"
+            className="h-[27px] sm:h-[30px] md:h-[33px] 2xl:h-9 w-auto max-w-full object-contain"
             priority
           />
         </Link>

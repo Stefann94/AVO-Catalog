@@ -22,6 +22,11 @@ import { Mail, MapPin, Phone, Truck } from "lucide-react";
  * Plăcuța albă rezolvă amândouă cerințele deodată: footer-ul rămâne închis,
  * iar sigla stă pe suprafața pentru care a fost desenată și ajunge la 13,12:1.
  *
+ * SIGLA S-A SCHIMBAT (septembrie 2026): public/logo.png e acum sigla din
+ * proiectul de prezentare, „AVO" cu O roșu și „grup invest", PNG transparent de
+ * 1490×173. Paragraful de mai jos descrie fișierul de dinainte, cu triunghi,
+ * care a rămas în istoricul git.
+ *
  * FIȘIERUL a fost pregătit, nu copiat ca atare: originalul era un JPEG de
  * 1 MB, 3168×1344, cu fundal alb opac și margini goale care ocupau două treimi
  * din cadru. Alb opac ar fi ieșit ca un dreptunghi vizibil în navbar, care e
@@ -181,7 +186,9 @@ export default function Footer() {
                 <Image
                   src={logo}
                   alt={FIRMA.nume}
-                  className="h-9 w-auto object-contain"
+                  /* 28px, nu 36: sigla nouă e 8,6:1 (vezi Navbar.tsx), deci la
+                     36px plăcuța ar fi ieșit de 342px, mai lată decât coloana. */
+                  className="h-7 w-auto object-contain"
                 />
               </span>
             </div>
