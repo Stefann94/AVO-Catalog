@@ -8,7 +8,7 @@ const slides = [
     videoSrc: "/videos/deye.mp4",
     imageSrc: "/images/deye-inverter.png",
     badge: "Partener Oficial",
-    title: "Distribuitor Autorizat Deye",
+    title: "Distribuitor Platinum Deye",
     subtitle: "Invertoare hibride și soluții de stocare de înaltă performanță pentru aplicații rezidențiale și industriale.",
     buttonText: "Vezi Produsele Deye",
     buttonLink: "/catalog",
