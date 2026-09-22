@@ -302,7 +302,10 @@ export default function FisaProdus({
                     fill
                     sizes="(max-width: 1024px) 400px, 520px"
                     className="object-contain"
-                    priority
+                    /* Elementul LCP al fișei. `priority` e depreciat în Next
+                       16; echivalentul recomandat e perechea de mai jos. */
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
               ) : p.cifra ? (
@@ -462,7 +465,7 @@ export default function FisaProdus({
                    cu el. */
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  src={`/branduri/color/${sigla.slug}.png`}
+                  src={`/branduri/color/${sigla.slug}.webp`}
                   alt={sigla.nume}
                   height={40}
                   className="h-8 sm:h-10 w-auto max-w-[45%] shrink-0 object-contain object-right opacity-90"

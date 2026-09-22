@@ -76,7 +76,7 @@ import { BADGE, BADGE_CARD, BADGE_OFERTA } from "@/components/stiluri";
 function sigla(brand: string, varianta: "alb" | "color"): string | null {
   const b = gasesteBrand(brand);
   if (!b) return null;
-  return varianta === "alb" ? `/branduri/${b.slug}.png` : `/branduri/color/${b.slug}.png`;
+  return varianta === "alb" ? `/branduri/${b.slug}.webp` : `/branduri/color/${b.slug}.webp`;
 }
 
 const eur = (n: number) => n.toLocaleString("ro-RO");
@@ -151,7 +151,7 @@ export default function HeroCatalog({
                 <li key={b}>
                   {src ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={src} alt={b} height={20} className="h-4 w-auto opacity-80" decoding="async" />
+                    <img src={src} alt={b} height={20} className="h-4 w-auto opacity-80" loading="lazy" decoding="async" />
                   ) : (
                     <span className="text-[13px] font-bold text-white/80">{b}</span>
                   )}
@@ -184,7 +184,10 @@ export default function HeroCatalog({
                        pătratul dispare; umbrele și marginile produsului rămân,
                        fiindcă sunt mai închise decât fondul. */
                     className="object-contain mix-blend-multiply"
-                    priority
+                    /* `priority` e depreciat în Next 16; documentația cere
+                       loading="eager" + fetchPriority="high" pentru LCP. */
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 ) : null}
                 <span className={`absolute top-0 left-0 ${BADGE} ${BADGE_CARD} ${BADGE_OFERTA}`}>Ofertă</span>
@@ -195,7 +198,7 @@ export default function HeroCatalog({
                   const src = sigla(principal.brand, "color");
                   return src ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={src} alt={principal.brand} height={20} className="h-5 w-auto max-w-full" decoding="async" />
+                    <img src={src} alt={principal.brand} height={20} className="h-5 w-auto max-w-full" loading="lazy" decoding="async" />
                   ) : null;
                 })()}
                 <p className="mt-2 text-[15px] leading-snug font-bold text-gray-900 transition-colors group-hover:text-avo-700">
@@ -248,7 +251,7 @@ export default function HeroCatalog({
                       <div className="min-w-0">
                         {src ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={src} alt={o.brand} height={14} className="h-3.5 w-auto max-w-full" decoding="async" />
+                          <img src={src} alt={o.brand} height={14} className="h-3.5 w-auto max-w-full" loading="lazy" decoding="async" />
                         ) : (
                           <span className="text-[11px] font-bold text-gray-900">{o.brand}</span>
                         )}

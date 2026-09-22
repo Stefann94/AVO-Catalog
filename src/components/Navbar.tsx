@@ -297,7 +297,12 @@ export default function Navbar() {
             src={logo}
             alt="Avo Grup Invest"
             className="h-[27px] sm:h-[30px] md:h-[33px] 2xl:h-9 w-auto max-w-full object-contain"
-            priority
+            /* Cea mai mare lățime afișată: 36px × 8,6 = 310px la 2xl. Fără
+               `sizes`, Next alegea din fișierul de 1490px și cerea varianta
+               de 3840px. Nu mai e `priority`: sigla nu e elementul LCP și
+               nu trebuie să ia banda pozei principale. */
+            sizes="310px"
+            loading="eager"
           />
         </Link>
 

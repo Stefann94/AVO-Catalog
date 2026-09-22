@@ -189,6 +189,7 @@ export default function Footer() {
                   /* 28px, nu 36: sigla nouă e 8,6:1 (vezi Navbar.tsx), deci la
                      36px plăcuța ar fi ieșit de 342px, mai lată decât coloana. */
                   className="h-7 w-auto object-contain"
+                  sizes="241px"
                 />
               </span>
             </div>

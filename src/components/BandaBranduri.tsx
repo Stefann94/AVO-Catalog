@@ -96,17 +96,22 @@ export default function BandaBranduri() {
                   >
                     {/* `<img>`, nu `next/image`: siglele au lățimi foarte
                         diferite la aceeași înălțime, iar aici contează doar
-                        înălțimea. Sunt deja optimizate (4–17 KB, medie 7 KB,
-                        160 KB tot lotul), deci nu câștigăm nimic din trecerea
-                        lor prin optimizator — doar am adăuga 17 cereri către
-                        /_next/image pe primul ecran. */}
+                        înălțimea. Sunt WebP la 48px înălțime, gata optimizate
+                        de tools/imagini/optimizeaza-sigle.mjs (~2–7 KB).
+
+                        `lazy`, nu `eager`: Next pre-încarcă pagina principală
+                        din orice link spre `/`, iar cu `eager` cele 17 sigle se
+                        descărcau pe FIECARE pagină a site-ului, în fundal,
+                        exact cât se încărca poza principală (măsurat pe fișa
+                        de produs). Pe prima pagină banda e în primul ecran,
+                        deci `lazy` le încarcă oricum imediat după layout. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`/branduri/${b.slug}.png`}
+                      src={`/branduri/${b.slug}.webp`}
                       alt={set === 0 ? b.nume : ""}
                       height={24}
                       className="h-3.5 sm:h-6 w-auto opacity-60 transition-opacity duration-300 hover:opacity-100"
-                      loading="eager"
+                      loading="lazy"
                       decoding="async"
                     />
                   </span>

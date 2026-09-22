@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, PackageSearch, X } from "lucide-react";
@@ -210,7 +211,7 @@ export default async function PaginaCategorie({
                 cardul are acolo ~170px, deci poza devine pătrată, titlul 12px,
                 prețul 16px. De la `sm` fiecare clasă e cea de dinainte. */}
             <div className="mt-4 sm:mt-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
-              {lista.map((p) => (
+              {lista.map((p, i) => (
                 <Link
                   key={p.id}
                   href={`/catalog/produs/${p.slug}`}
@@ -225,11 +226,24 @@ export default async function PaginaCategorie({
                       în jur. `max-h` o oprește la 200px. */}
                   <div className="relative aspect-square sm:aspect-[16/10] max-h-[200px] rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.image?.sourceUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      /* `next/image`, nu `<img>`: fotografia originală din
+                         WordPress venea întreagă, la rezoluția de upload, pe un
+                         card de 170–280px. Prin optimizator vine AVIF, la
+                         lățimea cardului. `sizes` urmează grila: 2 coloane
+                         până la lg, 3 până la xl, apoi 4 carduri de ~280px.
+
+                         Primul rând e în primul ecran și conține elementul LCP
+                         al paginii (măsurat): primele patru se încarcă imediat,
+                         primele două cu prioritate — pe telefon sunt singurele
+                         vizibile. Restul, lazy. */
+                      <Image
                         src={p.image.sourceUrl}
                         alt={p.image.altText ?? p.name}
-                        className="h-full w-full object-contain"
+                        fill
+                        sizes="(max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 280px"
+                        className="object-contain"
+                        loading={i < 4 ? "eager" : "lazy"}
+                        fetchPriority={i < 2 ? "high" : "auto"}
                       />
                     ) : (
                       <span className="text-[11px] text-slate-300">Fără imagine</span>

@@ -323,10 +323,11 @@ export default function MeniuCategorii({
                       {sigla ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={`/branduri/color/${sigla.slug}.png`}
+                          src={`/branduri/color/${sigla.slug}.webp`}
                           alt={sigla.nume}
                           height={16}
                           className="mt-3 h-4 w-auto self-start"
+                          loading="lazy"
                           decoding="async"
                         />
                       ) : null}

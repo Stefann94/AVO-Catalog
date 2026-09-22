@@ -115,10 +115,19 @@ export default function HeroSlider() {
     return () => window.clearTimeout(id);
   }, [activeIndex]);
 
-  // După fade, slide-ul care a ieșit își eliberează video-ul.
+  // După fade, slide-ul care a ieșit își eliberează video-ul — și uită că
+  // rula: la următoarea trecere, video-ul e unul nou, care pornește de la zero,
+  // deci posterul trebuie să reapară până începe redarea.
   useEffect(() => {
     if (anterior === null) return;
-    const id = window.setTimeout(() => setAnterior(null), FADE_MS);
+    const id = window.setTimeout(() => {
+      setRuleaza((r) => {
+        const rest = { ...r };
+        delete rest[anterior];
+        return rest;
+      });
+      setAnterior(null);
+    }, FADE_MS);
     return () => window.clearTimeout(id);
   }, [anterior]);
 
@@ -172,7 +181,12 @@ export default function HeroSlider() {
               sizes="100vw"
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
-              className="object-cover opacity-60"
+              /* Posterul se stinge când pornește video-ul. Rămas dedesubt,
+                 se vedea prin video: amândouă sunt la 60%, iar posterul e alt
+                 cadru decât cel care rulează — două imagini suprapuse. */
+              className={`object-cover transition-opacity duration-700 ${
+                cuVideo && ruleaza[index] ? "opacity-0" : "opacity-60"
+              }`}
             />
 
             {cuVideo && (
