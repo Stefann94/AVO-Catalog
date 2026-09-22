@@ -1,0 +1,13 @@
+{
+  "name": "avo-video",
+  "private": true,
+  "description": "Recomprimarea video-urilor din hero și extragerea posterelor, cu ffmpeg adus de npm.",
+  "type": "module",
+  "scripts": {
+    "comprima": "node comprima.mjs"
+  },
+  "dependencies": {
+    "@ffprobe-installer/ffprobe": "2.1.2",
+    "ffmpeg-static": "5.3.0"
+  }
+}

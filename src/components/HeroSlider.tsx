@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
+/*
+ * Video-urile sunt recomprimate din tools/video/originale cu tools/video/
+ * comprima.mjs: 10 s, 1280 px, fără sunet — 2,9 MB în total în loc de 33,6 MB.
+ * Posterul e un cadru din același video, servit prin next/image (AVIF/WebP).
+ */
 const slides = [
   {
-    videoSrc: "/videos/deye.mp4",
-    imageSrc: "/images/deye-inverter.png",
+    videoSrc: "/videos/hero-deye.mp4",
+    posterSrc: "/videos/hero-deye-poster.jpg",
     badge: "Partener Oficial",
     title: "Distribuitor Platinum Deye",
     subtitle: "Invertoare hibride și soluții de stocare de înaltă performanță pentru aplicații rezidențiale și industriale.",
@@ -19,8 +25,8 @@ const slides = [
     ]
   },
   {
-    videoSrc: "/videos/aiko.mp4",
-    imageSrc: "/images/aiko-panel.png",
+    videoSrc: "/videos/hero-aiko.mp4",
+    posterSrc: "/videos/hero-aiko-poster.jpg",
     badge: "Top Performanță",
     title: "Eficiență Redefinită: Aiko Solar",
     subtitle: "Tehnologia ABC (All Back Contact) pentru cel mai mare randament la nivel global. Putere maximă pe m².",
@@ -33,8 +39,8 @@ const slides = [
     ]
   },
   {
-    videoSrc: "/videos/solar.mp4",
-    imageSrc: "/images/solar-system.png",
+    videoSrc: "/videos/hero-solar.mp4",
+    posterSrc: "/videos/hero-solar-poster.jpg",
     badge: "Parteneriat B2B",
     title: "Oferte Exclusive Pentru Parteneri",
     subtitle: "Beneficiați de prețuri preferențiale de importator, stocuri garantate și livrare prioritară.",
@@ -48,40 +54,149 @@ const slides = [
   }
 ];
 
+/**
+ * Video doar unde merită: ecran de la 768px, fără „reduce motion" și fără
+ * „Economizor de date". Pe telefon rămâne posterul — un video de fundal sub
+ * două gradiente nu adaugă nimic acolo, dar consumă date și baterie și
+ * întârzie LCP-ul.
+ */
+const INTEROGARE_VIDEO = "(min-width: 768px) and (prefers-reduced-motion: no-preference)";
+
+function aboneazaVideo(anunta: () => void) {
+  const mq = window.matchMedia(INTEROGARE_VIDEO);
+  mq.addEventListener("change", anunta);
+  return () => mq.removeEventListener("change", anunta);
+}
+
+function permiteVideo() {
+  const conexiune = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  return window.matchMedia(INTEROGARE_VIDEO).matches && !conexiune?.saveData;
+}
+
+/** Durata fade-ului dintre slide-uri; video-ul care iese rămâne montat atât. */
+const FADE_MS = 1000;
+
 export default function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [anterior, setAnterior] = useState<number | null>(null);
 
+  // Pe server și la prima randare: false, deci HTML-ul inițial are doar postere.
+  const poateVideo = useSyncExternalStore(aboneazaVideo, permiteVideo, () => false);
+
+  // Video-ul pornește abia după evenimentul `load`: nu concurează cu fontul,
+  // cu CSS-ul și cu imaginile din prima vedere pentru banda de trafic.
+  const [dupaIncarcare, setDupaIncarcare] = useState(false);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length);
-    }, 8000); // Change slide every 8 seconds
-    return () => clearInterval(interval);
+    const porneste = () => setDupaIncarcare(true);
+    if (document.readyState === "complete") {
+      const id = window.setTimeout(porneste, 0);
+      return () => window.clearTimeout(id);
+    }
+    window.addEventListener("load", porneste, { once: true });
+    return () => window.removeEventListener("load", porneste);
+  }, []);
+
+  // Care video a ajuns să ruleze — până atunci se vede posterul de dedesubt.
+  const [ruleaza, setRuleaza] = useState<Record<number, boolean>>({});
+
+  const schimba = (urmator: number) => {
+    if (urmator === activeIndex) return;
+    setAnterior(activeIndex);
+    setActiveIndex(urmator);
+  };
+
+  // Temporizatorul repornește la fiecare schimbare, deci și după un click pe
+  // puncte slide-ul ales stă 8 s întregi, cât durează și bara de progres.
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setAnterior(activeIndex);
+      setActiveIndex((activeIndex + 1) % slides.length);
+    }, 8000);
+    return () => window.clearTimeout(id);
+  }, [activeIndex]);
+
+  // După fade, slide-ul care a ieșit își eliberează video-ul.
+  useEffect(() => {
+    if (anterior === null) return;
+    const id = window.setTimeout(() => setAnterior(null), FADE_MS);
+    return () => window.clearTimeout(id);
+  }, [anterior]);
+
+  // Redarea se oprește când hero-ul iese din ecran sau tab-ul trece în fundal.
+  const sectiune = useRef<HTMLElement>(null);
+  const videouri = useRef(new Map<number, HTMLVideoElement>());
+  useEffect(() => {
+    let vizibil = true;
+    const aplica = () => {
+      const activ = vizibil && document.visibilityState === "visible";
+      for (const v of videouri.current.values()) {
+        if (activ) v.play().catch(() => {});
+        else v.pause();
+      }
+    };
+    const observator = new IntersectionObserver(([intrare]) => {
+      vizibil = intrare.isIntersecting;
+      aplica();
+    });
+    if (sectiune.current) observator.observe(sectiune.current);
+    document.addEventListener("visibilitychange", aplica);
+    return () => {
+      observator.disconnect();
+      document.removeEventListener("visibilitychange", aplica);
+    };
   }, []);
 
   return (
-    <section className="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* Videos */}
-      {slides.map((slide, index) => (
-        <div 
-          key={index} 
-          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
-            index === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-          }`}
-        >
-          {/* Fallback color while loading */}
-          <div className="absolute inset-0 bg-slate-900"></div>
-          
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover opacity-60"
+    <section ref={sectiune} className="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden bg-slate-900">
+      {/* Fundalurile. Se montează doar slide-ul activ și cel care tocmai iese
+          (pentru fade), deci niciodată trei video-uri deodată. Primul poster
+          e randat de server și încărcat cu prioritate: e ce vede telefonul. */}
+      {slides.map((slide, index) => {
+        const montat = index === activeIndex || index === anterior;
+        if (!montat) return null;
+        const cuVideo = poateVideo && dupaIncarcare;
+        return (
+          <div
+            key={index}
+            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
+              index === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
           >
-            <source src={slide.videoSrc} type="video/mp4" />
-          </video>
-        </div>
-      ))}
+            {/* Fallback color while loading */}
+            <div className="absolute inset-0 bg-slate-900"></div>
+
+            <Image
+              src={slide.posterSrc}
+              alt=""
+              fill
+              sizes="100vw"
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchPriority={index === 0 ? "high" : "auto"}
+              className="object-cover opacity-60"
+            />
+
+            {cuVideo && (
+              <video
+                ref={(el) => {
+                  if (el) videouri.current.set(index, el);
+                  else videouri.current.delete(index);
+                }}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                onPlaying={() => setRuleaza((r) => (r[index] ? r : { ...r, [index]: true }))}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                  ruleaza[index] ? "opacity-60" : "opacity-0"
+                }`}
+              >
+                <source src={slide.videoSrc} type="video/mp4" />
+              </video>
+            )}
+          </div>
+        );
+      })}
 
       {/* Modern Gradient Overlays for better text readability */}
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent"></div>
@@ -168,7 +283,7 @@ export default function HeroSlider() {
                 {slides.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setActiveIndex(index)}
+                    onClick={() => schimba(index)}
                     className="relative h-1.5 w-24 rounded-full overflow-hidden transition-all duration-500 bg-white/20 hover:bg-white/40"
                     aria-label={`Go to slide ${index + 1}`}
                   >
