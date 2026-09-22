@@ -55,23 +55,31 @@ const slides = [
 ];
 
 /**
- * Video doar unde merită: ecran de la 768px, fără „reduce motion" și fără
- * „Economizor de date". Pe telefon rămâne posterul — un video de fundal sub
- * două gradiente nu adaugă nimic acolo, dar consumă date și baterie și
- * întârzie LCP-ul.
+ * Ce video primește ecranul:
+ *   desktop ... de la 768px: 1280px lățime, ~0,5–1,3 MB bucata;
+ *   mobil ..... sub 768px: decupajul vertical 360×640, ~130–200 KB bucata —
+ *               hero-ul e vertical pe telefon, deci din cadrul lat s-ar fi
+ *               văzut oricum doar mijlocul (tools/video/comprima.mjs);
+ *   niciunul .. „reduce motion" sau „Economizor de date": doar posterul.
  */
-const INTEROGARE_VIDEO = "(min-width: 768px) and (prefers-reduced-motion: no-preference)";
+type ModVideo = "desktop" | "mobil" | "niciunul";
+const INTEROGARI = ["(min-width: 768px)", "(prefers-reduced-motion: reduce)"];
 
 function aboneazaVideo(anunta: () => void) {
-  const mq = window.matchMedia(INTEROGARE_VIDEO);
-  mq.addEventListener("change", anunta);
-  return () => mq.removeEventListener("change", anunta);
+  const liste = INTEROGARI.map((q) => window.matchMedia(q));
+  for (const mq of liste) mq.addEventListener("change", anunta);
+  return () => {
+    for (const mq of liste) mq.removeEventListener("change", anunta);
+  };
 }
 
-function permiteVideo() {
+function modVideo(): ModVideo {
   const conexiune = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-  return window.matchMedia(INTEROGARE_VIDEO).matches && !conexiune?.saveData;
+  if (conexiune?.saveData || window.matchMedia(INTEROGARI[1]).matches) return "niciunul";
+  return window.matchMedia(INTEROGARI[0]).matches ? "desktop" : "mobil";
 }
+
+const sursaVideo = (src: string, mod: ModVideo) => (mod === "mobil" ? src.replace(/\.mp4$/, "-mobil.mp4") : src);
 
 /** Durata fade-ului dintre slide-uri; video-ul care iese rămâne montat atât. */
 const FADE_MS = 1000;
@@ -80,8 +88,8 @@ export default function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [anterior, setAnterior] = useState<number | null>(null);
 
-  // Pe server și la prima randare: false, deci HTML-ul inițial are doar postere.
-  const poateVideo = useSyncExternalStore(aboneazaVideo, permiteVideo, () => false);
+  // Pe server și la prima randare: „niciunul", deci HTML-ul inițial are doar postere.
+  const mod = useSyncExternalStore<ModVideo>(aboneazaVideo, modVideo, () => "niciunul");
 
   // Video-ul pornește abia după evenimentul `load`: nu concurează cu fontul,
   // cu CSS-ul și cu imaginile din prima vedere pentru banda de trafic.
@@ -98,6 +106,10 @@ export default function HeroSlider() {
 
   // Care video are deja un cadru de arătat — până atunci se vede posterul.
   const [gata, setGata] = useState<Record<number, boolean>>({});
+  // Care video e destul de descărcat ca să ruleze până la capăt. Abia atunci
+  // începe descărcarea următorului — altfel, pe 4G lent, cele două își
+  // împart banda și primul se blochează.
+  const [plin, setPlin] = useState<Record<number, boolean>>({});
 
   const urmator = (activeIndex + 1) % slides.length;
   const videouri = useRef(new Map<number, HTMLVideoElement>());
@@ -141,11 +153,13 @@ export default function HeroSlider() {
         const v = videouri.current.get(anterior);
         if (v) v.currentTime = 0;
       } else {
-        setGata((g) => {
-          const rest = { ...g };
+        const fara = (r: Record<number, boolean>) => {
+          const rest = { ...r };
           delete rest[anterior];
           return rest;
-        });
+        };
+        setGata(fara);
+        setPlin(fara);
       }
       setAnterior(null);
     }, FADE_MS);
@@ -183,15 +197,17 @@ export default function HeroSlider() {
     <section ref={sectiune} className="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden bg-slate-900">
       {/* Fundalurile. Montate: slide-ul activ, cel care tocmai iese (oprit,
           pentru fade) și URMĂTORUL — descărcat din timp și oprit la cadrul 0,
-          dar abia după ce video-ul activ are ce arăta, ca descărcările să nu
+          dar abia după ce video-ul activ se poate reda până la capăt
+          (`canplaythrough`), ca descărcările să nu
           se suprapună. Primul poster e randat de server și încărcat cu
-          prioritate: e ce vede telefonul. */}
+          prioritate: e prima imagine de pe ecran (elementul LCP) și singura
+          pentru cine are „Economizor de date" sau „reduce motion". */}
       {slides.map((slide, index) => {
-        const cuVideo = poateVideo && dupaIncarcare;
+        const cuVideo = mod !== "niciunul" && dupaIncarcare;
         const montat =
           index === activeIndex ||
           index === anterior ||
-          (index === urmator && (!cuVideo || gata[activeIndex]));
+          (index === urmator && (!cuVideo || plin[activeIndex]));
         if (!montat) return null;
         return (
           <div
@@ -222,6 +238,9 @@ export default function HeroSlider() {
 
             {cuVideo && (
               <video
+                // Alt fișier la trecerea peste 768px (rotire, fereastră
+                // redimensionată): elementul se remontează cu noua sursă.
+                key={mod}
                 ref={(el) => {
                   if (el) videouri.current.set(index, el);
                   else videouri.current.delete(index);
@@ -234,11 +253,12 @@ export default function HeroSlider() {
                 playsInline
                 preload="auto"
                 onLoadedData={() => setGata((g) => (g[index] ? g : { ...g, [index]: true }))}
+                onCanPlayThrough={() => setPlin((p) => (p[index] ? p : { ...p, [index]: true }))}
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
                   gata[index] ? "opacity-60" : "opacity-0"
                 }`}
               >
-                <source src={slide.videoSrc} type="video/mp4" />
+                <source src={sursaVideo(slide.videoSrc, mod)} type="video/mp4" />
               </video>
             )}
           </div>

@@ -6,6 +6,7 @@
  *
  * Din originale/<nume>.mp4 scrie în public/videos/:
  *   hero-<nume>.mp4          H.264, 1280 px, 10 s, fără sunet, faststart
+ *   hero-<nume>-mobil.mp4    la fel, decupat vertical 9:16, 360×640, pentru telefon
  *   hero-<nume>-poster.jpg   un cadru reprezentativ, sursa pentru next/image (AVIF/WebP)
  *
  * DE CE AȘA
@@ -62,11 +63,26 @@ for (const f of readdirSync(originale).filter((f) => f.endsWith(".mp4"))) {
     video,
   ]);
 
+  // Varianta de telefon: hero-ul e vertical acolo, deci dintr-un cadru 16:9 se
+  // vede oricum doar mijlocul. Îl decupăm noi, 9:16, și trimitem 360×640 în loc
+  // de 1280×720 — de ~5 ori mai puțini pixeli. CRF 33: sub 60% opacitate și
+  // gradiente, diferența față de 28 nu se vede; verificat pe cadre.
+  const mobil = join(iesire, `hero-${nume}-mobil.mp4`);
+  execFileSync(ffmpeg, [
+    "-y", "-v", "error", "-i", sursa,
+    "-t", String(DURATA),
+    "-vf", "crop=ih*9/16:ih,scale=360:640:flags=lanczos,fps=25",
+    "-c:v", "libx264", "-preset", "slow", "-crf", "33",
+    "-profile:v", "high", "-pix_fmt", "yuv420p",
+    "-an", "-movflags", "+faststart",
+    mobil,
+  ]);
+
   execFileSync(ffmpeg, [
     "-y", "-v", "error", "-ss", String(CADRU_POSTER[nume] ?? 2), "-i", sursa,
     "-frames:v", "1", "-vf", `scale=${LATIME}:-2:flags=lanczos`, "-q:v", "2",
     poster,
   ]);
 
-  console.log(`${nume.padEnd(6)} ${String(kb(sursa)).padStart(6)} KB  →  video ${String(kb(video)).padStart(5)} KB, poster ${kb(poster)} KB`);
+  console.log(`${nume.padEnd(6)} ${String(kb(sursa)).padStart(6)} KB  →  video ${String(kb(video)).padStart(5)} KB, telefon ${kb(mobil)} KB, poster ${kb(poster)} KB`);
 }
