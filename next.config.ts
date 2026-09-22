@@ -10,12 +10,27 @@ const nextConfig: NextConfig = {
      * Pe fotografiile din cardurile de categorie diferența e reală — sunt
      * patru JPEG-uri de 106–231 KB, iar AVIF le duce tipic la jumătate față
      * de WebP la aceeași calitate vizuală.
-     *
-     * `qualities` rămâne nedeclarat intenționat: implicit e `[75]`, iar
-     * nicăieri nu cerem altă calitate. Se declară doar când se folosește
-     * `quality` cu altă valoare — altfel Next o respinge.
      */
     formats: ["image/avif", "image/webp"],
+
+    /**
+     * Calitatea imaginilor servite. Implicit Next folosește 75; aici 60 pentru
+     * tot site-ul și 45 pentru posterele din hero.
+     *
+     * Alese pe decupaje mărite, la 75/60/50/40 (AVIF, cu formula lui Next):
+     *   60 ... nu se distinge de 75, iar fișierele scad cu ~33%
+     *          (poster 35,7 → 23,5 KB; fotografie de categorie 18 → 12 KB);
+     *   50 ... liniile celulelor de pe panouri încep să se încețoșeze, iar
+     *          textul mic de pe produse (sigla Deye de pe baterie) se pătează;
+     *   40 ... degradare vizibilă.
+     * Posterele din hero merg la 45: sunt afișate la 60% opacitate, sub două
+     * gradiente închise, unde diferența nu se vede.
+     *
+     * O imagine fără `quality` primește valoarea din listă cea mai apropiată
+     * de 75, adică 60. Orice altă valoare cerută direct la /_next/image e
+     * respinsă cu 400 — de aceea lista e închisă.
+     */
+    qualities: [45, 60],
 
     /**
      * Pozele de categorie încărcate în WooCommerce.

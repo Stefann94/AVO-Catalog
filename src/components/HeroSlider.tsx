@@ -179,6 +179,8 @@ export default function HeroSlider() {
               alt=""
               fill
               sizes="100vw"
+              /* 45, nu 60: afișat la 60% opacitate sub gradiente (next.config.ts). */
+              quality={45}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               /* Posterul se stinge când pornește video-ul. Rămas dedesubt,
