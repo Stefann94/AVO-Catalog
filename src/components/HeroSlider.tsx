@@ -96,55 +96,79 @@ export default function HeroSlider() {
     return () => window.removeEventListener("load", porneste);
   }, []);
 
-  // Care video a ajuns să ruleze — până atunci se vede posterul de dedesubt.
-  const [ruleaza, setRuleaza] = useState<Record<number, boolean>>({});
+  // Care video are deja un cadru de arătat — până atunci se vede posterul.
+  const [gata, setGata] = useState<Record<number, boolean>>({});
 
-  const schimba = (urmator: number) => {
-    if (urmator === activeIndex) return;
+  const urmator = (activeIndex + 1) % slides.length;
+  const videouri = useRef(new Map<number, HTMLVideoElement>());
+  const vizibilRef = useRef(true);
+
+  /**
+   * TRANZIȚIA, ca pe avogrupinvest.ro: video-ul curent se OPREȘTE pe cadrul
+   * la care a ajuns și se stinge, iar următorul pornește DE LA ÎNCEPUT și
+   * apare peste el. Următorul e deja descărcat și oprit la cadrul 0 (vezi
+   * `montat` mai jos), deci pornește instant, fără poster intermediar.
+   */
+  const schimba = (tinta: number) => {
+    if (tinta === activeIndex) return;
+    videouri.current.get(activeIndex)?.pause();
+    const v = videouri.current.get(tinta);
+    if (v) {
+      v.currentTime = 0;
+      if (vizibilRef.current && document.visibilityState === "visible") v.play().catch(() => {});
+    }
     setAnterior(activeIndex);
-    setActiveIndex(urmator);
+    setActiveIndex(tinta);
   };
 
   // Temporizatorul repornește la fiecare schimbare, deci și după un click pe
   // puncte slide-ul ales stă 8 s întregi, cât durează și bara de progres.
+  const schimbaRef = useRef(schimba);
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      setAnterior(activeIndex);
-      setActiveIndex((activeIndex + 1) % slides.length);
-    }, 8000);
+    schimbaRef.current = schimba;
+  });
+  useEffect(() => {
+    const id = window.setTimeout(() => schimbaRef.current((activeIndex + 1) % slides.length), 8000);
     return () => window.clearTimeout(id);
   }, [activeIndex]);
 
-  // După fade, slide-ul care a ieșit își eliberează video-ul — și uită că
-  // rula: la următoarea trecere, video-ul e unul nou, care pornește de la zero,
-  // deci posterul trebuie să reapară până începe redarea.
+  // După fade, slide-ul care a ieșit își eliberează video-ul. Excepție: dacă e
+  // chiar următorul (după un click pe puncte), rămâne montat, dus la cadrul 0.
   useEffect(() => {
     if (anterior === null) return;
     const id = window.setTimeout(() => {
-      setRuleaza((r) => {
-        const rest = { ...r };
-        delete rest[anterior];
-        return rest;
-      });
+      if (anterior === (activeIndex + 1) % slides.length) {
+        const v = videouri.current.get(anterior);
+        if (v) v.currentTime = 0;
+      } else {
+        setGata((g) => {
+          const rest = { ...g };
+          delete rest[anterior];
+          return rest;
+        });
+      }
       setAnterior(null);
     }, FADE_MS);
     return () => window.clearTimeout(id);
-  }, [anterior]);
+  }, [anterior, activeIndex]);
 
-  // Redarea se oprește când hero-ul iese din ecran sau tab-ul trece în fundal.
+  // Redarea se oprește când hero-ul iese din ecran sau tab-ul trece în fundal,
+  // și se reia — doar pentru slide-ul activ — când revine.
   const sectiune = useRef<HTMLElement>(null);
-  const videouri = useRef(new Map<number, HTMLVideoElement>());
+  const activRef = useRef(activeIndex);
   useEffect(() => {
-    let vizibil = true;
+    activRef.current = activeIndex;
+  }, [activeIndex]);
+  useEffect(() => {
     const aplica = () => {
-      const activ = vizibil && document.visibilityState === "visible";
-      for (const v of videouri.current.values()) {
-        if (activ) v.play().catch(() => {});
-        else v.pause();
-      }
+      const activ = vizibilRef.current && document.visibilityState === "visible";
+      const v = videouri.current.get(activRef.current);
+      if (!v) return;
+      if (activ) v.play().catch(() => {});
+      else v.pause();
     };
     const observator = new IntersectionObserver(([intrare]) => {
-      vizibil = intrare.isIntersecting;
+      vizibilRef.current = intrare.isIntersecting;
       aplica();
     });
     if (sectiune.current) observator.observe(sectiune.current);
@@ -157,13 +181,18 @@ export default function HeroSlider() {
 
   return (
     <section ref={sectiune} className="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* Fundalurile. Se montează doar slide-ul activ și cel care tocmai iese
-          (pentru fade), deci niciodată trei video-uri deodată. Primul poster
-          e randat de server și încărcat cu prioritate: e ce vede telefonul. */}
+      {/* Fundalurile. Montate: slide-ul activ, cel care tocmai iese (oprit,
+          pentru fade) și URMĂTORUL — descărcat din timp și oprit la cadrul 0,
+          dar abia după ce video-ul activ are ce arăta, ca descărcările să nu
+          se suprapună. Primul poster e randat de server și încărcat cu
+          prioritate: e ce vede telefonul. */}
       {slides.map((slide, index) => {
-        const montat = index === activeIndex || index === anterior;
-        if (!montat) return null;
         const cuVideo = poateVideo && dupaIncarcare;
+        const montat =
+          index === activeIndex ||
+          index === anterior ||
+          (index === urmator && (!cuVideo || gata[activeIndex]));
+        if (!montat) return null;
         return (
           <div
             key={index}
@@ -183,11 +212,11 @@ export default function HeroSlider() {
               quality={45}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
-              /* Posterul se stinge când pornește video-ul. Rămas dedesubt,
+              /* Posterul dispare când video-ul are un cadru. Rămas dedesubt,
                  se vedea prin video: amândouă sunt la 60%, iar posterul e alt
                  cadru decât cel care rulează — două imagini suprapuse. */
               className={`object-cover transition-opacity duration-700 ${
-                cuVideo && ruleaza[index] ? "opacity-0" : "opacity-60"
+                cuVideo && gata[index] ? "opacity-0" : "opacity-60"
               }`}
             />
 
@@ -197,14 +226,16 @@ export default function HeroSlider() {
                   if (el) videouri.current.set(index, el);
                   else videouri.current.delete(index);
                 }}
-                autoPlay
+                // Doar slide-ul activ pornește singur; următorul stă oprit
+                // la cadrul 0 până îl pornește `schimba`.
+                autoPlay={index === activeIndex}
                 muted
                 loop
                 playsInline
                 preload="auto"
-                onPlaying={() => setRuleaza((r) => (r[index] ? r : { ...r, [index]: true }))}
+                onLoadedData={() => setGata((g) => (g[index] ? g : { ...g, [index]: true }))}
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-                  ruleaza[index] ? "opacity-60" : "opacity-0"
+                  gata[index] ? "opacity-60" : "opacity-0"
                 }`}
               >
                 <source src={slide.videoSrc} type="video/mp4" />
