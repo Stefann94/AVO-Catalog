@@ -85,33 +85,35 @@ const nextConfig: NextConfig = {
     staticGenerationMaxConcurrency: 4,
     staticGenerationRetryCount: 2,
 
-    /**
-     * CSS-ul intră în pagină, nu într-un fișier cerut separat.
+    /*
+     * ─── `inlineCss` A FOST ÎNCERCAT ȘI RESPINS. NU-L REPORNI. ───────────
      *
-     * ─── CE PROBLEMĂ REZOLVĂ ────────────────────────────────────────────
+     * Ideea părea sigură: foaia de stil bloca desenarea 150 ms, iar lanțul
+     * document → stil → font dura 597 ms. Pusă în pagină, cererea a doua
+     * dispare. Documentația lui Next o recomandă exact pentru cazul nostru —
+     * Tailwind, vizitatori noi, conexiuni lente.
      *
-     * Măsurat pe fișa de produs, înainte: browserul cerea documentul (225 ms),
-     * îl citea, descoperea acolo `<link>`-ul către foaia de stil, o cerea
-     * (încă 57 ms) și abia apoi putea desena ceva. Lanțul ăsta — document, apoi
-     * stil, apoi font — dura 597 ms, iar foaia de stil singură bloca desenarea
-     * 150 ms. Nimic nu apărea pe ecran în tot acest timp.
+     * Măsurat însă pe site-ul viu, cu tools/masurare/masoara.mjs, mediana din
+     * 3 rulări pe 4 pagini:
      *
-     * Cu stilurile în pagină, ele sosesc odată cu marcajul. Cererea a doua
-     * dispare, și cu ea și așteptarea.
+     *                        fără        cu
+     *     Performance ....... 83   →     77
+     *     LCP ............... 3,91 s →   4,04 s
+     *     FCP, prima pagină . 1,44 s →   2,05 s
+     *     HTML, fișă ........ 77 KB  →   360 KB
      *
-     * ─── DE CE E POTRIVIT AICI, DEȘI NU E POTRIVIT ORIUNDE ──────────────
+     * Cauza e în ultimul rând. Stilurile nu se scriu o dată, ci de DOUĂ ori:
+     * 89 KB în `<style>` și încă o dată, cu escape, în datele React din
+     * pagină — ~280 KB în plus la fiecare document, ~50 KB după comprimare.
+     * Pe o rețea lentă, octeții ăia costă mai mult decât drumul economisit.
      *
-     * Costul e că stilurile nu se mai pot păstra în cache separat: cine
-     * deschide a doua pagină le primește din nou. La noi asta înseamnă 16 KB
-     * comprimați, fiindcă Tailwind scrie doar clasele folosite — foaia
-     * întreagă a site-ului e 89 KB, cât un sfert dintr-o fotografie.
+     * `cssChunking` nu ajută: tot CSS-ul vine dintr-un singur fișier Tailwind
+     * importat în layout, deci n-are ce să fie tăiat pe rute.
      *
-     * Și cine plătește costul contează: ținta noastră sunt vizitatorii care
-     * ajung din Google pe o fișă de produs, adică exact oamenii care n-au
-     * nimic în cache. Robotul lui Google e în aceeași situație la fiecare
-     * trecere.
+     * Ar redeveni interesant doar dacă foaia de stil ar scădea mult sau dacă
+     * Next ar înceta s-o mai repete în datele React. Până atunci, `<link>`-ul
+     * separat e mai ieftin.
      */
-    inlineCss: true,
   },
 
   /**
