@@ -89,13 +89,20 @@ jobs:
 
       - run: npm ci
 
-      # Verificările rulează ÎNAINTE de construcție, nu după: o greșeală de
-      # tipuri prinsă aici costă 30 de secunde, prinsă pe site costă o zi.
-      - name: Verifică tipurile
-        run: npx tsc --noEmit
-
       - name: Verifică stilul codului
         run: npx eslint src next.config.ts
+
+      # AICI A FOST UN `npx tsc --noEmit` SEPARAT. L-am scos, fiindcă eșua.
+      #
+      # Next generează în `.next/types` declarații pentru fiecare rută, iar
+      # tsconfig.json le include. Pe calculatorul meu existau din construcțiile
+      # de dinainte, deci verificarea trecea. Pe un cod proaspăt descărcat nu
+      # există încă, iar `tsc` cădea pe fișiere lipsă — o eroare despre starea
+      # folderului, nu despre cod.
+      #
+      # Pasul era oricum în plus: `next build` rulează el însuși verificarea de
+      # tipuri („Running TypeScript"), DUPĂ ce generează declarațiile. O
+      # greșeală reală de tipuri tot oprește construcția de mai jos.
 
       # `next build` scoate paginile; pregateste-static.mjs produce
       # fotografiile și rescrie adresele. Dacă o fotografie nu poate fi
