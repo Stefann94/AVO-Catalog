@@ -1,0 +1,138 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# CONSTRUIEȘTE SITE-UL ȘI ÎL URCĂ PE HOSTICO
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# ─── DE CE AICI, ȘI NU PE SERVER ──────────────────────────────────────────
+#
+# Hostico nu poate lua singur codul de pe GitHub — nu are funcția asta, și nu
+# are nici Node ca să construiască site-ul. Dar are FTP, ca orice cPanel.
+#
+# Deci direcția se inversează: GitHub construiește și TRIMITE. Găzduirea nu
+# trebuie să știe nimic despre GitHub, despre Node sau despre Next. Primește
+# fișiere, exact ca atunci când le-ar urca cineva de mână — doar că nu le urcă
+# nimeni de mână, și nu se mai face nicio arhivă.
+#
+# ─── CÂND PORNEȘTE ────────────────────────────────────────────────────────
+#
+#   push pe main ......... s-a schimbat codul;
+#   noaptea, la 03:10 .... plasa de siguranță: dacă s-a schimbat un preț în
+#                          WooCommerce și semnalul s-a pierdut, site-ul e
+#                          oricum proaspăt dimineața;
+#   semnal din WordPress . `repository_dispatch`, trimis la salvarea unui
+#                          produs. Site-ul se actualizează în 2–3 minute;
+#   manual ............... butonul „Run workflow", pentru când vrei tu.
+#
+# ─── CONDIȚIE CARE NU E ÎNCĂ ÎNDEPLINITĂ ──────────────────────────────────
+#
+# Acum, `avogrupinvest.ro` și `admin.avogrupinvest.ro` servesc AMÂNDOUĂ din
+# `/public_html` — așa a fost creat subdomeniul, cu „Share document root".
+# WordPress stă acolo.
+#
+# Publicarea în același folder ar suprascrie `.htaccess`-ul WordPress-ului,
+# iar el își ține acolo regulile de adrese: `/graphql` și toate paginile lui ar
+# da 404. Deci ÎNAINTE de prima publicare, cele două trebuie despărțite —
+# WordPress în folderul lui, site-ul static în `public_html`.
+#
+# Până atunci, workflow-ul se poate porni manual, dar pasul de urcare trebuie
+# lăsat să eșueze sau ținut pe un server de test.
+#
+# ─── CE TREBUIE PUS ÎN GITHUB ÎNAINTE SĂ MEARGĂ ───────────────────────────
+#
+# Settings → Secrets and variables → Actions → New repository secret:
+#
+#   FTP_SERVER ..... adresa serverului FTP (din cPanel → FTP Accounts →
+#                    Configure FTP Client), de ex. ftp.avogrupinvest.ro
+#   FTP_USER ....... numele contului FTP, întreg
+#   FTP_PAROLA ..... parola lui
+#
+# Parola NU se scrie niciodată în fișierul ăsta și nu apare în jurnalele
+# construcției.
+
+name: Publică site-ul
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 03:10 UTC, adică 05:10 sau 06:10 la noi, după anotimp. Ora e aleasă în
+    # afara orelor de lucru: dacă ceva pică, nimeni nu prinde site-ul la mijloc.
+    - cron: "10 3 * * *"
+  repository_dispatch:
+    types: [catalog-modificat]
+  workflow_dispatch:
+
+# Două construcții în paralel ar urca fișiere una peste alta, în altă ordine
+# decât au fost produse. Se anulează cea veche: ce contează e ultima stare.
+concurrency:
+  group: publica
+  cancel-in-progress: true
+
+jobs:
+  publica:
+    runs-on: ubuntu-latest
+    # Construcția descarcă 140 de fotografii de pe o găzduire partajată care
+    # cedează la sarcină. Are reîncercări, dar tot poate dura.
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Verificările rulează ÎNAINTE de construcție, nu după: o greșeală de
+      # tipuri prinsă aici costă 30 de secunde, prinsă pe site costă o zi.
+      - name: Verifică tipurile
+        run: npx tsc --noEmit
+
+      - name: Verifică stilul codului
+        run: npx eslint src next.config.ts
+
+      # `next build` scoate paginile; pregateste-static.mjs produce
+      # fotografiile și rescrie adresele. Dacă o fotografie nu poate fi
+      # produsă, se oprește aici — mai bine nicio publicare decât una cu poze
+      # rupte.
+      - name: Construiește
+        env:
+          NEXT_PUBLIC_SITE_URL: https://www.avogrupinvest.ro
+        run: npm run build
+
+      # Verificare de plasă: o construcție „reușită" care a scos zero pagini
+      # ar șterge site-ul la urcare.
+      - name: Verifică ce a ieșit
+        run: |
+          pagini=$(find out -name "*.html" | wc -l)
+          poze=$(find out/i -name "*.avif" 2>/dev/null | wc -l)
+          echo "pagini: $pagini, fotografii: $poze"
+          if [ "$pagini" -lt 200 ]; then echo "PREA PUȚINE PAGINI"; exit 1; fi
+          if [ "$poze" -lt 1000 ]; then echo "PREA PUȚINE FOTOGRAFII"; exit 1; fi
+          test -f out/.htaccess || { echo "LIPSEȘTE .htaccess"; exit 1; }
+
+      # Urcă DOAR ce s-a schimbat. Acțiunea ține pe server un fișier cu starea
+      # ultimei publicări și compară; la a doua publicare se mișcă câteva
+      # zeci de fișiere, nu 85 MB.
+      - name: Urcă pe Hostico
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PAROLA }}
+          local-dir: ./out/
+          server-dir: /public_html/
+          # Fișierele WordPress-ului rămân neatinse: el stă în același
+          # public_html, iar `admin.avogrupinvest.ro` îl servește de acolo.
+          # Fără lista asta, publicarea ar șterge tot ce nu e în `out`.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            wp-admin/**
+            wp-content/**
+            wp-includes/**
+            wp-*.php
+            xmlrpc.php
+            cgi-bin/**
+            .well-known/**
