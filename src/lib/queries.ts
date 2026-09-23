@@ -21,13 +21,17 @@
  * `featured` în plus: dă badge-ul roșu „Ofertă", la fel ca pe fișa produsului.
  * Stă în fragmentul `SimpleProduct`, ca în GET_PRODUS_QUERY.
  *
- * `first: 50` e NEATINS: schimbarea e de desen, nu de câte produse arată
- * pagina. Plafonul real al WPGraphQL e 100 pe cerere; pentru toate cele 172
- * ar trebui paginare, ca în GET_PRODUSE_TOATE_QUERY.
+ * PAGINATĂ, din 23.09.2026. Era `first: 50`, adică grila de pe /catalog arăta
+ * 50 din cele 172 de produse — restul nu existau pentru vizitator. Acum se
+ * cer 100 pe pagină (plafonul WPGraphQL) și se adună toate; vezi lib/paginare.
  */
 export const GET_ALL_PRODUCTS_QUERY = `
-  query GetAllProducts {
-    products(first: 50) {
+  query GetAllProducts($after: String) {
+    products(first: 100, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         name
@@ -99,14 +103,14 @@ export const GET_CATEGORIES_QUERY = `
  * moneda, și locale-ul — ca în toate celelalte interogări.
  */
 export const GET_CATEGORY_PAGE_QUERY = `
-  query GetCategoryPage($slug: ID!, $categorySlug: String!) {
+  query GetCategoryPage($slug: ID!, $categorySlug: String!, $after: String) {
     productCategory(id: $slug, idType: SLUG) {
       name
       slug
       description
       count
     }
-    products(first: 48, where: { category: $categorySlug }) {
+    products(first: 100, after: $after, where: { category: $categorySlug }) {
       pageInfo {
         hasNextPage
         endCursor
@@ -318,18 +322,23 @@ export const GET_OFERTE_QUERY = `
  * și meta `_pret_volum`, iar WooGraphQL nu știe să filtreze după o expresie
  * între două câmpuri. Se aduc toate și se filtrează la noi.
  *
- * `first: 200` nu e o cifră rotundă la întâmplare: catalogul curent are 172 de
- * produse, iar 200 lasă loc pentru două-trei ediții de creștere fără să atingă
- * nimeni fișierul. Peste plafon, WPGraphQL taie tăcut — de-aia e scris cu
- * margine, nu exact.
+ * PAGINATĂ, din 23.09.2026. Avea `first: 200`, scris „cu margine" ca să acopere
+ * creșterea catalogului — numai că WPGraphQL plafonează la 100 și taie TĂCUT.
+ * Cu 172 de produse, ofertele și lichidarea se calculau pe primele 100: un
+ * produs cu reducere din a doua sută nu apărea nicăieri pe site. Acum se adună
+ * toate paginile; vezi lib/paginare.ts.
  *
  * Setul de câmpuri e IDENTIC cu al lui GET_OFERTE_QUERY, ca `mapeaza()` din
  * lib/oferte.ts să poată citi și de aici, fără o a doua funcție de mapare care
  * s-ar desincroniza la prima modificare.
  */
 export const GET_TOATE_OFERTELE_QUERY = `
-  query GetToateOfertele {
-    products(first: 200) {
+  query GetToateOfertele($after: String) {
+    products(first: 100, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         name

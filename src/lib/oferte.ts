@@ -1,6 +1,8 @@
 import { cache } from "react";
 import { fetchGraphQL } from "./graphql-client";
+import { urlMedia } from "./wordpress";
 import { GET_ALL_PRODUCTS_QUERY, GET_OFERTE_QUERY, GET_TOATE_OFERTELE_QUERY } from "./queries";
+import { adunaTot, type Conexiune } from "./paginare";
 import { gasesteBrand } from "./branduri";
 
 /**
@@ -384,7 +386,7 @@ function mapeazaCu(nod: NodProdus, permiteFaraPret: boolean): Oferta | null {
     // decorativă", ceea ce o fotografie de produs nu e. Componenta decide ce
     // scrie în locul lui. Aceeași regulă ca în lib/produs.ts.
     imagine: nod.image?.sourceUrl
-      ? { url: nod.image.sourceUrl, alt: nod.image.altText?.trim() || undefined }
+      ? { url: urlMedia(nod.image.sourceUrl), alt: nod.image.altText?.trim() || undefined }
       : undefined,
     // Fără atribut, brandul se caută după primul cuvânt din denumire, în lista
     // din lib/branduri.ts — nu într-o a doua listă scrisă aici. Prinde exact
@@ -545,12 +547,12 @@ function eOfertaBuna(o: Oferta): boolean {
  * produse care n-au nicio treabă cu regula scrisă în titlul ei.
  */
 export const incarcaCeleMaiBuneOferte = cache(async (): Promise<Oferta[]> => {
-  const date = await fetchGraphQL(GET_TOATE_OFERTELE_QUERY, {}, {
-    optional: true,
-    tags: ["produse"],
-  });
-
-  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  const noduri = await adunaTot<NodProdus>(
+    GET_TOATE_OFERTELE_QUERY,
+    {},
+    { optional: true, tags: ["produse"] },
+    (d) => (d as { products?: Conexiune<NodProdus> } | null)?.products,
+  );
   const dinWoo = noduri.map(mapeaza).filter((o): o is Oferta => o !== null);
 
   const sursa = dinWoo.length > 0 ? dinWoo : OFERTE;
@@ -597,12 +599,12 @@ export const incarcaCeleMaiBuneOferte = cache(async (): Promise<Oferta[]> => {
  * mai puțin real, doar nu are cu ce fi comparat.
  */
 export const incarcaLichidareStoc = cache(async (): Promise<Oferta[]> => {
-  const date = await fetchGraphQL(GET_TOATE_OFERTELE_QUERY, {}, {
-    optional: true,
-    tags: ["produse"],
-  });
-
-  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  const noduri = await adunaTot<NodProdus>(
+    GET_TOATE_OFERTELE_QUERY,
+    {},
+    { optional: true, tags: ["produse"] },
+    (d) => (d as { products?: Conexiune<NodProdus> } | null)?.products,
+  );
   const dinWoo = noduri.map(mapeaza).filter((o): o is Oferta => o !== null);
   const sursa = dinWoo.length > 0 ? dinWoo : OFERTE;
 
@@ -634,12 +636,12 @@ export const incarcaLichidareStoc = cache(async (): Promise<Oferta[]> => {
  * interogarea pică întreagă, iar pagina arată starea goală în loc de o eroare.
  */
 export const incarcaProduseCatalog = cache(async (): Promise<Oferta[]> => {
-  const date = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, {}, {
-    optional: true,
-    tags: ["produse"],
-  });
-
-  const noduri: NodProdus[] = date?.products?.nodes ?? [];
+  const noduri = await adunaTot<NodProdus>(
+    GET_ALL_PRODUCTS_QUERY,
+    {},
+    { optional: true, tags: ["produse"] },
+    (d) => (d as { products?: Conexiune<NodProdus> } | null)?.products,
+  );
   // `mapeazaCatalog`, nu `mapeaza`: cu regula strictă, PB-068.1 și PB-062.1
   // („LA CERERE" în catalog) dispăreau de pe pagină — 48 de carduri din 50.
   return noduri.map(mapeazaCatalog).filter((o): o is Oferta => o !== null);

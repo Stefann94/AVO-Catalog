@@ -9,6 +9,7 @@
 
 import { cache } from "react";
 import { fetchGraphQL } from "./graphql-client";
+import { urlMedia } from "./wordpress";
 import {
   GET_PRODUS_QUERY,
   GET_SLUGURI_PRODUSE_QUERY,
@@ -200,7 +201,7 @@ function mapeaza(nod: NodProdus): Produs | null {
      * lipsa lui. Componenta decide ce scrie în locul lui.
      */
     imagine: nod.image?.sourceUrl
-      ? { url: nod.image.sourceUrl, alt: nod.image.altText?.trim() || undefined }
+      ? { url: urlMedia(nod.image.sourceUrl), alt: nod.image.altText?.trim() || undefined }
       : undefined,
     cifra: cifraDeTitlu(atribute, dc?.capacitateKwh),
     ancora: ancoraVizuala(

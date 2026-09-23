@@ -161,7 +161,24 @@ export default async function PaginaCategorie({
   ]);
 
   const dinWoo = date?.productCategory ?? null;
-  const produse: Produs[] = date?.products?.nodes ?? [];
+
+  /* Toate produsele categoriei, nu primele 48.
+     WPGraphQL plafonează o cerere la 100 de noduri, iar interogarea cerea 48:
+     „Sisteme de Montaj", cu 51 de produse, ascundea 3 — fără niciun semn în
+     pagină. Prima pagină e deja cerută mai sus, împreună cu datele categoriei;
+     aici se continuă doar dacă mai are. Limita de 20 de pagini e o siguranță
+     împotriva unui cursor care nu avansează. */
+  const produse: Produs[] = [...(date?.products?.nodes ?? [])];
+  let pageInfo = date?.products?.pageInfo;
+  for (let pagina = 1; pagina < 20 && pageInfo?.hasNextPage && pageInfo?.endCursor; pagina++) {
+    const urmatoare = await fetchGraphQL(
+      GET_CATEGORY_PAGE_QUERY,
+      { slug, categorySlug: slug, after: pageInfo.endCursor },
+      { tags: ["produse"] },
+    );
+    produse.push(...(urmatoare?.products?.nodes ?? []));
+    pageInfo = urmatoare?.products?.pageInfo;
+  }
 
   // Slug necunoscut atât în WooCommerce, cât și în lista canonică.
   if (!dinWoo && !cunoscuta) notFound();

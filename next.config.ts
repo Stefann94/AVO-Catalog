@@ -44,6 +44,18 @@ const nextConfig: NextConfig = {
      * fotografia din public/ — vezi lib/gama.ts.
      */
     remotePatterns: [
+      // Gazda WordPress după mutare. Vezi lib/wordpress.ts: `urlMedia()` aduce
+      // aici orice adresă de fișier venită din WordPress, indiferent sub ce
+      // nume și-l scrie el însuși în răspuns.
+      {
+        protocol: "https",
+        hostname: "admin.avogrupinvest.ro",
+        pathname: "/wp-content/uploads/**",
+      },
+      // Gazda de dinainte de mutare. Rămâne în listă cât timp `www` mai poate
+      // servi fișiere: o scoatem abia după ce domeniul principal e al nostru
+      // de-a binelea, ca o construcție pornită în timpul mutării să nu cadă pe
+      // o imagine respinsă.
       {
         protocol: "https",
         hostname: "www.avogrupinvest.ro",

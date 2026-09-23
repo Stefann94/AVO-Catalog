@@ -19,6 +19,7 @@
 import { cache } from "react";
 import type { StaticImageData } from "next/image";
 import { fetchGraphQL } from "./graphql-client";
+import { urlMedia } from "./wordpress";
 import { GET_CATEGORII_GAMA_QUERY, construiestePreturiQuery } from "./queries";
 
 import imgPanouri from "../../public/cat-panouri.jpg";
@@ -211,7 +212,7 @@ export const incarcaGamaProduse = cache(async (): Promise<CategorieGama[]> => {
       nume: nod.name?.trim() || slug,
       produse: numaraProduse(nod),
       descriere: textSimplu(nod.description),
-      imagine: nod.image?.sourceUrl ?? undefined,
+      imagine: urlMedia(nod.image?.sourceUrl),
       imagineLocala: IMAGINI_LOCALE[slug],
       deLa: ancora?.deLa,
       unitate: ancora?.unitate,

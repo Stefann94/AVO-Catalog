@@ -1,13 +1,4 @@
-/**
- * Endpoint-ul GraphQL.
- *
- * Adresa productiei e valoarea implicita, ca aplicatia sa functioneze fara nicio
- * configurare. Variabila de mediu exista ca sa poti indrepta aplicatia catre
- * WordPress-ul local din tools/wp-local, unde poti testa importul si
- * modificarile de plugin fara sa atingi magazinul viu.
- */
-const WP_GRAPHQL_URL =
-  process.env.WP_GRAPHQL_URL ?? 'https://www.avogrupinvest.ro/graphql';
+import { WP_GRAPHQL_URL } from './wordpress';
 
 /**
  * Endpoint-ul WordPress răspunde în ~4 secunde. Cu `cache: 'no-store'` fiecare
