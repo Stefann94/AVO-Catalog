@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,8 @@ import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
 import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
 import { incarcaToateProdusele } from "@/lib/produs";
 import { BRANDURI, gasesteBrand } from "@/lib/branduri";
+import { urlAbsolut } from "@/lib/site";
+import { curata, jsonLd } from "@/lib/jsonld";
 
 /**
  * Pagina de categorie, rută catch-all ca să acopere și ierarhia pe două
@@ -34,6 +37,59 @@ const eur = (p?: string | null) => {
   const n = Number(p);
   return Number.isFinite(n) && n > 0 ? `${n.toLocaleString("ro-RO")} €` : "La cerere";
 };
+
+/** Textul curat dintr-o descriere care poate conține HTML de la WooCommerce. */
+const textCurat = (html: string) =>
+  html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+/**
+ * `<head>`-ul paginii de categorie.
+ *
+ * ─── DE CE NU MAI E TITLUL DIN LAYOUT ─────────────────────────────────────
+ *
+ * Până acum, toate cele 27 de pagini de categorie moșteneau „Avo Grup Invest -
+ * Catalog", adică exact același titlu și aceeași descriere ca prima pagină.
+ * Pentru Google, 27 de pagini nediferențiate: alege una singură și le ascunde
+ * pe restul.
+ *
+ * ─── CANONICAL ȘI FILTRE ──────────────────────────────────────────────────
+ *
+ * Canonical-ul e MEREU adresa curată a categoriei, fără `?brand=`. Filtrul
+ * arată aceleași produse, doar mai puține: indexat separat, ar concura cu
+ * pagina întreagă pentru aceleași cuvinte. În plus, varianta filtrată primește
+ * `noindex, follow` — „nu indexa pagina asta, dar mergi mai departe pe
+ * linkurile din ea", ca produsele din ea să fie oricum descoperite.
+ */
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ categorie: string[] }>;
+  searchParams: Promise<{ [cheie: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const [{ categorie }, { brand: brandParam }] = await Promise.all([params, searchParams]);
+  const slug = categorie[categorie.length - 1];
+  const cunoscuta = gasesteCategorie(slug);
+  const cale = `/catalog/${categorie.join("/")}`;
+
+  // Aceeași interogare ca a paginii: Next o servește din cache, nu e un al
+  // doilea drum până la WordPress.
+  const date = await fetchGraphQL(GET_CATEGORY_PAGE_QUERY, { slug, categorySlug: slug }, { tags: ["produse"] });
+  const dinWoo = date?.productCategory ?? null;
+  const nume: string = dinWoo?.name ?? cunoscuta?.nume ?? slug;
+  const descriere = textCurat(dinWoo?.description ?? cunoscuta?.descriere ?? "");
+  const numar: number = (date?.products?.nodes ?? []).length;
+
+  return {
+    title: `${nume} — prețuri de distribuitor`,
+    description:
+      descriere ||
+      `${nume}: ${numar} produse în catalogul Avo Grup Invest, cu preț și disponibilitate.`,
+    alternates: { canonical: cale },
+    robots: brandParam ? { index: false, follow: true } : undefined,
+    openGraph: { type: "website", url: urlAbsolut(cale), title: nume, description: descriere || undefined },
+  };
+}
 
 export async function generateStaticParams() {
   return [
@@ -75,6 +131,24 @@ export default async function PaginaCategorie({
   const [{ categorie }, { brand: brandParam }] = await Promise.all([params, searchParams]);
   const slug = categorie[categorie.length - 1];
   const cunoscuta = gasesteCategorie(slug);
+
+  /* ── Ierarhia trebuie să fie cea reală ──────────────────────────────────
+     Ruta e catch-all, deci accepta ORICE părinte: `/catalog/orice/hibride-
+     trifazate` răspundea cu 200 și afișa aceeași pagină ca
+     `/catalog/invertoare/hibride-trifazate`. Adică o pagină bună, multiplicată
+     la infinit de oricine pune un cuvânt în adresă — conținut duplicat pe care
+     Google chiar îl poate găsi (dintr-un link greșit) și care împarte în două
+     semnalele paginii corecte.
+
+     Trei niveluri nu există în catalog; părintele unei subcategorii cunoscute
+     trebuie să fie exact al ei, iar primul segment trebuie să fie o categorie
+     reală. */
+  if (categorie.length > 2) notFound();
+  if (categorie.length === 2) {
+    const sub = SUBCATEGORII_CUNOSCUTE.find((s) => s.slug === slug);
+    const parinteCunoscut = CATEGORII_CUNOSCUTE.some((c) => c.slug === categorie[0]);
+    if (!parinteCunoscut || (sub && sub.parinte !== categorie[0])) notFound();
+  }
 
   // Un singur `?brand=`; o listă (`?brand=a&brand=b`) nu e un filtru pe care
   // îl oferim, deci se ignoră.
@@ -123,6 +197,50 @@ export default async function PaginaCategorie({
        `pt-28 sm:pt-32` nu nimerea niciuna dintre cele trei înălțimi reale ale
        navbarului. Motivul complet e în app/globals.css. */
     <div className="bg-slate-50 min-h-screen pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
+      {/* ── Datele structurate ──────────────────────────────────────────────
+          BreadcrumbList: Google desenează drumul „Catalog › Invertoare ›
+          Hibride trifazate" sub titlul din rezultate, în locul adresei.
+          ItemList: îi spune că pagina e o listă de produse și în ce ordine —
+          de aici vin rezultatele extinse cu mai multe produse dintr-o pagină.
+
+          Doar pe pagina curată: varianta filtrată e `noindex`, deci datele ei
+          n-ar fi citite oricum. */}
+      {!brandSlug ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLd(
+            curata({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Catalog", item: urlAbsolut("/catalog") },
+                    ...categorie.map((seg, i) => ({
+                      "@type": "ListItem",
+                      position: i + 2,
+                      name: i === categorie.length - 1 ? nume : (gasesteCategorie(seg)?.nume ?? seg),
+                      item: urlAbsolut(`/catalog/${categorie.slice(0, i + 1).join("/")}`),
+                    })),
+                  ],
+                },
+                {
+                  "@type": "ItemList",
+                  name: nume,
+                  numberOfItems: lista.length,
+                  itemListElement: lista.map((p, i) => ({
+                    "@type": "ListItem",
+                    position: i + 1,
+                    name: p.name,
+                    url: urlAbsolut(`/catalog/produs/${p.slug}`),
+                  })),
+                },
+              ],
+            }),
+          )}
+        />
+      ) : null}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <Link
           href="/catalog"

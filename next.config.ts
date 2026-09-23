@@ -51,6 +51,28 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  /**
+   * Build-ul apasă mai ușor pe WordPress.
+   *
+   * Implicit, Next pornește un lucrător la fiecare 25 de pagini — la 205 pagini
+   * înseamnă 10 procese care interoghează WordPress-ul în aceeași secundă.
+   * Găzduirea partajată răspunde în ~0,8 s la o interogare simplă și cedează
+   * sub sarcina asta: un build a produs 566 de reîncercări și 490 de răspunsuri
+   * 500, iar toate cele 172 de fișe au ieșit goale.
+   *
+   * `MinPagesPerWorker: 60` ... 3–4 lucrători în loc de 10.
+   * `MaxConcurrency: 4` ....... câte pagini randează în paralel un lucrător.
+   * `RetryCount: 2` ........... o pagină care a eșuat se reîncearcă, deci un
+   *                             hopa trecător nu mai oprește build-ul. Ce
+   *                             eșuează și după reîncercări ÎL OPREȘTE —
+   *                             intenționat, vezi lib/graphql-client.ts.
+   */
+  experimental: {
+    staticGenerationMinPagesPerWorker: 60,
+    staticGenerationMaxConcurrency: 4,
+    staticGenerationRetryCount: 2,
+  },
 };
 
 export default nextConfig;

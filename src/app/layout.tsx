@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Libre_Franklin, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { FIRMA, NUME_SITE, SITE_URL, urlAbsolut } from "@/lib/site";
+import { curata, jsonLd } from "@/lib/jsonld";
 
 /**
  * Libre Franklin pentru tot textul site-ului.
@@ -65,9 +67,37 @@ const plexMono = IBM_Plex_Mono({
   preload: false,
 });
 
+/**
+ * Ce moștenește fiecare pagină în `<head>`.
+ *
+ * `metadataBase` e obligatoriu ca adresele relative (canonical, imagini Open
+ * Graph) să devină absolute. Fără el, Next dă eroare la build pentru orice
+ * canonical relativ, iar rețelele sociale nu pot rezolva imaginea.
+ *
+ * `title.template` pune numele site-ului după titlul fiecărei pagini, o
+ * singură dată, în loc să fie scris de mână în fiecare `generateMetadata`.
+ * `default` e pentru paginile fără titlu propriu.
+ *
+ * Titlul și descrierea de aici NU mai sunt „Catalog de produse Avo Grup
+ * Invest": aceeași pereche apărea pe prima pagină, pe /catalog și pe toate
+ * cele 27 de pagini de categorie. Google tratează asta ca pagini
+ * nediferențiate și alege singur care merită arătată.
+ */
 export const metadata: Metadata = {
-  title: "Avo Grup Invest - Catalog",
-  description: "Catalog de produse Avo Grup Invest",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${NUME_SITE} — distribuitor echipamente fotovoltaice`,
+    template: `%s — ${NUME_SITE}`,
+  },
+  description: FIRMA.descriere,
+  openGraph: {
+    type: "website",
+    locale: "ro_RO",
+    siteName: NUME_SITE,
+  },
+  // Implicit Google indexează oricum; scris explicit, ca o schimbare viitoare
+  // să fie o decizie, nu o omisiune.
+  robots: { index: true, follow: true },
 };
 
 import Navbar from "../components/Navbar";
@@ -84,6 +114,31 @@ export default function RootLayout({
       className={`${libreFranklin.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+        {/* Cine e firma, o singură dată pe site. Google leagă de ea toate
+            paginile și o folosește în panoul de cunoștințe. Doar date care
+            există și pe pagină: nimic inventat. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLd(
+            curata({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: FIRMA.nume,
+              description: FIRMA.descriere,
+              url: SITE_URL,
+              logo: urlAbsolut("/logo.png"),
+              telephone: FIRMA.telefon,
+              email: FIRMA.email,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: FIRMA.adresa.strada,
+                addressLocality: FIRMA.adresa.oras,
+                addressRegion: FIRMA.adresa.judet,
+                addressCountry: FIRMA.adresa.tara,
+              },
+            }),
+          )}
+        />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

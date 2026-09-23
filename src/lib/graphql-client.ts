@@ -21,6 +21,11 @@ const WP_GRAPHQL_URL =
  * câmp opțional tipărește la fiecare build un obiect de erori și o urmă de
  * stivă, adică exact aspectul unui build stricat — deși pagina are o rezervă
  * și se randează corect. Cu el, rămâne un singur rând de avertisment.
+ *
+ * ATENȚIE: `optional` acoperă DOAR erorile din răspunsul GraphQL (câmp
+ * inexistent, extensie lipsă). O eroare de rețea sau un 5xx se aruncă
+ * întotdeauna, chiar și pentru interogările opționale — vezi comentariul lung
+ * de la `fetchGraphQL`.
  */
 const REVALIDARE_IMPLICITA = 3600;
 
@@ -65,7 +70,21 @@ export const ETICHETA_WP = 'wp';
  * Pauzele cresc — 300ms, 900ms — ca a doua încercare să nu cadă exact în
  * aceeași secundă aglomerată care a produs prima eroare.
  */
-const REINCERCARI = 2;
+/**
+ * Patru reîncercări, cu pauze de 0,3 · 0,9 · 2,7 · 8,1 secunde.
+ *
+ * Măsurat pe găzduirea actuală: fiecare interogare merge singură în 0,7–2 s,
+ * inclusiv cele grele, și rezistă la patru cereri simultane. Erorile 500 apar
+ * doar când build-ul trimite multe cereri grele în același timp și se atinge
+ * limita de procese a găzduirii partajate — o stare care trece în câteva
+ * secunde.
+ *
+ * Pauza care contează e ultima: opt secunde sunt suficiente ca valul să
+ * treacă. Cu două reîncercări (0,3 și 0,9 s) se renunța încă în plin vârf, iar
+ * build-ul se oprea — ceea ce, de când erorile nu mai sunt înghițite, chiar
+ * oprește publicarea.
+ */
+const REINCERCARI = 4;
 
 async function cereCuReincercari(
   query: string,
@@ -119,6 +138,26 @@ async function cereCuReincercari(
     : new Error('Network error during GraphQL fetch');
 }
 
+/**
+ * ─── DE CE O EROARE DE REȚEA SE ARUNCĂ, NU SE ÎNGHITE ─────────────────────
+ *
+ * Varianta veche întorcea `null` la ORICE eșec, inclusiv la un 500 rămas după
+ * toate reîncercările. Consecința, măsurată: într-un build în care găzduirea
+ * WordPress a cedat, `incarcaProdus` a primit null pentru fiecare produs,
+ * fișele au chemat `notFound()`, iar toate cele 172 de pagini au fost scrise
+ * ca „produs negăsit". Un site fără niciun produs, publicat fără nicio eroare
+ * în jurnalul de build.
+ *
+ * Alegerea corectă între „publicăm pagini goale" și „nu publicăm" e a doua:
+ *   - la build, excepția oprește build-ul, iar Vercel păstrează versiunea
+ *     anterioară, cea bună;
+ *   - la revalidare, Next păstrează pagina deja generată și reîncearcă mai
+ *     târziu, deci vizitatorul vede conținut puțin mai vechi, nu unul gol.
+ *
+ * Diferența față de `optional`: acolo e vorba de un CÂMP care lipsește din
+ * schemă, adică o stare cunoscută și așteptată, cu rezervă în pagină. Aici e
+ * vorba de „nu știm nimic despre produse", ceea ce nu se poate desena.
+ */
 export async function fetchGraphQL(
   query: string,
   variables = {},
@@ -145,13 +184,9 @@ export async function fetchGraphQL(
 
     return json.data;
   } catch (error) {
-    if (optional) {
-      console.warn(
-        `GraphQL opțional indisponibil: ${error instanceof Error ? error.message : error}`
-      );
-      return null;
-    }
+    // Aici ajung doar eșecurile de transport (rețea, 4xx, 5xx după reîncercări)
+    // și răspunsurile care nu se pot citi ca JSON. Nu se înghit niciodată.
     console.error('Error fetching GraphQL:', error);
-    return null;
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }

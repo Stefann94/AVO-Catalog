@@ -37,9 +37,11 @@ import type { CSSProperties } from "react";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Lichidare de stoc — Avo Grup Invest",
+  // Numele firmei îl adaugă `title.template` din layout.
+  title: "Lichidare de stoc",
   description:
     "Produsele scoase la lichidare din catalogul curent, cu prețul de listă și pragul de volum.",
+  alternates: { canonical: "/catalog/lichidare-stoc" },
 };
 
 const TITLU = "Lichidare de stoc";

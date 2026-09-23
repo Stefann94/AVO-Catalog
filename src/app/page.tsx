@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroSlider from "@/components/HeroSlider";
 import BandaBranduri from "@/components/BandaBranduri";
 import GamaProduse from "@/components/GamaProduse";
@@ -7,6 +8,7 @@ import OferteleLunii from "@/components/OferteleLunii";
 import ConditiiB2B from "@/components/ConditiiB2B";
 import BaraFiltre from "@/components/BaraFiltre";
 import BaraReclame from "@/components/BaraReclame";
+import { urlAbsolut } from "@/lib/site";
 
 /**
  * Pagina e prerandată static, iar perioada catalogului vine acum din WooCommerce.
@@ -20,6 +22,30 @@ import BaraReclame from "@/components/BaraReclame";
  * face.
  */
 export const revalidate = 3600;
+
+/**
+ * Prima pagină avea titlul moștenit din layout, identic cu al catalogului și
+ * al celor 27 de categorii. Acum are titlul ei, scris pentru ce caută lumea
+ * („distribuitor panouri fotovoltaice”), și canonical propriu.
+ *
+ * `title.absolute` ocolește șablonul din layout: pe prima pagină, numele
+ * firmei e deja în titlu, iar „… — Avo Grup Invest" l-ar repeta.
+ */
+export const metadata: Metadata = {
+  title: {
+    absolute: "Avo Grup Invest — distribuitor panouri fotovoltaice, invertoare și baterii",
+  },
+  description:
+    "Distribuitor de echipamente fotovoltaice pentru instalatori și revânzători: panouri, invertoare hibride, acumulatori LiFePO4 și structuri de montaj, cu preț de distribuitor.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: urlAbsolut("/"),
+    title: "Avo Grup Invest — distribuitor echipamente fotovoltaice",
+    description:
+      "Panouri, invertoare, acumulatori și structuri de montaj, la preț de distribuitor.",
+  },
+};
 
 export default function Home() {
   return (

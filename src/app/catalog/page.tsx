@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { urlAbsolut } from '@/lib/site';
 import { incarcaOferte, incarcaProduseCatalog } from '@/lib/oferte';
 import { incarcaBaraFiltre } from '@/lib/panou';
 import { incarcaToateProdusele } from '@/lib/produs';
@@ -16,6 +18,15 @@ import MeniuCategorii from '@/components/catalog/MeniuCategorii';
 
 // Catalogul se revalidează o dată pe oră, ca și restul interogărilor GraphQL.
 export const revalidate = 3600;
+
+/** Titlu propriu: înainte era identic cu cel al primei pagini. */
+export const metadata: Metadata = {
+  title: "Catalog de produse fotovoltaice",
+  description:
+    "Catalogul complet: panouri, invertoare, acumulatori, sisteme de montaj, monitorizare și stații de încărcare, cu preț de distribuitor și disponibilitate.",
+  alternates: { canonical: "/catalog" },
+  openGraph: { type: "website", url: urlAbsolut("/catalog"), title: "Catalog de produse fotovoltaice" },
+};
 
 /** „1 produs", „2 produse", „20 de produse" — acordul românesc de după 19. */
 const produse = (n: number) =>
