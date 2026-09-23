@@ -84,6 +84,34 @@ const nextConfig: NextConfig = {
     staticGenerationMinPagesPerWorker: 60,
     staticGenerationMaxConcurrency: 4,
     staticGenerationRetryCount: 2,
+
+    /**
+     * CSS-ul intră în pagină, nu într-un fișier cerut separat.
+     *
+     * ─── CE PROBLEMĂ REZOLVĂ ────────────────────────────────────────────
+     *
+     * Măsurat pe fișa de produs, înainte: browserul cerea documentul (225 ms),
+     * îl citea, descoperea acolo `<link>`-ul către foaia de stil, o cerea
+     * (încă 57 ms) și abia apoi putea desena ceva. Lanțul ăsta — document, apoi
+     * stil, apoi font — dura 597 ms, iar foaia de stil singură bloca desenarea
+     * 150 ms. Nimic nu apărea pe ecran în tot acest timp.
+     *
+     * Cu stilurile în pagină, ele sosesc odată cu marcajul. Cererea a doua
+     * dispare, și cu ea și așteptarea.
+     *
+     * ─── DE CE E POTRIVIT AICI, DEȘI NU E POTRIVIT ORIUNDE ──────────────
+     *
+     * Costul e că stilurile nu se mai pot păstra în cache separat: cine
+     * deschide a doua pagină le primește din nou. La noi asta înseamnă 16 KB
+     * comprimați, fiindcă Tailwind scrie doar clasele folosite — foaia
+     * întreagă a site-ului e 89 KB, cât un sfert dintr-o fotografie.
+     *
+     * Și cine plătește costul contează: ținta noastră sunt vizitatorii care
+     * ajung din Google pe o fișă de produs, adică exact oamenii care n-au
+     * nimic în cache. Robotul lui Google e în aceeași situație la fiecare
+     * trecere.
+     */
+    inlineCss: true,
   },
 
   /**
