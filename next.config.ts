@@ -73,6 +73,41 @@ const nextConfig: NextConfig = {
     staticGenerationMaxConcurrency: 4,
     staticGenerationRetryCount: 2,
   },
+
+  /**
+   * Adresele site-ului de prezentare care se înlocuiește.
+   *
+   * ─── DE CE DOAR ȘAPTE ─────────────────────────────────────────────────
+   *
+   * Sitemap-ul vechi are 59 de adrese, dar 52 sunt paginile demo ale temei
+   * WordPress: `air-freight`, `maritime-transport`, `typography`,
+   * `coming-soon`, plus articole de umplutură („the-hidden-gems",
+   * „art-deco-fair-2021"). Ele n-au echivalent aici, iar o redirecționare
+   * către prima pagină ar fi tratată de Google drept „soft 404" — adică
+   * exact același rezultat, dar cu un drum în plus și cu riscul ca omul să
+   * ajungă pe o pagină care n-are legătură cu ce căuta.
+   *
+   * Pentru ele, 404 e răspunsul corect și cinstit: pagina chiar nu mai
+   * există. Google le scoate din index de la sine.
+   *
+   * Redirecționăm doar unde există un echivalent real. `/contact`,
+   * `/despre-noi` și `/cerere-oferta` nu apar în listă fiindcă adresele lor
+   * rămân identice — paginile noi le preiau direct.
+   */
+  async redirects() {
+    return [
+      { source: "/prima-pagina", destination: "/", permanent: true },
+      { source: "/distributie-echipamente-fotovoltaice", destination: "/catalog", permanent: true },
+      { source: "/invertoare-stocare-energie", destination: "/catalog/invertoare", permanent: true },
+      { source: "/panouri-fotovoltaice", destination: "/catalog/panouri-fotovoltaice", permanent: true },
+      // Paginile de magazin ale WooCommerce-ului din spate. Catalogul nu are
+      // coș, deci toate duc în același loc: lista de produse.
+      { source: "/shop", destination: "/catalog", permanent: true },
+      { source: "/cart", destination: "/catalog", permanent: true },
+      { source: "/checkout", destination: "/catalog", permanent: true },
+      { source: "/my-account", destination: "/catalog", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
