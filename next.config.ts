@@ -1,6 +1,29 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /**
+   * Site static: fișiere HTML, fără niciun program care să ruleze pe server.
+   *
+   * ─── DE CE ────────────────────────────────────────────────────────────
+   *
+   * Găzduirea pe care se mută site-ul, avogrupinvest.ro de la Hostico, n-are
+   * Node. Dar motivul nu e doar constrângerea: măsurat, un fișier static de
+   * acolo răspunde în 96 ms, față de 125 ms de pe Vercel. Serverul e în
+   * România, ca și clienții. Iar paginile erau OaRICUM pregătite dinainte —
+   * toate cele 218 se generează la construcție. Node-ul nu le construia la
+   * cerere, doar le trimitea.
+   *
+   * ─── CE S-A MUTAT DIN CAUZA ASTA ──────────────────────────────────────
+   *
+   *   redirecționările ....... în public/.htaccess, unde le face serverul;
+   *   filtrul `?brand=` ...... în pagini proprii, /catalog/x/brand-y
+   *                            (vezi lib/pagini-brand.ts);
+   *   /api/revalidate ........ șters. WordPress nu mai anunță site-ul; site-ul
+   *                            se reconstruiește, iar reconstrucția ia datele
+   *                            proaspete;
+   *   fotografiile ........... pregătite după construcție, vezi mai jos.
+   */
+  output: "export",
   images: {
     /**
      * Implicit Next servește doar WebP. Adăugat AVIF în față, fiindcă ordinea
@@ -116,40 +139,18 @@ const nextConfig: NextConfig = {
      */
   },
 
-  /**
-   * Adresele site-ului de prezentare care se înlocuiește.
+  /*
+   * ─── REDIRECȚIONĂRILE NU MAI SUNT AICI ────────────────────────────────
    *
-   * ─── DE CE DOAR ȘAPTE ─────────────────────────────────────────────────
+   * Erau opt reguli `redirects()`, pentru adresele site-ului de prezentare
+   * care se înlocuiește. Într-un site static nu se aplică — `next build` o
+   * spune răspicat: „rewrites, redirects, and headers are not applied when
+   * exporting your application". Reguli lăsate aici ar fi arătat ca și cum
+   * site-ul le face, fără să le facă.
    *
-   * Sitemap-ul vechi are 59 de adrese, dar 52 sunt paginile demo ale temei
-   * WordPress: `air-freight`, `maritime-transport`, `typography`,
-   * `coming-soon`, plus articole de umplutură („the-hidden-gems",
-   * „art-deco-fair-2021"). Ele n-au echivalent aici, iar o redirecționare
-   * către prima pagină ar fi tratată de Google drept „soft 404" — adică
-   * exact același rezultat, dar cu un drum în plus și cu riscul ca omul să
-   * ajungă pe o pagină care n-are legătură cu ce căuta.
-   *
-   * Pentru ele, 404 e răspunsul corect și cinstit: pagina chiar nu mai
-   * există. Google le scoate din index de la sine.
-   *
-   * Redirecționăm doar unde există un echivalent real. `/contact`,
-   * `/despre-noi` și `/cerere-oferta` nu apar în listă fiindcă adresele lor
-   * rămân identice — paginile noi le preiau direct.
+   * Sunt acum în public/.htaccess, cu aceleași adrese și cu explicația
+   * pentru care sunt doar șapte, nu cele 59 din sitemap-ul vechi.
    */
-  async redirects() {
-    return [
-      { source: "/prima-pagina", destination: "/", permanent: true },
-      { source: "/distributie-echipamente-fotovoltaice", destination: "/catalog", permanent: true },
-      { source: "/invertoare-stocare-energie", destination: "/catalog/invertoare", permanent: true },
-      { source: "/panouri-fotovoltaice", destination: "/catalog/panouri-fotovoltaice", permanent: true },
-      // Paginile de magazin ale WooCommerce-ului din spate. Catalogul nu are
-      // coș, deci toate duc în același loc: lista de produse.
-      { source: "/shop", destination: "/catalog", permanent: true },
-      { source: "/cart", destination: "/catalog", permanent: true },
-      { source: "/checkout", destination: "/catalog", permanent: true },
-      { source: "/my-account", destination: "/catalog", permanent: true },
-    ];
-  },
 };
 
 export default nextConfig;

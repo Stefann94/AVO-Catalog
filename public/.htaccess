@@ -1,0 +1,111 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# REGULILE SERVERULUI — Apache / LiteSpeed (Hostico)
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Fișierul ăsta stă în public/, deci ajunge în rădăcina site-ului construit.
+#
+# ─── DE CE EXISTĂ ──────────────────────────────────────────────────────────
+#
+# Pe Vercel, redirecționările și adresele fără extensie erau treaba lui Next,
+# scrise în next.config.ts. Un site static n-are cine să le facă: `next build`
+# chiar avertizează, „rewrites, redirects, and headers are not applied when
+# exporting your application". Aici sunt mutate, cu aceleași adrese.
+#
+# ─── ORDINEA CONTEAZĂ ──────────────────────────────────────────────────────
+#
+# Redirecționările vin ÎNAINTEA rescrierilor. Altfel o adresă veche ar fi
+# întâi transformată în fișier, apoi n-ar mai avea ce să redirecționeze.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # ── 1. Site-ul de prezentare vechi ────────────────────────────────────
+  # Doar cele șapte adrese care au echivalent real. Celelalte 52 din
+  # sitemap-ul vechi erau paginile demo ale temei WordPress — pentru ele 404
+  # e răspunsul cinstit, iar o redirecționare spre prima pagină ar fi citită
+  # de Google drept „soft 404". Explicația lungă era în next.config.ts.
+  RewriteRule ^prima-pagina/?$ / [R=301,L]
+  RewriteRule ^distributie-echipamente-fotovoltaice/?$ /catalog [R=301,L]
+  RewriteRule ^invertoare-stocare-energie/?$ /catalog/invertoare [R=301,L]
+  RewriteRule ^panouri-fotovoltaice/?$ /catalog/panouri-fotovoltaice [R=301,L]
+
+  # Paginile de magazin ale WooCommerce-ului din spate. Catalogul nu are coș,
+  # deci toate duc în același loc.
+  RewriteRule ^(shop|cart|checkout|my-account)/?$ /catalog [R=301,L]
+
+  # ── 2. Filtrul vechi pe brand ─────────────────────────────────────────
+  # `?brand=deye` a devenit `/brand-deye`, o pagină proprie (vezi
+  # lib/pagini-brand.ts). Fără regula asta, adresa veche ar servi categoria
+  # ÎNTREAGĂ sub un nume care promite doar un brand — aceeași pagină la două
+  # adrese, exact ce nu vrem să vadă Google.
+  RewriteCond %{QUERY_STRING} (?:^|&)brand=([a-z0-9-]+)(?:&|$)
+  RewriteRule ^catalog/([a-z0-9-]+)/?$ /catalog/$1/brand-%1? [R=301,L]
+
+  # ── 3. Slash-ul de la final ───────────────────────────────────────────
+  # Construcția scrie `contact.html`, iar adresa canonică din pagini e
+  # `/contact`, fără slash. `/contact/` ar fi a doua adresă pentru același
+  # conținut.
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # ── 4. Adresele fără extensie ─────────────────────────────────────────
+  # `/catalog/produs/x` → `catalog/produs/x.html`.
+  #
+  # ATENȚIE la ordinea celor două condiții. Lângă fiecare pagină există și un
+  # DIRECTOR cu același nume, în care Next ține datele pentru navigarea din
+  # browser:
+  #
+  #     catalog/produs/x.html   ← pagina
+  #     catalog/produs/x/       ← date de navigare
+  #
+  # Dacă Apache ar trata întâi directorul, n-ar servi niciodată pagina. De
+  # aceea se verifică ÎNTÂI existența fișierului `.html`.
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ /$1.html [L]
+</IfModule>
+
+# ── Pagina de 404 ──────────────────────────────────────────────────────
+# Cea construită de Next, ca omul să rămână pe site, cu meniul la îndemână.
+ErrorDocument 404 /404.html
+
+# ── Comprimarea ────────────────────────────────────────────────────────
+# Paginile sunt mari în octeți bruți — catalogul are 1,2 MB de marcaj — dar se
+# comprimă de peste douăzeci de ori, fiindcă sunt aceleași structuri repetate.
+# Fără regula asta, LiteSpeed ar putea servi necomprimat, iar diferența ar fi
+# de secunde pe o conexiune de telefon.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml image/svg+xml
+</IfModule>
+
+# ── Cât timp se păstrează fișierele în browser ─────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Fotografiile produse la construcție și pachetele lui Next au numele
+  # format dintr-o amprentă a conținutului: la orice modificare se schimbă
+  # numele, deci o versiune veche nu poate fi servită din greșeală din cache.
+  # Un an e sigur.
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 month"
+
+  # Paginile NU. Numele lor e fix, iar conținutul se schimbă la fiecare
+  # reconstrucție: un preț nou n-ar ajunge la cine a mai fost pe site.
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(avif|webp|woff2|js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>

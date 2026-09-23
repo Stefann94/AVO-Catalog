@@ -234,11 +234,14 @@ export default function MeniuCategorii({
                          lipsește, în locul unei liste. Brandurile umplu același
                          loc cu informație.
 
-                         SUNT LINKURI SPRE FILTRUL PE BRAND: pagina categoriei cu
-                         `?brand=<slug>`, care arată doar produsele acelui brand
-                         (vezi app/catalog/[...categorie]/page.tsx). Au fost rânduri
-                         simple cât timp filtrul nu exista — un link spre categoria
-                         întreagă ar fi promis o filtrare pe care n-o făcea.
+                         SUNT LINKURI SPRE PAGINA CATEGORIE + BRAND:
+                         `/catalog/<categorie>/brand-<slug>`, o pagină proprie,
+                         pregătită dinainte și indexabilă (vezi lib/pagini-brand.ts).
+                         A fost `?brand=<slug>` până la trecerea pe site static, unde
+                         un parametru citit pe server n-are cine să-l citească. Au
+                         fost rânduri simple cât timp filtrul nu exista — un link
+                         spre categoria întreagă ar fi promis o filtrare pe care
+                         n-o făcea.
 
                          HOVER-UL e rețeta subcategoriilor din meniul din stânga al
                          paginii (app/catalog/page.tsx): o bară avo-600 de 2px pe
@@ -259,7 +262,7 @@ export default function MeniuCategorii({
                             <li key={b.nume}>
                               {b.slug ? (
                                 <Link
-                                  href={`/catalog/${c.slug}?brand=${b.slug}`}
+                                  href={`/catalog/${c.slug}/brand-${b.slug}`}
                                   className="group/brand relative flex items-baseline justify-between gap-3 rounded-md px-2.5 py-1.5 transition-colors before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:rounded-full before:bg-transparent before:transition-colors hover:before:bg-avo-600 focus-visible:outline-2 focus-visible:outline-avo-600"
                                 >
                                   <span

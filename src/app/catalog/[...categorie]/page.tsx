@@ -9,6 +9,7 @@ import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
 import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
 import { incarcaToateProdusele } from "@/lib/produs";
 import { BRANDURI, gasesteBrand } from "@/lib/branduri";
+import { PREFIX_BRAND, caleBrand, paginiBrand } from "@/lib/pagini-brand";
 import { urlAbsolut } from "@/lib/site";
 import { curata, jsonLd } from "@/lib/jsonld";
 
@@ -43,6 +44,62 @@ const textCurat = (html: string) =>
   html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
 /**
+ * Ce cere adresa: o categorie, o subcategorie, sau o categorie filtrată pe brand.
+ *
+ * ─── DE CE E CITITĂ ÎNTR-UN SINGUR LOC ────────────────────────────────────
+ *
+ * Aceleași segmente sunt interpretate de trei ori — o dată pentru `<head>`, o
+ * dată pentru pagină, o dată pentru lista de adrese generate. Scrisă de trei
+ * ori, regula ar diverge la prima modificare, iar divergența s-ar vedea ca o
+ * pagină cu titlu bun și conținut greșit.
+ *
+ * ─── DE CE ÎNTOARCE `null` ÎN LOC SĂ ARUNCE ───────────────────────────────
+ *
+ * Fiecare motiv de mai jos înseamnă o adresă care NU trebuie să existe:
+ *
+ *   trei segmente ........... catalogul are două niveluri, nu trei;
+ *   părinte greșit .......... `/catalog/orice/hibride-trifazate` arăta aceeași
+ *                             pagină ca cea corectă, adică o pagină bună
+ *                             multiplicată la infinit de oricine pune un
+ *                             cuvânt în adresă — conținut duplicat pe care
+ *                             Google chiar îl poate găsi dintr-un link greșit;
+ *   brand necunoscut ........ `brand-inventat` ar da o pagină goală care
+ *                             promite un filtru inexistent.
+ *
+ * Toate ajung în `notFound()`. Într-un site static nici n-ar fi generate — dar
+ * verificarea rămâne, fiindcă ea e și cea care decide ce SE generează.
+ */
+type Adresa = {
+  /** Segmentele categoriei, fără cel de brand: `["invertoare"]`. */
+  segmente: string[];
+  /** Slug-ul după care se filtrează în WooCommerce: ultimul segment de categorie. */
+  slug: string;
+  /** Brandul cerut, când adresa se termină în `brand-<slug>`. */
+  brand?: { slug: string; nume: string };
+};
+
+function citesteAdresa(categorie: string[]): Adresa | null {
+  const ultim = categorie[categorie.length - 1] ?? "";
+  const eBrand = ultim.startsWith(PREFIX_BRAND);
+  const segmente = eBrand ? categorie.slice(0, -1) : categorie;
+
+  if (segmente.length === 0 || segmente.length > 2) return null;
+
+  const slug = segmente[segmente.length - 1];
+
+  if (segmente.length === 2) {
+    const sub = SUBCATEGORII_CUNOSCUTE.find((s) => s.slug === slug);
+    const parinteCunoscut = CATEGORII_CUNOSCUTE.some((c) => c.slug === segmente[0]);
+    if (!parinteCunoscut || (sub && sub.parinte !== segmente[0])) return null;
+  }
+
+  if (!eBrand) return { segmente, slug };
+
+  const brand = BRANDURI.find((b) => b.slug === ultim.slice(PREFIX_BRAND.length));
+  return brand ? { segmente, slug, brand: { slug: brand.slug, nume: brand.nume } } : null;
+}
+
+/**
  * `<head>`-ul paginii de categorie.
  *
  * ─── DE CE NU MAI E TITLUL DIN LAYOUT ─────────────────────────────────────
@@ -52,23 +109,28 @@ const textCurat = (html: string) =>
  * Pentru Google, 27 de pagini nediferențiate: alege una singură și le ascunde
  * pe restul.
  *
- * ─── CANONICAL ȘI FILTRE ──────────────────────────────────────────────────
+ * ─── CANONICAL ───────────────────────────────────────────────────────────
  *
- * Canonical-ul e MEREU adresa curată a categoriei, fără `?brand=`. Filtrul
- * arată aceleași produse, doar mai puține: indexat separat, ar concura cu
- * pagina întreagă pentru aceleași cuvinte. În plus, varianta filtrată primește
- * `noindex, follow` — „nu indexa pagina asta, dar mergi mai departe pe
- * linkurile din ea", ca produsele din ea să fie oricum descoperite.
+ * Fiecare adresă e canonică pentru ea însăși — inclusiv paginile de brand.
+ *
+ * Nu era așa înainte. Filtrul trăia ca `?brand=deye`, iar acea adresă primea
+ * `noindex` și arăta spre categoria întreagă, fiindcă altfel ar fi concurat cu
+ * ea pentru aceleași cuvinte. Consecința: „invertoare Deye" nu avea nicio
+ * pagină care să-i răspundă.
+ *
+ * Ca adresă proprie, pagina nu mai e o variantă a categoriei, ci un subiect
+ * mai îngust, cu titlu și descriere proprii. Vezi lib/pagini-brand.ts.
  */
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<{ categorie: string[] }>;
-  searchParams: Promise<{ [cheie: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
-  const [{ categorie }, { brand: brandParam }] = await Promise.all([params, searchParams]);
-  const slug = categorie[categorie.length - 1];
+  const { categorie } = await params;
+  const adresa = citesteAdresa(categorie);
+  if (!adresa) return {};
+
+  const { slug, brand } = adresa;
   const cunoscuta = gasesteCategorie(slug);
   const cale = `/catalog/${categorie.join("/")}`;
 
@@ -80,24 +142,39 @@ export async function generateMetadata({
   const descriere = textCurat(dinWoo?.description ?? cunoscuta?.descriere ?? "");
   const numar: number = (date?.products?.nodes ?? []).length;
 
+  // Pe pagina de brand, descrierea categoriei ar fi greșită: vorbește despre
+  // toate produsele, nu despre ale acestui producător. Se scrie una proprie,
+  // din ce știm sigur — câte produse și de la cine.
+  const titlu = brand ? `${nume} ${brand.nume} — prețuri de distribuitor` : `${nume} — prețuri de distribuitor`;
+
   return {
-    title: `${nume} — prețuri de distribuitor`,
-    description:
-      descriere ||
-      `${nume}: ${numar} produse în catalogul Avo Grup Invest, cu preț și disponibilitate.`,
+    title: titlu,
+    description: brand
+      ? `Produsele ${brand.nume} din categoria ${nume.toLowerCase()}, în catalogul Avo Grup Invest, cu preț și disponibilitate.`
+      : descriere ||
+        `${nume}: ${numar} produse în catalogul Avo Grup Invest, cu preț și disponibilitate.`,
     alternates: { canonical: cale },
-    robots: brandParam ? { index: false, follow: true } : undefined,
-    openGraph: { type: "website", url: urlAbsolut(cale), title: nume, description: descriere || undefined },
+    openGraph: {
+      type: "website",
+      url: urlAbsolut(cale),
+      title: titlu,
+      description: brand ? undefined : descriere || undefined,
+    },
   };
 }
 
 export async function generateStaticParams() {
+  const brand = await paginiBrand();
+
   return [
     ...CATEGORII_CUNOSCUTE.map((c) => ({ categorie: [c.slug] })),
     // Și cele două niveluri: /catalog/invertoare/hibride-trifazate. Fără ele
     // subcategoriile s-ar randa la cerere, deci prima vizită ar aștepta
     // răspunsul WordPress-ului, care vine în ~4 secunde.
     ...SUBCATEGORII_CUNOSCUTE.map((s) => ({ categorie: [s.parinte, s.slug] })),
+    // Și paginile de brand, câte una pentru fiecare combinație care chiar are
+    // produse și la care duce un link din meniu. Vezi lib/pagini-brand.ts.
+    ...brand.map((p) => ({ categorie: [p.categorie, `${PREFIX_BRAND}${p.brand}`] })),
   ];
 }
 
@@ -123,37 +200,19 @@ export async function generateStaticParams() {
  */
 export default async function PaginaCategorie({
   params,
-  searchParams,
 }: {
   params: Promise<{ categorie: string[] }>;
-  searchParams: Promise<{ [cheie: string]: string | string[] | undefined }>;
 }) {
-  const [{ categorie }, { brand: brandParam }] = await Promise.all([params, searchParams]);
-  const slug = categorie[categorie.length - 1];
+  const { categorie } = await params;
+
+  // Adresa decide totul: ce categorie, ce brand, și dacă adresa are voie să
+  // existe. Motivele fiecărui refuz sunt la `citesteAdresa`.
+  const adresa = citesteAdresa(categorie);
+  if (!adresa) notFound();
+
+  const { slug, brand } = adresa;
+  const brandSlug = brand?.slug;
   const cunoscuta = gasesteCategorie(slug);
-
-  /* ── Ierarhia trebuie să fie cea reală ──────────────────────────────────
-     Ruta e catch-all, deci accepta ORICE părinte: `/catalog/orice/hibride-
-     trifazate` răspundea cu 200 și afișa aceeași pagină ca
-     `/catalog/invertoare/hibride-trifazate`. Adică o pagină bună, multiplicată
-     la infinit de oricine pune un cuvânt în adresă — conținut duplicat pe care
-     Google chiar îl poate găsi (dintr-un link greșit) și care împarte în două
-     semnalele paginii corecte.
-
-     Trei niveluri nu există în catalog; părintele unei subcategorii cunoscute
-     trebuie să fie exact al ei, iar primul segment trebuie să fie o categorie
-     reală. */
-  if (categorie.length > 2) notFound();
-  if (categorie.length === 2) {
-    const sub = SUBCATEGORII_CUNOSCUTE.find((s) => s.slug === slug);
-    const parinteCunoscut = CATEGORII_CUNOSCUTE.some((c) => c.slug === categorie[0]);
-    if (!parinteCunoscut || (sub && sub.parinte !== categorie[0])) notFound();
-  }
-
-  // Un singur `?brand=`; o listă (`?brand=a&brand=b`) nu e un filtru pe care
-  // îl oferim, deci se ignoră.
-  const brandSlug = typeof brandParam === "string" && brandParam ? brandParam : undefined;
-  const brand = brandSlug ? BRANDURI.find((b) => b.slug === brandSlug) : undefined;
 
   const [date, toateProdusele] = await Promise.all([
     fetchGraphQL(GET_CATEGORY_PAGE_QUERY, { slug, categorySlug: slug }, { tags: ["produse"] }),
@@ -206,8 +265,10 @@ export default async function PaginaCategorie({
           }))
       : produse;
 
-  const numeBrand = brand?.nume ?? brandSlug;
-  const caleCategorie = `/catalog/${categorie.join("/")}`;
+  const numeBrand = brand?.nume;
+  /* Adresa categoriei ÎNTREGI, nu a paginii curente: e locul în care duc
+     eticheta filtrului și butonul din starea goală, adică „scoate filtrul". */
+  const caleCategorie = `/catalog/${adresa.segmente.join("/")}`;
 
   return (
     /* Înălțimea barei fixe vine din variabilă, nu dintr-o cifră proprie:
@@ -220,9 +281,9 @@ export default async function PaginaCategorie({
           ItemList: îi spune că pagina e o listă de produse și în ce ordine —
           de aici vin rezultatele extinse cu mai multe produse dintr-o pagină.
 
-          Doar pe pagina curată: varianta filtrată e `noindex`, deci datele ei
-          n-ar fi citite oricum. */}
-      {!brandSlug ? (
+          ȘI pe paginile de brand, de când sunt adrese proprii, indexabile.
+          Drumul lor are un pas în plus: Catalog › Invertoare › Deye. */}
+      {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={jsonLd(
@@ -233,17 +294,27 @@ export default async function PaginaCategorie({
                   "@type": "BreadcrumbList",
                   itemListElement: [
                     { "@type": "ListItem", position: 1, name: "Catalog", item: urlAbsolut("/catalog") },
-                    ...categorie.map((seg, i) => ({
+                    ...adresa.segmente.map((seg, i) => ({
                       "@type": "ListItem",
                       position: i + 2,
-                      name: i === categorie.length - 1 ? nume : (gasesteCategorie(seg)?.nume ?? seg),
-                      item: urlAbsolut(`/catalog/${categorie.slice(0, i + 1).join("/")}`),
+                      name: i === adresa.segmente.length - 1 ? nume : (gasesteCategorie(seg)?.nume ?? seg),
+                      item: urlAbsolut(`/catalog/${adresa.segmente.slice(0, i + 1).join("/")}`),
                     })),
+                    ...(brand
+                      ? [
+                          {
+                            "@type": "ListItem",
+                            position: adresa.segmente.length + 2,
+                            name: brand.nume,
+                            item: urlAbsolut(caleBrand(slug, brand.slug)),
+                          },
+                        ]
+                      : []),
                   ],
                 },
                 {
                   "@type": "ItemList",
-                  name: nume,
+                  name: brand ? `${nume} ${brand.nume}` : nume,
                   numberOfItems: lista.length,
                   itemListElement: lista.map((p, i) => ({
                     "@type": "ListItem",
@@ -256,7 +327,7 @@ export default async function PaginaCategorie({
             }),
           )}
         />
-      ) : null}
+      }
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <Link
@@ -267,8 +338,15 @@ export default async function PaginaCategorie({
           Catalog
         </Link>
 
+        {/* Pe pagina de brand, titlul conține și producătorul: „Invertoare
+            Deye". Înainte scria doar „Invertoare", fiindcă adresa era un filtru
+            `noindex` și titlul n-avea cui să spună nimic. Acum pagina e un
+            subiect de sine stătător, iar titlul ei trebuie să fie subiectul —
+            altfel Google citește în `<title>` „Invertoare Deye" și în pagină
+            „Invertoare", adică două răspunsuri diferite la aceeași întrebare.
+            Eticheta cu „×" de dedesubt rămâne: ea e drumul înapoi. */}
         <h1 className="text-[22px] sm:text-[34px] md:text-[40px] font-extrabold text-slate-900 leading-tight">
-          {nume}
+          {brand ? `${nume} ${brand.nume}` : nume}
         </h1>
 
         {descriere ? (
