@@ -74,6 +74,11 @@ jobs:
     # cedează la sarcină. Are reîncercări, dar tot poate dura.
     timeout-minutes: 30
 
+    # Aici, nu pe pas: `secrets` nu se poate citi într-un `if`, iar un `env`
+    # scris pe pas nu e vizibil în propriul lui `if`. La nivel de job, e.
+    env:
+      ARE_FTP: ${{ secrets.FTP_SERVER != '' }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -115,7 +120,16 @@ jobs:
       # Urcă DOAR ce s-a schimbat. Acțiunea ține pe server un fișier cu starea
       # ultimei publicări și compară; la a doua publicare se mișcă câteva
       # zeci de fișiere, nu 85 MB.
+      # Cât timp datele de FTP nu sunt puse în GitHub, pasul se SARE, nu
+      # eșuează. Altfel fiecare urcare de cod ar lăsa un X roșu care nu
+      # înseamnă nimic — iar un semnal de alarmă care sună mereu încetează să
+      # mai fie ascultat. Construcția și verificările de mai sus rulează
+      # oricum, deci o greșeală tot e prinsă.
+      #
+      # `secrets` nu se poate citi direct într-un `if`, de-aici ocolul prin
+      # env-ul de mai jos.
       - name: Urcă pe Hostico
+        if: env.ARE_FTP == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
