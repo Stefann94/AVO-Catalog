@@ -42,8 +42,19 @@ export const FIRMA = {
     judet: "Neamț",
     tara: "RO",
   },
+  /** Adresa într-un singur rând, pentru afișare. */
+  adresaText: "Str. Nordului 8A, Piatra-Neamț, jud. Neamț",
+  /** Coordonatele sediului, prin Maps URL API — vezi comentariul din Footer. */
+  harta: "https://www.google.com/maps/search/?api=1&query=46.9117987%2C26.4059015",
   telefon: "+40721233544",
+  telefonAfisat: "+40 721 233 544",
   email: "contact@avogrupinvest.ro",
+  emailTransport: "transport@avogrupinvest.ro",
+  /**
+   * Mărcile pentru care firma se declară distribuitor oficial, exact cum scrie
+   * pe site-ul actual (pagina Contact). Nu se adaugă altele fără confirmare.
+   */
+  distribuitorOficial: ["Deye", "Pytes", "Felicity Solar", "AIKO Solar", "Canadian Solar"],
 } as const;
 
 /** Adresa absolută a unei căi interne: `/catalog` → `https://…/catalog`. */

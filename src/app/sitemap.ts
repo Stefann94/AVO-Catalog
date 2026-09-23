@@ -47,6 +47,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     pagina("/", 1, "weekly"),
     pagina("/catalog", 0.9, "daily"),
+    pagina("/despre-noi", 0.5, "monthly"),
+    pagina("/contact", 0.5, "monthly"),
     pagina("/catalog/lichidare-stoc", 0.7, "daily"),
     ...CATEGORII_CUNOSCUTE.map((c) => pagina(`/catalog/${c.slug}`, 0.8, "weekly")),
     ...SUBCATEGORII_CUNOSCUTE.map((s) =>
