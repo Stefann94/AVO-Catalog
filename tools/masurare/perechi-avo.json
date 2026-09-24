@@ -1,0 +1,10 @@
+[
+  { "eticheta": "Acasă",                    "tip": "acasa",     "url": "https://www.avogrupinvest.ro/" },
+  { "eticheta": "Cat. Invertoare",          "tip": "categorie", "url": "https://www.avogrupinvest.ro/catalog/invertoare" },
+  { "eticheta": "Cat. Panouri",             "tip": "categorie", "url": "https://www.avogrupinvest.ro/catalog/panouri-fotovoltaice" },
+  { "eticheta": "Brand Canadian Solar",     "tip": "brand",     "url": "https://www.avogrupinvest.ro/catalog/panouri-fotovoltaice/brand-canadian-solar" },
+  { "eticheta": "Prod. Deye SUN-10K",       "tip": "produs",    "url": "https://www.avogrupinvest.ro/catalog/produs/sun-10k-sg05lp3-eu-sm2" },
+  { "eticheta": "Prod. Pytes V5a",          "tip": "produs",    "url": "https://www.avogrupinvest.ro/catalog/produs/pytes-v5a-5-12-kwh" },
+  { "eticheta": "Prod. Canadian 460W",      "tip": "produs",    "url": "https://www.avogrupinvest.ro/catalog/produs/canadian-solar-cs6-2-48td-460-n-type-topcon" },
+  { "eticheta": "Prod. Cârlig țiglă",       "tip": "produs",    "url": "https://www.avogrupinvest.ro/catalog/produs/carlig-montaj-tigla-ajustabil-3-pozitii-aluminiu-ios" }
+]
