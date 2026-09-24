@@ -1,0 +1,62 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# MUTĂ SITE-UL DIN FOLDERUL DE PREGĂTIRE LA LOCUL LUI
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Se pornește DOAR de mână, din GitHub → Actions → „Mută site-ul la locul lui"
+# → Run workflow. Nu se declanșează singur, niciodată: e operațiunea care
+# schimbă ce văd vizitatorii.
+#
+# ─── DE CE NU DIN CPANEL ──────────────────────────────────────────────────
+#
+# Mutarea se făcea din File Manager, cu Select All și Move. Dar accesul la
+# cPanel intră în buclă la predarea sesiunii dinspre WHM — o problemă a
+# găzduirii, nu a noastră, și una care nu se repară de aici.
+#
+# FTP-ul funcționează, iar FTP știe să redenumească. O redenumire pe același
+# disc nu copiază nimic, deci mutarea durează secunde.
+#
+# ─── CUM SE FOLOSEȘTE ─────────────────────────────────────────────────────
+#
+# De două ori, în ordinea asta:
+#
+#   1. cu „arata"  — listează ce e în cele două foldere și se oprește. Nimic
+#                    nu se schimbă. Aici se citește lista și se confirmă.
+#   2. cu „muta"   — golește public_html și mută site-ul nou acolo.
+#
+# Pasul 1 nu e formalitate. Ștergerea nu se poate anula, iar lista e singura
+# ocazie de a observa că ceva nu e cum credeam.
+
+name: Mută site-ul la locul lui
+
+on:
+  workflow_dispatch:
+    inputs:
+      actiune:
+        description: "arata = doar listează · muta = golește public_html și mută"
+        required: true
+        default: arata
+        type: choice
+        options: [arata, muta]
+
+jobs:
+  mutare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Un singur pachet, instalat aici, nu adăugat în proiect: e folosit
+      # exclusiv de operațiunea asta, care se întâmplă o dată.
+      - run: npm install basic-ftp@5 --no-save
+
+      - name: ${{ inputs.actiune == 'muta' && 'Mută' || 'Arată ce s-ar muta' }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PAROLA: ${{ secrets.FTP_PAROLA }}
+        run: node tools/hostico/mutare.mjs ${{ inputs.actiune == 'muta' && '--muta' || '--arata' }}
