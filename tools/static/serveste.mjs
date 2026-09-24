@@ -36,6 +36,7 @@
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { join, extname, normalize } from "node:path";
+import { gzipSync } from "node:zlib";
 
 const optiune = (nume, implicit) => {
   const g = process.argv.find((a) => a.startsWith(`--${nume}=`));
@@ -64,6 +65,10 @@ const TIPURI = {
   ".woff2": "font/woff2",
   ".ico": "image/x-icon",
 };
+
+/** Ce se comprimă. Fotografiile și fonturile sunt deja comprimate; a doua
+    trecere le-ar face mai mari și ar consuma timp degeaba. */
+const COMPRIMABILE = new Set([".html", ".css", ".js", ".json", ".xml", ".txt", ".rsc", ".svg"]);
 
 const fisier = async (cale) => {
   try {
@@ -97,8 +102,34 @@ createServer(async (cerere, raspuns) => {
     const gasit = await fisier(c);
     if (!gasit) continue;
     const tip = TIPURI[extname(gasit)] ?? "application/octet-stream";
+    const continut = await readFile(gasit);
+
+    /* ── COMPRIMAREA NU E UN AMĂNUNT ──────────────────────────────────────
+       Fără ea, o măsurătoare făcută aici minte. Verificat pe propria piele:
+       o comparație între două versiuni a dat 67 față de 97 puncte — dar
+       versiunea cu mult JavaScript trimitea 493 KB necomprimați, în loc de
+       154 KB cât ar trimite orice server adevărat. Diferența măsurată era în
+       bună parte lipsa comprimării, nu diferența dintre tehnologii.
+
+       Hostico comprimă prin `mod_deflate`, declarat în public/.htaccess.
+       Serverul ăsta trebuie să facă la fel, altfel nu mai imită nimic. */
+    const comprimabil = COMPRIMABILE.has(extname(gasit));
+    const acceptaGzip = String(cerere.headers["accept-encoding"] ?? "").includes("gzip");
+
+    if (comprimabil && acceptaGzip) {
+      const mic = gzipSync(continut, { level: 6 });
+      raspuns.writeHead(200, {
+        "content-type": tip,
+        "content-encoding": "gzip",
+        "cache-control": "no-store",
+        vary: "accept-encoding",
+      });
+      raspuns.end(mic);
+      return;
+    }
+
     raspuns.writeHead(200, { "content-type": tip, "cache-control": "no-store" });
-    raspuns.end(await readFile(gasit));
+    raspuns.end(continut);
     return;
   }
 
