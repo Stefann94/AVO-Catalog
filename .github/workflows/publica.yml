@@ -53,6 +53,22 @@ name: Publică site-ul
 on:
   push:
     branches: [main]
+    # Ce NU declanșează o publicare.
+    #
+    # O publicare înseamnă ~25 de minute de construit și urcat. Merită doar
+    # dacă se schimbă ceva ce ajunge pe site. Fișierele de mai jos nu ajung:
+    # unealta de mutare rulează separat, la cerere, iar documentația și
+    # măsurătorile trăiesc doar în depozit.
+    #
+    # Atenție la ce NU e în listă: `tools/imagini/` și `tools/static/` chiar
+    # influențează ce iese, deci modificările lor trebuie publicate.
+    paths-ignore:
+      - "tools/hostico/**"
+      - "tools/masurare/**"
+      - "tools/captura/**"
+      - ".github/workflows/mutare.yml"
+      - "docs/**"
+      - "**/*.md"
   schedule:
     # 03:10 UTC, adică 05:10 sau 06:10 la noi, după anotimp. Ora e aleasă în
     # afara orelor de lucru: dacă ceva pică, nimeni nu prinde site-ul la mijloc.

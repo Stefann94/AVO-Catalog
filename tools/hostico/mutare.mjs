@@ -42,6 +42,33 @@ import { Client } from "basic-ftp";
 const SURSA = "/site-nou";
 const TINTA = "/public_html";
 
+/**
+ * Unde ajunge ce era înainte în `public_html`.
+ *
+ * ─── DE CE NU SE ȘTERGE ───────────────────────────────────────────────────
+ *
+ * Prima variantă ștergea. Listarea de dinainte de mutare a arătat de ce era
+ * greșit: în `public_html` erau și `!-Backup`, un folder despre care nu știm
+ * ce conține, și `.well-known`, folosit la validarea certificatelor SSL.
+ *
+ * Nu aveam niciun motiv să riscăm. O mutare pe același disc costă la fel de
+ * puțin ca o ștergere — amândouă schimbă doar unde e trecut fișierul — dar se
+ * poate desface.
+ *
+ * Folderul rămâne până când cineva se uită în el și decide. Nu e treaba unui
+ * script automat să hotărască ce se pierde.
+ */
+const ARHIVA = "/public_html-vechi";
+
+/**
+ * Singurele fișiere care chiar se șterg: jurnalele de erori.
+ *
+ * `error_log` avea 3,1 GB la listare. E un jurnal de diagnostic scris de
+ * WordPress, nu face parte din site, și ocupă o șesime din spațiul contului.
+ * Mutat, ar fi rămas să-l ocupe în continuare.
+ */
+const DE_STERS = /^error_log/;
+
 const MUTA = process.argv.includes("--muta");
 
 const kb = (n) => (n > 1024 * 1024 ? `${(n / 1048576).toFixed(1)} MB` : `${(n / 1024).toFixed(0)} KB`);
@@ -72,7 +99,14 @@ try {
   };
 
   arata(`${SURSA} — site-ul nou, de mutat`, sursa);
-  arata(`${TINTA} — ce se șterge`, tinta);
+  arata(`${TINTA} — ce se pune deoparte în ${ARHIVA}`, tinta);
+
+  const jurnale = tinta.filter((x) => !x.isDirectory && DE_STERS.test(x.name));
+  if (jurnale.length) {
+    console.log(`── Singurele care se ȘTERG (jurnale de erori, ${jurnale.length}):`);
+    for (const x of jurnale) console.log(`   ${x.name.padEnd(34)} ${kb(x.size)}`);
+    console.log();
+  }
 
   /* ── Opririle de siguranță ─────────────────────────────────────────── */
   const numeSursa = nume(sursa);
@@ -91,14 +125,26 @@ try {
     process.exit(0);
   }
 
-  /* ── 1. Se golește ținta ───────────────────────────────────────────── */
-  console.log(`Golesc ${TINTA}…`);
+  /* ── 1. Se eliberează ținta ────────────────────────────────────────── */
+  console.log(`Pregătesc ${ARHIVA}…`);
+  await client.ensureDir(ARHIVA);
+  await client.cd("/");
+
+  console.log(`\nEliberez ${TINTA}…`);
+  let mutate = 0;
+  let sterse = 0;
   for (const x of tinta) {
-    const cale = `${TINTA}/${x.name}`;
-    if (x.isDirectory) await client.removeDir(cale);
-    else await client.remove(cale);
-    console.log(`   șters ${x.name}`);
+    if (!x.isDirectory && DE_STERS.test(x.name)) {
+      await client.remove(`${TINTA}/${x.name}`);
+      sterse++;
+      console.log(`   ȘTERS  ${x.name}  (jurnal de erori)`);
+      continue;
+    }
+    await client.rename(`${TINTA}/${x.name}`, `${ARHIVA}/${x.name}`);
+    mutate++;
+    console.log(`   pus deoparte  ${x.name}`);
   }
+  console.log(`   ${mutate} puse în ${ARHIVA}, ${sterse} jurnale șterse.`);
 
   /* ── 2. Se mută ────────────────────────────────────────────────────── */
   console.log(`\nMut ${SURSA} → ${TINTA}…`);
