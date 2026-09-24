@@ -70,9 +70,14 @@ concurrency:
 jobs:
   publica:
     runs-on: ubuntu-latest
-    # Construcția descarcă 140 de fotografii de pe o găzduire partajată care
-    # cedează la sarcină. Are reîncercări, dar tot poate dura.
-    timeout-minutes: 30
+    # Ridicat de la 30, fiindcă 30 n-au ajuns: prima urcare a fost oprită la
+    # 25,9 minute, cu urcarea încă în curs.
+    #
+    # Motivul e FTP-ul: fiecare fișier e o cerere separată, iar site-ul are
+    # ~3000 de fișiere — 215 pagini, dar și 2181 de fotografii și încărcăturile
+    # de navigare ale lui Next. Urcările următoare trimit doar ce s-a schimbat,
+    # deci sunt de ordinul secundelor; doar prima le trimite pe toate.
+    timeout-minutes: 120
 
     # Aici, nu pe pas: `secrets` nu se poate citi într-un `if`, iar un `env`
     # scris pe pas nu e vizibil în propriul lui `if`. La nivel de job, e.
