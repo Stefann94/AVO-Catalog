@@ -48,7 +48,25 @@ DirectoryIndex index.html
   # Construcția scrie `contact.html`, iar adresa canonică din pagini e
   # `/contact`, fără slash. `/contact/` ar fi a doua adresă pentru același
   # conținut.
-  RewriteCond %{REQUEST_FILENAME} !-d
+  #
+  # AICI A FOST UN DEFECT, prins la verificarea de după publicare: regula avea
+  # și condiția `%{REQUEST_FILENAME} !-d`, adică „sari peste dacă există un
+  # folder cu numele ăsta". Părea prudentă. Era greșită.
+  #
+  # Next creează, lângă fiecare pagină, un folder cu același nume, în care ține
+  # datele de navigare:
+  #
+  #     despre-noi.html   ← pagina
+  #     despre-noi/       ← date de navigare
+  #
+  # Deci folderul EXISTĂ mereu, condiția era mereu falsă, iar regula nu rula
+  # niciodată. `/despre-noi/` și `/contact/` răspundeau cu 404 — exact
+  # adresele pe care Google le are indexate de la site-ul vechi, cu slash la
+  # final.
+  #
+  # Fără condiție, regula prinde orice adresă care se termină în slash.
+  # Fișierele DIN acele foldere nu sunt atinse: tiparul cere ca slash-ul să fie
+  # ultimul caracter, iar `/despre-noi/__next._full.txt` nu se termină așa.
   RewriteRule ^(.+)/$ /$1 [R=301,L]
 
   # ── 4. Adresele fără extensie ─────────────────────────────────────────

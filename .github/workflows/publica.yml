@@ -187,26 +187,21 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PAROLA }}
           local-dir: ./out/
-          # ─── PRIMA URCARE MERGE ÎNTR-UN FOLDER DE PREGĂTIRE ───────────
+          # ─── ACUM MERGE DIRECT PE SITE ───────────────────────────────
           #
-          # Ținta finală e `/public_html/`, și acolo se va întoarce imediat
-          # după prima publicare. Deocamdată nu, dintr-un motiv de timp.
+          # Prima urcare a mers într-un folder alăturat, `/site-nou/`, și de
+          # acolo a fost mutată la locul ei. Motivul era timpul: site-ul are
+          # ~3000 de fișiere, iar prin FTP prima urcare durează zeci de
+          # minute. Trimise direct aici, site-ul ar fi rămas jumătate vechi,
+          # jumătate nou în tot acel timp.
           #
-          # Site-ul are ~3000 de fișiere. Prin FTP, fiecare e o cerere
-          # separată, deci prima urcare durează zeci de minute. Trimise
-          # direct în `public_html`, site-ul ar fi rămas jumătate vechi,
-          # jumătate nou în tot acest timp: `index.html` ajunge la un moment
-          # dat și preia prima pagină, dar restul paginilor încă nu există.
+          # Acum fișierele sunt deja pe server și se trimite doar ce s-a
+          # schimbat, deci urcarea e scurtă și nu mai are sens ocolul.
           #
-          # Aici se urcă în liniște, lângă site, fără ca nimeni să vadă ceva.
-          # Când folderul e complet, conținutul lui se MUTĂ în `public_html`
-          # — mutarea pe același disc e instantanee, deci schimbarea se face
-          # dintr-o dată, nu pe bucăți.
-          #
-          # Folderul e în afara lui `public_html` intenționat: înăuntru ar fi
-          # fost accesibil din internet, iar Google ar fi putut găsi o a doua
-          # copie a site-ului la o adresă greșită.
-          server-dir: /site-nou/
+          # Dacă vreodată se reface totul de la zero — alt server, alt cont —
+          # se pune la loc `/site-nou/` aici, se lasă urcarea să se termine,
+          # și apoi se rulează workflow-ul „Mută site-ul la locul lui".
+          server-dir: /public_html/
           # Fișierele WordPress-ului rămân neatinse: el stă în același
           # public_html, iar `admin.avogrupinvest.ro` îl servește de acolo.
           # Fără lista asta, publicarea ar șterge tot ce nu e în `out`.
