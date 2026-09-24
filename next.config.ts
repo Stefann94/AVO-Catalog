@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 const nextConfig: NextConfig = {
   /**
@@ -184,4 +185,49 @@ const nextConfig: NextConfig = {
    */
 };
 
-export default nextConfig;
+/**
+ * ÎN DEZVOLTARE, `output: "export"` SE SCOATE.
+ *
+ * ─── CE SE ÎNTÂMPLA ───────────────────────────────────────────────────────
+ *
+ * Pe `npm run dev`, orice pagină cădea cu „Image Optimization using the
+ * default loader is not compatible with `{ output: 'export' }`", aruncată din
+ * bara de sus, de la sigla din `next/image`. Site-ul live mergea perfect, deci
+ * arăta ca o ciudățenie — dar nu era.
+ *
+ * Sunt DOUĂ verificări diferite în Next 16.3.4, găsite în node_modules:
+ *
+ *   shared/lib/get-img-props.js:286 ... aruncă la RANDARE, dar numai dacă
+ *                                       `NODE_ENV !== "production"` — adică
+ *                                       numai pe serverul de dezvoltare;
+ *   export/index.js:343 ............... aceeași verificare la export, dar
+ *                                       SĂRITĂ când exportul e parte din
+ *                                       `next build` (`options.buildExport`).
+ *
+ * De-aceea construcția trece și scoate adrese `/_next/image?url=…`, pe care
+ * tools/imagini/pregateste-static.mjs le transformă apoi în AVIF. Doar
+ * dezvoltarea era blocată.
+ *
+ * ─── DE CE NU `images.unoptimized: true` ──────────────────────────────────
+ *
+ * E soluția pe care o propune chiar mesajul de eroare, și ar fi stricat
+ * construcția. Cu ea, Next scrie în pagini adresele brute ale fotografiilor,
+ * nu `/_next/image?url=…` — iar unealta noastră exact pe acelea le caută. Ar fi
+ * ieșit zero AVIF-uri, iar verificarea din workflow („cel puțin 1000 de
+ * fotografii") ar fi oprit publicarea. Mesajul de eroare nu știe de ea.
+ *
+ * ─── DE CE `phase`, ȘI NU `NODE_ENV` ──────────────────────────────────────
+ *
+ * Ar fi mers și `process.env.NODE_ENV`, dar valoarea lui depinde de momentul
+ * în care Next o pune față de citirea fișierului ăstuia. `phase` e argumentul
+ * pe care Next îl dă anume pentru asta, deci nu depinde de nicio ordine.
+ *
+ * Construcția nu e atinsă: la `PHASE_PRODUCTION_BUILD` se întoarce exact
+ * configurația de mai sus, cu `output: "export"` neschimbat.
+ */
+export default function configurare(faza: string): NextConfig {
+  if (faza === PHASE_DEVELOPMENT_SERVER) {
+    return { ...nextConfig, output: undefined };
+  }
+  return nextConfig;
+}

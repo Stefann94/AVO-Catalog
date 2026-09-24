@@ -77,6 +77,42 @@ export const ETICHETA_WP = 'wp';
  */
 const REINCERCARI = 4;
 
+/**
+ * Răspuns care nu e JSON — aproape întotdeauna filtrul anti-bot al găzduirii.
+ *
+ * ─── DE CE ARE NEVOIE DE O CLASĂ PROPRIE ──────────────────────────────────
+ *
+ * Imunify360, filtrul de pe Hostico, nu răspunde cu 403. Răspunde cu **200** și
+ * o pagină HTML de ~12 KB, „One moment, please…", care se reîncarcă singură
+ * după 5 secunde. Pentru codul de mai jos, 200 înseamnă succes: cererea trecea
+ * de `res.ok`, ajungea la `res.json()` și cădea acolo cu
+ *
+ *     SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+ *
+ * Mesajul ăla nu spune nimănui ce s-a întâmplat. S-a întâmplat de două ori în
+ * aceeași zi — o dată în dezvoltare, o dată la o măsurătoare — și de fiecare
+ * dată a costat minute bune până la diagnostic.
+ *
+ * Clasa separată există ca reîncercările să n-o prindă: blocarea e pe IP și
+ * ține zeci de minute, deci patru reîncercări în 12 secunde n-ar face decât să
+ * mai trimită patru cereri către un server care tocmai ne-a spus să plecăm.
+ * Aceeași logică ca la codurile sub 500 — „e ceva la noi, nu trece de la sine".
+ */
+class RaspunsNeJSON extends Error {
+  constructor(tip: string, inceput: string) {
+    const eProvocare = /One moment, please|Just a moment|cf-browser-verification/i.test(inceput);
+    super(
+      eProvocare
+        ? `Filtrul anti-bot al găzduirii a blocat cererea către ${WP_GRAPHQL_URL}. ` +
+          "IP-ul de pe care rulezi e blocat temporar (zeci de minute). " +
+          "Încearcă de pe altă conexiune, sau cere-i Hostico să treacă IP-ul fix al firmei pe lista albă."
+        : `WordPress a răspuns cu „${tip || "tip necunoscut"}", nu cu JSON, la ${WP_GRAPHQL_URL}. ` +
+          `Începutul răspunsului: ${inceput.slice(0, 120)}`
+    );
+    this.name = "RaspunsNeJSON";
+  }
+}
+
 async function cereCuReincercari(
   query: string,
   variables: object,
@@ -100,7 +136,13 @@ async function cereCuReincercari(
           : { next: { revalidate, tags } }),
       });
 
-      if (res.ok) return res;
+      if (res.ok) {
+        // Un 200 nu mai e destul: filtrul anti-bot răspunde tot cu 200, dar cu
+        // HTML. Vezi RaspunsNeJSON de mai sus.
+        const tip = res.headers.get("content-type") ?? "";
+        if (tip.includes("json")) return res;
+        throw new RaspunsNeJSON(tip, await res.text());
+      }
 
       // Sub 500 e o problemă de-a noastră, nu a serverului: nu se repetă.
       if (res.status < 500) {
@@ -113,6 +155,9 @@ async function cereCuReincercari(
         `WordPress a răspuns ${res.status}; reîncercare ${incercare + 1} din ${REINCERCARI}.`
       );
     } catch (e) {
+      // Provocarea anti-bot e pe IP și ține zeci de minute: nu trece de la sine
+      // în cele 12 secunde ale reîncercărilor, deci nu se reîncearcă.
+      if (e instanceof RaspunsNeJSON) throw e;
       // O eroare aruncată de noi pentru un cod sub 500 nu se reîncearcă.
       if (e instanceof Error && e.message === 'Network error during GraphQL fetch') throw e;
       ultimaEroare = e;
