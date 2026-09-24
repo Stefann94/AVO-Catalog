@@ -38,6 +38,9 @@
      avo-700 pe alb .......... 10,93 ✓   hover buton
      avo-300 pe #101828 ....... 9,54 ✓   iconița de pe banner
      avo-400 pe #0F172A ....... 6,32 ✓   bara de contact din navbar
+     alb pe red-600 ........... 4,83 ✓   banda de anunț „SITE ÎN LUCRU"
+                                         (#DC2626; trece AA, dar fără rezervă —
+                                          un roșu mai deschis ar pica)
    ══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
@@ -90,6 +93,7 @@
    components/Navbar.tsx), iar meniul nu se mai poate rupe pe două rânduri.
    Suma e scrisă desfăcută, ca fiecare termen să trimită la clasa lui:
 
+     peste tot . 28px banda de anunț — vezi mai jos de ce e variabilă
      sub lg .... 68px, rândul siglei (`h-[68px]`)
      de la lg .. 32px bara de contact (`h-8`), plus cele de mai sus
      de la 2xl . rândul siglei crește la 72px, odată cu sigla (`2xl:h-12`)
@@ -103,18 +107,30 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --inaltime-navbar: 68px;
+  /*
+   * Banda roșie de anunț din capul barei (components/BandaLucru.tsx).
+   *
+   * E VARIABILĂ TOCMAI CA SĂ POATĂ FI SCOASĂ. Banda e temporară; când site-ul
+   * e gata, se pune aici `0px` și se șterge rândul `<BandaLucru />` din
+   * components/Navbar.tsx. Atât — toate cele trei sume de mai jos revin
+   * singure la geometria de dinainte, și nicio pagină nu trebuie atinsă.
+   *
+   * Scrisă ca o cifră, nu dedusă din text: `h-7` e declarat și pe bandă.
+   */
+  --inaltime-banda-lucru: 28px;
+
+  --inaltime-navbar: calc(var(--inaltime-banda-lucru) + 68px);
 }
 
 @media (min-width: 64rem) {
   :root {
-    --inaltime-navbar: calc(32px + 68px);
+    --inaltime-navbar: calc(var(--inaltime-banda-lucru) + 32px + 68px);
   }
 }
 
 @media (min-width: 96rem) {
   :root {
-    --inaltime-navbar: calc(32px + 72px);
+    --inaltime-navbar: calc(var(--inaltime-banda-lucru) + 32px + 72px);
   }
 }
 
@@ -398,4 +414,57 @@ body {
 
 .fara-bara-derulare::-webkit-scrollbar {
   display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BANDA DE ANUNȚ „SITE ÎN LUCRU" — derularea
+   ──────────────────────────────────────────────────────────────────────────
+   Componenta e components/BandaLucru.tsx, iar înălțimea ei stă sus, în
+   `--inaltime-banda-lucru`. Aici e doar mișcarea.
+
+   Aceeași mecanică cu banda de branduri: pista conține mesajul de două ori,
+   iar deplasarea cu exact 50% aduce al doilea set fix în poziția de start a
+   primului, deci reluarea nu se vede. Se animă `transform`, singura
+   proprietate pe care browserul o rezolvă pe compozitor — banda se mișcă
+   permanent, pe TOATE paginile, deci nu-și poate permite să ceară recalcularea
+   așezării la fiecare cadru.
+
+   ─── DE CE 50 DE SECUNDE ──────────────────────────────────────────────────
+
+   O jumătate de pistă are ~3600px (patru repetări ale mesajului). 3600px în
+   50s înseamnă ~72px/s — destul de încet cât să se poată citi din mers, destul
+   de repede cât să nu pară blocată. Banda de branduri merge mai lent (60s
+   pentru un tur), fiindcă ea e decor; asta are text de citit.
+
+   ─── CLASĂ PROPRIE, NU `animate-[...]` ────────────────────────────────────
+
+   Banda de branduri folosește o animație scrisă direct în clasă, iar oprirea
+   pentru „reduce motion" trebuie atunci să țintească un selector cu paranteze
+   escapate — `.animate-\[defilareBranduri_var\(--durata\)_linear_infinite\]`.
+   Merge, dar se rupe tăcut dacă cineva schimbă durata în componentă: numele
+   clasei se schimbă, regula de oprire rămâne să țintească vechiul nume, și
+   animația nu se mai oprește pentru nimeni.
+
+   Cu o clasă proprie, cele două nu mai pot diverge.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes defilareLucru {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.banda-lucru-pista {
+  animation: defilareLucru 50s linear infinite;
+}
+
+/* Cu „reduce motion" activat în sistem, banda stă pe loc. Textul rămâne
+   lizibil: pista pornește de la 0, deci prima repetare e oricum pe ecran. */
+@media (prefers-reduced-motion: reduce) {
+  .banda-lucru-pista {
+    animation: none;
+  }
 }

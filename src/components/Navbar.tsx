@@ -3,6 +3,7 @@ import Image from "next/image";
 import logo from "../../public/logo.png";
 import { Search, User, ChevronDown, Award, Package, Phone, Mail, MapPin } from "lucide-react";
 import NavbarInteractiv from "./navbar/NavbarInteractiv";
+import BandaLucru from "./BandaLucru";
 
 /* ══════════════════════════════════════════════════════════════════════════
    BARA SE RANDEAZĂ PE SERVER
@@ -90,6 +91,12 @@ const BUTON_MENIU =
 export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
+      {/* ── Banda de anunț, TEMPORARĂ ───────────────────────────────────
+          Stă deasupra tuturor rândurilor, deci și deasupra dungii de contact.
+          Se scoate ștergând rândul ăsta și punând `--inaltime-banda-lucru` pe
+          `0px` în app/globals.css. Vezi components/BandaLucru.tsx. */}
+      <BandaLucru />
+
       {/* ── Bara de contact ──────────────────────────────────────────────
           `h-8`, nu `py-2`: înălțimea ei intră în `--inaltime-navbar`, deci
           trebuie să fie o cifră, nu o consecință a textului dinăuntru. */}
