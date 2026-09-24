@@ -143,7 +143,26 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PAROLA }}
           local-dir: ./out/
-          server-dir: /public_html/
+          # ─── PRIMA URCARE MERGE ÎNTR-UN FOLDER DE PREGĂTIRE ───────────
+          #
+          # Ținta finală e `/public_html/`, și acolo se va întoarce imediat
+          # după prima publicare. Deocamdată nu, dintr-un motiv de timp.
+          #
+          # Site-ul are ~3000 de fișiere. Prin FTP, fiecare e o cerere
+          # separată, deci prima urcare durează zeci de minute. Trimise
+          # direct în `public_html`, site-ul ar fi rămas jumătate vechi,
+          # jumătate nou în tot acest timp: `index.html` ajunge la un moment
+          # dat și preia prima pagină, dar restul paginilor încă nu există.
+          #
+          # Aici se urcă în liniște, lângă site, fără ca nimeni să vadă ceva.
+          # Când folderul e complet, conținutul lui se MUTĂ în `public_html`
+          # — mutarea pe același disc e instantanee, deci schimbarea se face
+          # dintr-o dată, nu pe bucăți.
+          #
+          # Folderul e în afara lui `public_html` intenționat: înăuntru ar fi
+          # fost accesibil din internet, iar Google ar fi putut găsi o a doua
+          # copie a site-ului la o adresă greșită.
+          server-dir: /site-nou/
           # Fișierele WordPress-ului rămân neatinse: el stă în același
           # public_html, iar `admin.avogrupinvest.ro` îl servește de acolo.
           # Fără lista asta, publicarea ar șterge tot ce nu e în `out`.
