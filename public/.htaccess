@@ -99,6 +99,13 @@ ErrorDocument 404 /404.html
   # Paginile NU. Numele lor e fix, iar conținutul se schimbă la fiecare
   # reconstrucție: un preț nou n-ar ajunge la cine a mai fost pe site.
   ExpiresByType text/html "access plus 0 seconds"
+
+  # Nici încărcăturile de navigare (fișierele .txt de lângă fiecare pagină,
+  # din care se face trecerea dintr-o pagină în alta fără reîncărcare). Ele
+  # conțin ACELEAȘI prețuri ca paginile; păstrate în cache, ar arăta prețul
+  # vechi cuiva care ajunge la produs dând clic, și pe cel nou cuiva care
+  # deschide adresa direct. Aceeași regulă ca pentru pagini.
+  ExpiresByType text/plain "access plus 0 seconds"
 </IfModule>
 
 <IfModule mod_headers.c>

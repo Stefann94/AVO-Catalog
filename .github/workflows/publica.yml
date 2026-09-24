@@ -94,6 +94,29 @@ jobs:
 
       - run: npm ci
 
+      # Fotografiile descărcate din WordPress, păstrate între rulări.
+      #
+      # Fără ele, fiecare construcție descarcă din nou toate cele 140, deși
+      # aproape niciuna nu se schimbă. Pe găzduire partajată asta a avut
+      # consecințe reale: filtrul anti-bot a blocat IP-ul de pe care se
+      # construia, după câteva construcții într-o zi.
+      #
+      # Cheia e unică pe rulare, deci nu se potrivește niciodată exact, deci
+      # la final se salvează mereu o copie proaspătă. `restore-keys: poze-`
+      # ia la început cea mai recentă copie de dinainte. Așa memoria crește cu
+      # fotografiile noi, în loc să înghețe la prima versiune.
+      #
+      # Memoria e legată de ADRESA fotografiei. Dacă cineva înlocuiește
+      # conținutul uneia păstrând exact același nume de fișier, ar rămâne
+      # varianta veche. Se golește schimbând prefixul de mai jos, de exemplu
+      # în `poze2-`.
+      - name: Ia fotografiile din memorie
+        uses: actions/cache@v4
+        with:
+          path: .cache-poze
+          key: poze-${{ github.run_id }}
+          restore-keys: poze-
+
       - name: Verifică stilul codului
         run: npx eslint src next.config.ts
 

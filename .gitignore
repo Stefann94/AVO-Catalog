@@ -66,3 +66,7 @@ poze-lipsa.html
 
 # capturi de ecran facute cu tools/captura, pentru verificari vizuale
 capturi/
+
+# Fotografiile descărcate din WordPress, păstrate între construcții ca să nu
+# fie cerute din nou la fiecare rulare. Vezi tools/imagini/pregateste-static.mjs.
+/.cache-poze/

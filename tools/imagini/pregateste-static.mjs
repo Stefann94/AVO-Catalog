@@ -122,14 +122,51 @@ async function descarca(url) {
   throw ultima;
 }
 
+/**
+ * Fotografiile descărcate se păstrează pe disc, între construcții.
+ *
+ * ─── DE CE ────────────────────────────────────────────────────────────────
+ *
+ * Fără asta, fiecare construcție descarcă din nou toate cele 140 de
+ * fotografii, deși aproape niciuna nu s-a schimbat. Pe o găzduire partajată,
+ * asta contează: filtrul anti-bot al Hostico a blocat IP-ul de pe care se
+ * construia, după câteva construcții într-o zi. Cererile erau legitime, dar
+ * tiparul — sute de descărcări în rafală — arată ca un robot.
+ *
+ * Cu memoria asta, o construcție care nu schimbă pozele face ZERO descărcări.
+ *
+ * ─── CÂND NU E CORECTĂ ────────────────────────────────────────────────────
+ *
+ * Cheia e adresa. Dacă cineva înlocuiește conținutul unei fotografii
+ * PĂSTRÂND exact același nume de fișier, memoria ar servi varianta veche.
+ * WordPress nu face asta de la sine — la reîncărcare dă alt nume — dar unele
+ * extensii de înlocuire o fac.
+ *
+ * Dacă se întâmplă: se șterge folderul, sau, în publicarea automată, cheia
+ * de memorie din .github/workflows/publica.yml.
+ */
+const DIR_MEMORIE = ".cache-poze";
+
+async function dinMemorie(url) {
+  const nume = join(DIR_MEMORIE, createHash("sha1").update(url).digest("hex"));
+  try {
+    return await readFile(nume);
+  } catch {
+    const octeti = await descarca(url);
+    await mkdir(DIR_MEMORIE, { recursive: true });
+    await writeFile(nume, octeti);
+    return octeti;
+  }
+}
+
 async function sursa(url) {
   if (url.startsWith("http://") || url.startsWith("https://")) {
     /* Se ține PROMISIUNEA, nu rezultatul. Opt lucrători cer în paralel aceeași
        fotografie la opt lățimi; cu rezultatul, toți opt ar găsi harta goală
        înainte ca primul să termine și ar descărca-o de opt ori — exact
        sarcina care face WordPress-ul să cedeze. Așa, ceilalți șapte așteaptă
-       aceeași descărcare. */
-    if (!descarcate.has(url)) descarcate.set(url, descarca(url));
+       aceeași citire. */
+    if (!descarcate.has(url)) descarcate.set(url, dinMemorie(url));
     return descarcate.get(url);
   }
   return readFile(join(DIR_OUT, decodeURIComponent(url).replace(/^\//, "")));

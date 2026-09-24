@@ -24,6 +24,37 @@ const nextConfig: NextConfig = {
    *   fotografiile ........... pregătite după construcție, vezi mai jos.
    */
   output: "export",
+
+  /**
+   * Identificatorul construcției: același cod → același identificator.
+   *
+   * ─── CE PROBLEMĂ REZOLVĂ ──────────────────────────────────────────────
+   *
+   * Next pune în fiecare pagină un identificator al construcției, generat
+   * aleatoriu de fiecare dată. Consecința se vede abia la publicare: toate
+   * cele 1286 de fișiere de conținut — 215 pagini plus 1071 de încărcături de
+   * navigare — par modificate la fiecare rulare, chiar dacă nimic nu s-a
+   * schimbat.
+   *
+   * Măsurat: o publicare fără nicio modificare reală a urcat 17,8 minute.
+   * Urcarea trimite doar ce s-a schimbat, dar totul „se schimbase".
+   *
+   * ─── DE CE AMPRENTA COMMIT-ULUI ───────────────────────────────────────
+   *
+   * Identificatorul TREBUIE să se schimbe când se schimbă codul — el e ce
+   * împiedică un browser să amestece pagini vechi cu cod nou. Amprenta
+   * commit-ului face exact asta: se schimbă la orice modificare de cod, și
+   * rămâne aceeași când se schimbă doar un preț în WooCommerce.
+   *
+   * Așa, o modificare de preț urcă paginile acelui produs, nu tot site-ul.
+   *
+   * În afara publicării automate, `GITHUB_SHA` lipsește. Valoarea fixă de
+   * rezervă e corectă acolo: pe calculatorul propriu nu există cache de
+   * browser de păcălit, iar construcțiile trebuie să iasă identice ca să le
+   * putem compara între ele.
+   */
+  generateBuildId: () => process.env.GITHUB_SHA ?? "dezvoltare",
+
   images: {
     /**
      * Implicit Next servește doar WebP. Adăugat AVIF în față, fiindcă ordinea
