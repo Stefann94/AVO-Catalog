@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import HeroSlider from "@/components/HeroSlider";
-import BandaBranduri from "@/components/BandaBranduri";
+import HeroCatalog from "@/components/catalog/HeroCatalog";
+import { incarcaOferte } from "@/lib/oferte";
+import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import GamaProduse from "@/components/GamaProduse";
 import LichidareStoc from "@/components/LichidareStoc";
 import ReclamaPytes from "@/components/ReclamaPytes";
@@ -47,27 +48,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  // În paralel: n-au nicio dependență între ele. Aceleași două încărcări pe care
+  // le face și /catalog pentru același banner.
+  const [perioada, oferte] = await Promise.all([
+    incarcaPerioadaCatalog(),
+    incarcaOferte(),
+  ]);
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      {/*
-        Hero-ul și plinta lui ocupă împreună exact un ecran, la prima
-        deschidere și la reîncărcare.
+    /* `pt-(--inaltime-navbar)` e nou: hero-ul de dinainte era `fixed`-friendly,
+       începea sub bară prin construcție. Bannerul nu, deci pagina își coboără
+       singură conținutul, exact ca /catalog. */
+    <div className="flex flex-col min-h-screen bg-slate-50 pt-(--inaltime-navbar)">
+      {/* ── Bannerul: ofertele lunii ──
+          Același component ca în capul paginii /catalog.
 
-        Unitatea e `svh`, nu `vh`. Pe telefon `100vh` înseamnă înălțimea
-        ferestrei FĂRĂ barele browserului, deci la prima randare — când bara
-        de adrese e vizibilă — banda ar cădea sub marginea de jos, exact ce
-        trebuie evitat. `svh` e înălțimea cu barele vizibile, adică starea de
-        la prima interacțiune. `dvh` s-ar recalcula în timp ce derulezi și ar
-        face pagina să tresară sub deget.
+          A ÎNLOCUIT hero-ul cu videouri și banda de branduri, șterse la cerere.
+          Ocupau un ecran întreg cu 3 MB de filmări de stoc care arătau case
+          rezidențiale — un mesaj care nu spunea nimic despre distribuție — în
+          timp ce bannerul ăsta arată marfă, coduri și prețuri reale.
 
-        Hero-ul primește `flex-1`, banda `shrink-0`: banda își cere înălțimea
-        ei, hero-ul ia tot restul, pe orice ecran.
-      */}
-      <div data-navbar-clar className="flex h-[100svh] flex-col">
-        <HeroSlider />
-        <BandaBranduri />
-      </div>
+          Amândouă rămân în istoricul git dacă vor fi vreodată nevoie. */}
+      <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
 
       {/*
         ÎNVELIȘUL CARE MĂRGINEȘTE BARA DE FILTRE.

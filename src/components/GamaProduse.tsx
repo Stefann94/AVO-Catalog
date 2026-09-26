@@ -179,8 +179,8 @@ const TITLU = "Categoriile principale pentru casa și energia ta";
  *      treilea din HeroSlider.tsx („24h · Livrare · Din depozite naționale"),
  *      crezând că e o afirmație a firmei — dar acel slide e text de schelet.
  *      Termenele reale: 2–3 zile lucrătoare prin curier, 3–14 cu flota proprie,
- *      15–90 de la furnizor. AFIRMAȚIA E ȘI ACUM ÎN HeroSlider.tsx și trebuie
- *      scoasă și de-acolo.
+ *      15–90 de la furnizor. HeroSlider.tsx a fost șters pe
+ *      26.09.2026, deci afirmația nu mai există nicăieri în site.
  *
  *      Lecția, fiindcă regula de proveniență a acestui fișier o trecuse:
  *      „scris în proiect" nu înseamnă „verificat". Un text-șablon e scris în
@@ -266,7 +266,12 @@ export default async function GamaProduse() {
     /* PE TELEFON (sub `sm`) secțiunea e strânsă: 40px sus și jos în loc de 64,
        titlu de 22px, carduri câte două pe rând. De la `sm` fiecare clasă e cea
        de dinainte — `sm:pb-16` readuce exact jumătatea de jos a lui `py-16`. */
-    <section className="bg-[#F8F9FA] py-10 sm:pt-20 sm:pb-16 lg:pt-28 lg:pb-20">
+    <section className="bg-[#F8F9FA] py-10 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20">
+      {/* Aerul de sus a scăzut de la `sm:pt-20 lg:pt-28`. Cel mare era potrivit
+          cât deasupra stătea hero-ul de un ecran întreg: după o imagine atât de
+          înaltă, secțiunea avea nevoie de o respirație pe măsură. Din 26.09.2026
+          deasupra e bannerul de oferte, înalt de ~340px, iar aceeași pauză lăsa
+          un gol vizibil. */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-5 sm:mb-10 lg:mb-12">

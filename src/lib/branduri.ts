@@ -12,8 +12,14 @@
  * date reale, cifrele se recalculează din GraphQL.
  *
  * Fiecare intrare are o siglă în public/branduri/<slug>.png. Siglele sunt
- * normalizate ca siluete albe pe fond transparent — vezi comentariul din
- * BandaBranduri pentru motiv.
+ * normalizate ca siluete albe pe fond transparent, pentru fundaluri închise.
+ * Originalele colorate stau în public/branduri/color/ și se folosesc pe fundal
+ * deschis — vezi components/produs/FisaProdus.tsx.
+ *
+ * Motivul normalizării era explicat în BandaBranduri.tsx, șters pe 26.09.2026
+ * odată cu hero-ul de pe prima pagină: din 17 fișiere primite, 9 aveau fond
+ * alb opac și 3 erau transparente dar cu cerneală închisă, deci invizibile pe
+ * negru.
  */
 export type Brand = {
   slug: string;

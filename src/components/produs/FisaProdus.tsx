@@ -471,8 +471,7 @@ export default function FisaProdus({
                    `<img>`, nu `next/image`: siglele au lățimi foarte diferite
                    la aceeași înălțime de 120px, iar aici contează doar
                    înălțimea. Sunt mici (3–77 KB), deci trecerea prin
-                   /_next/image n-ar câștiga nimic. Același raționament ca în
-                   BandaBranduri.
+                   /_next/image n-ar câștiga nimic.
 
                    `max-w-[45%]` e plasa de siguranță: siglele merg de la 120px
                    lățime (K2, un pătrat) la 819px (Dyness, un wordmark lung).
