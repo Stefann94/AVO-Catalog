@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.png";
-import { Search, User, ChevronDown, Award, Package, Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import NavbarInteractiv from "./navbar/NavbarInteractiv";
 import BandaLucru from "./BandaLucru";
 
@@ -84,6 +84,20 @@ const BUTON_BARA =
   "hover:text-avo-600 hover:bg-white hover:shadow-md hover:shadow-avo-900/5 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
+/**
+ * Singurul buton plin din bară: cererea de ofertă.
+ *
+ * Într-un catalog fără coș, asta E conversia — nu există altă acțiune pe care
+ * un vizitator s-o poată duce la capăt. De-aceea e singurul element colorat
+ * plin din bară: dacă ar fi două, n-ar mai fi niciunul.
+ */
+const BUTON_PRINCIPAL =
+  "shrink-0 whitespace-nowrap flex items-center justify-center " +
+  "h-11 px-4 xl:px-5 2xl:px-6 rounded-xl text-[13px] xl:text-sm font-semibold " +
+  "bg-avo-600 text-white border border-avo-600 transition-all " +
+  "hover:bg-avo-700 hover:border-avo-700 hover:shadow-md hover:shadow-avo-900/15 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
+
 /** Butoanele de navigare: se lățesc pe măsură ce e loc. */
 const BUTON_MENIU =
   BUTON_BARA + " gap-2 h-11 px-3.5 xl:px-4 2xl:px-5 text-[13px] xl:text-sm";
@@ -146,21 +160,16 @@ export default function Navbar() {
 
       <NavbarInteractiv
         meniuMobil={
-          <div className="p-6 flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="Caută produse..."
-              className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg px-4 py-3 focus:outline-none focus:border-avo-600 w-full"
-            />
-            <Link href="/catalog" className="text-slate-700 text-lg py-2 border-b border-slate-100">Catalog Produse</Link>
-            <Link href="/parteneri" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex justify-between items-center">
-              Parteneri B2B <span className="text-xs bg-avo-50 text-avo-600 px-2 py-1 rounded-md">Gold / Platinum</span>
-            </Link>
-            <Link href="/oferte-en-gros" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex items-center gap-2">
-              <Package size={18} className="text-emerald-600"/> Oferte Palet &amp; En-Gros
-            </Link>
-            <Link href="/cont" className="text-slate-700 text-lg py-2 border-b border-slate-100 flex items-center gap-2">
-              <User size={18} /> Contul Meu
+          <div className="p-6 flex flex-col">
+            <Link href="/catalog" className="text-slate-700 text-lg py-3 border-b border-slate-100">Catalog</Link>
+            <Link href="/catalog/lichidare-stoc" className="text-slate-700 text-lg py-3 border-b border-slate-100">Lichidare de stoc</Link>
+            <Link href="/despre-noi" className="text-slate-700 text-lg py-3 border-b border-slate-100">Despre noi</Link>
+            <Link href="/contact" className="text-slate-700 text-lg py-3 border-b border-slate-100">Contact</Link>
+            <Link
+              href="/cerere-oferta"
+              className="mt-5 flex items-center justify-center h-12 rounded-xl bg-avo-600 text-white text-base font-semibold hover:bg-avo-700 transition-colors"
+            >
+              Cere ofertă
             </Link>
           </div>
         }
@@ -221,96 +230,49 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Meniul. `shrink-0` peste tot: dacă vreodată nu mai încape, vrem să
-            iasă în afară și să se vadă, nu să se strângă până când textul se
-            rupe pe două rânduri și crește bara. Aceea era starea de la 1280. */}
+        {/* ── Meniul ─────────────────────────────────────────
+            Patru linkuri, toate către pagini care există.
+
+            CE A IEȘIT DE AICI ȘI DE CE:
+
+              „Parteneri B2B” ....... fereastră cu „Cont Gold −10%” și „Cont
+                                     Platinum −15%”. Conturile nu există, iar
+                                     reducerile erau afișate ca și cum ar fi
+                                     reale. Linkul ei, /devino-partener, dă 404.
+              „Sisteme Industriale” . ducea la /oferte-en-gros, care nu există.
+                                     Era și singurul buton verde din bară,
+                                     a cincea culoare de accent din pagină.
+              „Cont B2B” ............ nu deschidea nimic. Site-ul n-are conturi.
+              căutarea ............. câmpul și butonul cu lupă nu făceau nimic.
+                                     Se întorc când căutarea chiar funcționează;
+                                     o lupă care nu caută e mai rău decât niciuna.
+
+            Au rămas patru linkuri și o singură acțiune. Navigarea prin marfă o
+            face rândul de categorii de sub bară (catalog/MeniuCategorii.tsx),
+            prezent acum și pe prima pagină — deci bara n-are de ce s-o repete. */}
         <div className="hidden lg:flex shrink-0 items-center gap-2 xl:gap-2.5 2xl:gap-3">
           <Link href="/catalog" className={BUTON_MENIU}>
-            Catalog Produse
+            Catalog
           </Link>
-
-          <div className="relative group cursor-pointer">
-            <div className={BUTON_MENIU}>
-              Parteneri B2B <ChevronDown size={14} className="group-hover:scale-125 group-hover:text-avo-500 group-hover:drop-shadow-md transition-all duration-300" />
-            </div>
-            {/* Dropdown B2B Wrapper (Hover Bridge) */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 transform group-hover:translate-y-0 translate-y-2 z-50">
-              {/* Visual Box */}
-              <div className="w-64 bg-slate-100/95 backdrop-blur-3xl backdrop-saturate-200 border border-slate-200/50 rounded-2xl shadow-xl shadow-slate-900/10 overflow-hidden">
-                <div className="p-4 border-b border-slate-200/50">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Statut Partener</p>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-3 text-sm text-yellow-600 font-medium p-3 hover:bg-white/80 border border-transparent hover:border-slate-300/60 hover:shadow-sm rounded-xl transition-all cursor-pointer">
-                      <Award size={18} /> Cont Gold <span className="ml-auto text-xs bg-yellow-500/10 text-yellow-700 px-2 py-1 rounded-md">-10%</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-700 font-medium p-3 hover:bg-white/80 border border-transparent hover:border-slate-300/60 hover:shadow-sm rounded-xl transition-all cursor-pointer">
-                      <Award size={18} className="text-slate-400" /> Cont Platinum <span className="ml-auto text-xs bg-slate-200/50 text-slate-600 px-2 py-1 rounded-md">-15%</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 bg-slate-200/30 hover:bg-avo-50/50 transition-colors cursor-pointer group/link">
-                  <Link href="/devino-partener" className="text-sm text-avo-600 font-bold flex items-center gap-1.5 justify-center">
-                    Află cum devii partener
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="/oferte-en-gros"
-            className={
-              "group shrink-0 whitespace-nowrap flex items-center justify-center gap-2 " +
-              "h-11 px-3.5 xl:px-4 2xl:px-5 rounded-xl text-[13px] xl:text-sm font-semibold " +
-              "bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 " +
-              "transition-all hover:text-emerald-800 hover:border-emerald-300 hover:from-emerald-100 hover:to-teal-100 hover:shadow-md hover:shadow-emerald-900/5 " +
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-            }
-          >
-            <Package size={16} className="shrink-0 group-hover:scale-110 transition-transform" /> Sisteme Industriale
+          <Link href="/catalog/lichidare-stoc" className={BUTON_MENIU}>
+            Lichidare de stoc
           </Link>
-
+          <Link href="/despre-noi" className={BUTON_MENIU}>
+            Despre noi
+          </Link>
+          <Link href="/contact" className={BUTON_MENIU}>
+            Contact
+          </Link>
         </div>
 
-        {/* ── Acțiunile din dreapta ────────────────────────────────────
-            Două elemente care se dezbracă pe rând, în ordinea în care le scade
-            utilitatea odată cu spațiul: întâi câmpul de căutare devine buton cu
-            lupă, apoi contul rămâne doar cu iconița. Coșul, al treilea, a fost
-            scos. */}
-        <div className="hidden lg:flex lg:grow lg:justify-end items-center gap-2 xl:gap-3 2xl:gap-5">
-          {/* Câmpul de căutare, doar de la 2xl. Sub el ar fi trebuit să scadă
-              la ~150px, adică sub lungimea textului „Caută produse…" pe care
-              îl ține — un câmp în care nu încape nici măcar invitația lui.
-              Butonul cu lupă spune același lucru și ocupă 44px. */}
-          <div className="relative group hidden 2xl:block min-w-0 shrink">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-700 transition-colors" size={16} />
-            <input
-              type="text"
-              placeholder="Caută produse..."
-              className="bg-white/70 border border-white/80 text-slate-900 text-sm rounded-xl pl-10 pr-4 h-11 focus:outline-none focus:bg-white focus:shadow-inner transition-all w-64 min-w-0 max-w-full"
-            />
-          </div>
-
-          <button
-            type="button"
-            aria-label="Caută produse"
-            className={BUTON_BARA + " 2xl:hidden h-11 w-11"}
-          >
-            <Search size={18} />
-          </button>
-
-          <div className="flex items-center gap-2 xl:gap-3">
-            {/* `w-11` cât timp e doar iconița, `px-4` când vine și eticheta:
-                un buton pătrat nu se obține lăsând padding-ul pe loc. */}
-            <button type="button" className={BUTON_BARA + " group h-11 w-11 xl:w-auto xl:gap-2 xl:px-4"}>
-              <User size={16} className="group-hover:scale-110 transition-transform" />
-              <span className="hidden xl:inline text-xs uppercase tracking-wider">Cont B2B</span>
-            </button>
-            {/* AICI ERA BUTONUL „COȘ", cu o bulină „0". Scos la cerere: site-ul
-                nu are coș — prețurile se ofertează, nu se plătesc online —, iar
-                butonul nu ducea nicăieri. Un coș mereu gol promitea o funcție
-                care nu există. */}
-          </div>
+        {/* ── Acțiunea principală ──────────────────────────────────
+            `grow` împinge butonul la marginea dreaptă și, îmreună cu `grow`-ul
+            de pe containerul siglei, ține meniul centrat — aceeași mecanică de
+            dinainte, cu un singur element în loc de patru. */}
+        <div className="hidden lg:flex lg:grow lg:justify-end items-center">
+          <Link href="/cerere-oferta" className={BUTON_PRINCIPAL}>
+            Cere ofertă
+          </Link>
         </div>
       </NavbarInteractiv>
     </nav>

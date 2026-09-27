@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import HeroCatalog from "@/components/catalog/HeroCatalog";
+import MeniuCategorii from "@/components/catalog/MeniuCategorii";
+import { incarcaBaraFiltre } from "@/lib/panou";
+import { incarcaToateProdusele } from "@/lib/produs";
 import { incarcaOferte } from "@/lib/oferte";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import GamaProduse from "@/components/GamaProduse";
@@ -51,9 +54,11 @@ export const metadata: Metadata = {
 export default async function Home() {
   // În paralel: n-au nicio dependență între ele. Aceleași două încărcări pe care
   // le face și /catalog pentru același banner.
-  const [perioada, oferte] = await Promise.all([
+  const [perioada, oferte, bara, toateProdusele] = await Promise.all([
     incarcaPerioadaCatalog(),
     incarcaOferte(),
+    incarcaBaraFiltre(),
+    incarcaToateProdusele(),
   ]);
 
   return (
@@ -71,6 +76,12 @@ export default async function Home() {
 
           Amândouă rămân în istoricul git dacă vor fi vreodată nevoie. */}
       <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
+
+      {/* ── Rândul de categorii, cu subcategoriile la hover ──
+          Același component ca pe /catalog, cu aceleași date. Prima pagină și
+          catalogul au acum aceeași intrare în marfă: cine ajunge pe oricare
+          dintre ele vede imediat cele nouă categorii, nu trebuie să caute. */}
+      <MeniuCategorii categorii={bara.categorii} produse={toateProdusele} />
 
       {/*
         ÎNVELIȘUL CARE MĂRGINEȘTE BARA DE FILTRE.
