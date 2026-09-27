@@ -297,6 +297,40 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* ── Anunț: magazinul nu e încă activ ──────────────────
+          A ÎNLOCUIT banda roșie derulantă din capul fiecărei pagini.
+
+          Banda spunea același lucru, dar apărea de nouă ori în textul
+          fiecărei pagini — o treime din conținut — și scria „SITE ÎN LUCRU",
+          exact semnalul pe care Google îl citește ca site neterminat. Aici
+          informația e la fel de accesibilă, dar nu mai concurează cu
+          produsele și nu mai diluează fiecare pagină.
+
+          Are linkuri reale, nu doar text: cine citește anunțul are pe loc
+          cele trei căi prin care se poate comanda. */}
+      <div className="border-t border-slate-800 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-4 flex flex-col sm:flex-row sm:items-center gap-x-3 gap-y-1.5">
+          <p className="text-sm font-semibold text-white shrink-0">
+            Magazinul online nu este încă activ
+          </p>
+          <p className="text-sm text-slate-300 leading-relaxed">
+            Pentru comenzi și prețuri,{" "}
+            <Link href="/cerere-oferta" className="text-white underline underline-offset-2 hover:text-avo-300 transition-colors">
+              trimite o cerere de ofertă
+            </Link>
+            , sună la{" "}
+            <a href={`tel:${FIRMA.telefonHref}`} className="text-white underline underline-offset-2 hover:text-avo-300 transition-colors">
+              {FIRMA.telefon}
+            </a>{" "}
+            sau scrie-ne la{" "}
+            <a href={`mailto:${FIRMA.email}`} className="text-white underline underline-offset-2 hover:text-avo-300 transition-colors">
+              {FIRMA.email}
+            </a>
+            .
+          </p>
+        </div>
+      </div>
+
       {/* ── Bara legală ────────────────────────────────────── */}
       <div className="border-t border-slate-800 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
