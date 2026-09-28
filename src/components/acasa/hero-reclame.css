@@ -49,8 +49,16 @@
 
 /* ══════════════════════════ HERO ══════════════════════════ */
 
+/* Fără spațiu sus: banda de categorii se termină exact unde începe caruselul.
+   Aerul de jos e al hero-ului, fiindcă e ultimul din capul paginii — fără el,
+   secțiunea albă care urmează s-ar lipi de rândul de reclame. */
 .rc-promo {
-  padding: 0 0 8px;
+  padding: 0 0 16px;
+}
+@media (min-width: 64rem) {
+  .rc-promo {
+    padding-bottom: 24px;
+  }
 }
 .rc-promo-sus {
   display: grid;

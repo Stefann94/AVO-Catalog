@@ -114,16 +114,16 @@ export default function HeroCatalog({
          .coloana ... lățimea și marginile laterale
          blocul ..... culoarea, decuparea diagonalei și padding-ul interior
 
-       FĂRĂ SPAȚIU, NICI SUS, NICI JOS. Sus se lipește de bara cu sigla, jos
-       de banda de categorii. Cele trei formează un singur cap de pagină, nu
-       trei blocuri care se întâmplă să stea unul peste altul. Aerul vine abia
-       după bandă (vezi MeniuCategorii).
+       FĂRĂ SPAȚIU SUS: banda de categorii se termină exact unde începe el.
+       Bara cu sigla, banda și blocul ăsta formează un singur cap de pagină, nu
+       trei blocuri puse unul peste altul. Aerul de jos e al lui, fiindcă e
+       ultimul dintre ele.
 
        Padding-ul textului e al blocului (`px-6 lg:px-10`), nu al coloanei:
        altfel s-ar fi adunat cu al ei, iar titlul ar fi început cu 32px mai la
        dreapta decât muchia blocului.
        ══════════════════════════════════════════════════════════════════════ */
-    <section className="bg-slate-50">
+    <section className="bg-slate-50 pb-4 lg:pb-6">
       <div className="coloana">
         <div className="relative overflow-hidden bg-avo-950">
           {/* ── Fondul deschis din dreapta, tăiat în diagonală ──

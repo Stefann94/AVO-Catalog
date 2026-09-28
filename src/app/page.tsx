@@ -80,8 +80,17 @@ export default async function Home() {
        sunt în arhiva/componente/, cu tot cu motivul — vezi arhiva/README.md.
        ══════════════════════════════════════════════════════════════════════ */
     <div className="flex min-h-screen flex-col bg-slate-50 pt-(--inaltime-navbar)">
-      {/* ── Capul de magazin: carusel, trei casete, cinci reclame ──
-          Structura prototipului Projects/Solarone.ro, cu datele noastre.
+      {/* ══ CAPUL DE PAGINĂ, DINTR-O BUCATĂ ══
+          Bara cu sigla, banda de categorii și hero-ul se ating: niciun spațiu
+          între ele, aceeași lățime pentru ultimele două. Se citesc ca un
+          singur obiect, nu ca trei blocuri puse unul peste altul.
+
+          Ordinea e cea a unui magazin, și cea a prototipului: întâi cum ajungi
+          la marfă, abia apoi ce e bun luna asta. */}
+      <MeniuCategorii categorii={bara.categorii} produse={toateProdusele} />
+
+      {/* Carusel, trei casete, cinci reclame de categorie — structura
+          prototipului Projects/Solarone.ro, cu datele noastre.
 
           A ÎNLOCUIT `HeroCatalog`, bannerul cu ofertele lunii, care rămâne pe
           /catalog. Acolo e potrivit — pagina aia ARE un singur subiect. Prima
@@ -91,13 +100,6 @@ export default async function Home() {
           Culorile sunt încă ale prototipului, ca să se poată compara 1:1.
           Trecerea pe paleta AVO e blocul de variabile din hero-reclame.css. */}
       <HeroReclame produse={toateProdusele} lichidare={lichidare} />
-
-      {/* ── Rândul de categorii ──
-          Sub banner, lipit de el. Cele două blocuri au aceeași lățime și nu
-          au spațiu între ele, deci se citesc ca un singur cap de pagină.
-
-          Același component ca pe /catalog, cu aceleași date. */}
-      <MeniuCategorii categorii={bara.categorii} produse={toateProdusele} />
 
       {/* Produsele, pe file: „Oferte" plus cele mai mari categorii. */}
       <ProduseCuFile oferte={oferte} produse={toateProdusele} />

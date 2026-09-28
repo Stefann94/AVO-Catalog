@@ -169,23 +169,23 @@ export default function MeniuCategorii({
        hover, iar pe ecran tactil hover-ul nu există. Pe telefon, placa duce
        direct la categorie, ceea ce e oricum ce vrea degetul. */
     /* ══════════════════════════════════════════════════════════════════════
-       BANDA E ÎN COLOANĂ, SUB BANNER
+       BANDA E ÎN COLOANĂ, PRIMA DE SUB BARA CU SIGLA
        ──────────────────────────────────────────────────────────────────────
        Mergea de la o margine a ferestrei la cealaltă. Culoarea a coborât de pe
        `<nav>` pe `<ul>`: pe `<nav>` se întindea cât fereastra, iar la 1440px
        ieșea cu 152px în fiecare parte față de restul paginii. Acum banda începe
-       și se termină pe aceeași verticală cu sigla, cu bannerul de deasupra și
-       cu titlurile secțiunilor.
+       și se termină pe aceeași verticală cu bannerul de dedesubt și cu
+       titlurile secțiunilor.
 
        Plăcile rămân lipite de muchiile benzii, fără padding orizontal: banda
-       ESTE rândul de categorii, nu un chenar în jurul lui. Bannerul de deasupra
+       ESTE rândul de categorii, nu un chenar în jurul lui. Bannerul de dedesubt
        are padding interior fiindcă acolo e text, nu butoane.
 
-       Fără spațiu sus — se lipește de banner. Aerul de jos e al ei, fiindcă e
-       ultima din capul paginii: fără el, secțiunea albă care urmează s-ar lipi
-       de bandă.
+       FĂRĂ SPAȚIU, NICI SUS, NICI JOS. Sus se lipește de bara cu sigla, jos de
+       hero. Cele trei formează un singur cap de pagină; aerul vine abia după
+       hero, din el.
        ══════════════════════════════════════════════════════════════════════ */
-    <nav aria-label="Categorii principale" className="relative z-40 bg-slate-50 pb-4 lg:pb-6">
+    <nav aria-label="Categorii principale" className="relative z-40 bg-slate-50">
       <div className="coloana">
       <ul className="fara-bara-derulare flex gap-2 overflow-x-auto bg-avo-900 py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
         {categorii.map((c, i) => {

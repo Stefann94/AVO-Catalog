@@ -57,14 +57,16 @@ export default async function CatalogPage() {
        bannerul, pe toată lățimea. Aerul de 2rem / 3rem pe care îl avea pagina
        sus s-a mutat pe învelișul catalogului, sub rândul de categorii. */
     <div className="min-h-screen bg-slate-50 pt-(--inaltime-navbar)">
-      {/* ── Bannerul: ofertele lunii, ca reclamă ── */}
-      <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
-
       {/* ── Rândul de categorii, cu subcategoriile la hover ──
-          Aceleași date ca meniul din stânga, care rămâne. Sub banner, ca pe
-          prima pagină: cele două trebuie să arate la fel pe ambele, altfel
+          Aceleași date ca meniul din stânga, care rămâne. Prima de sub bara cu
+          sigla, ca pe prima pagină: cele două trebuie să arate la fel, altfel
           capul paginii se schimbă când treci dintr-una în alta. */}
       <MeniuCategorii categorii={categorii} produse={toateProdusele} />
+
+      {/* ── Bannerul: ofertele lunii, ca reclamă ──
+          Lipit de bandă. Aerul de jos e al lui, fiindcă e ultimul din capul
+          paginii. */}
+      <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
 
       {/* ── Catalogul: meniul din stânga și grila, neschimbate ── */}
       <div className="pt-8 pb-16 sm:pb-24 lg:pt-12">
