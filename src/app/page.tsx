@@ -5,10 +5,10 @@ import { incarcaBaraFiltre } from "@/lib/panou";
 import { incarcaToateProdusele } from "@/lib/produs";
 import { incarcaOferte } from "@/lib/oferte";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
-import GamaProduse from "@/components/GamaProduse";
+import ProduseCuFile from "@/components/acasa/ProduseCuFile";
+import Marci from "@/components/acasa/Marci";
 import LichidareStoc from "@/components/LichidareStoc";
 import ReclamaPytes from "@/components/ReclamaPytes";
-import OferteleLunii from "@/components/OferteleLunii";
 import ConditiiB2B from "@/components/ConditiiB2B";
 import BaraFiltre from "@/components/BaraFiltre";
 import BaraReclame from "@/components/BaraReclame";
@@ -86,16 +86,18 @@ export default async function Home() {
       {/*
         ÎNVELIȘUL CARE MĂRGINEȘTE BARA DE FILTRE.
 
-        Cuprinde EXACT o secțiune, „Gama de produse", și de aici își ia bara
-        ambele capete: pornește din dreptul titlului „Categoriile principale…" și
-        se oprește unde se termină secțiunea, adică înainte de „Ofertele lunii".
+        Cuprinde EXACT o secțiune, și de aici își ia bara ambele capete:
+        pornește din dreptul titlului ei și se oprește unde se termină.
 
         E doar `relative` — fără lățime, fără padding, fără fundal. Secțiunea
-        dinăuntru rămâne exact ce era, pe toată lățimea, cu aceeași grilă de
-        patru coloane și aceleași margini. Nimic nu se îngustează.
+        dinăuntru rămâne pe toată lățimea, cu marginile ei. Nimic nu se
+        îngustează.
 
-        Dacă bara ar trebui vreodată să însoțească și secțiunile următoare,
-        singura modificare e să le mutăm în acest `div`. Nimic altceva.
+        AICI A FOST „Gama de produse", rândul de carduri de categorii. A ieșit
+        pe 28.09.2026: bara de categorii de deasupra spune același lucru, mai
+        compact, iar două navigări pe categorii una sub alta e exact ce făcea
+        pagina să pară că se învârte în loc. Bara de filtre a rămas, acum
+        mărginind secțiunea de produse.
       */}
       <div className="relative">
         {/* Cuprinsul catalogului, în marja liberă din stânga. Apare de la 1760px
@@ -107,8 +109,10 @@ export default async function Home() {
             filtre, cu aceleași variabile și același prag de 1760px. */}
         <BaraReclame />
 
-        {/* Gama de produse — categorii agregate din catalog, cu perioada din WooCommerce */}
-        <GamaProduse />
+        {/* Produsele, pe file: „Oferte" plus cele mai mari categorii.
+            Ține locul a două secțiuni de dinainte — grila de oferte și
+            cardurile de categorii — fără să trimită JavaScript în browser. */}
+        <ProduseCuFile oferte={oferte} produse={toateProdusele} />
       </div>
 
       {/* Lichidare de stoc — banda derulantă cu săgeți. A fost „Ofertele
@@ -122,9 +126,11 @@ export default async function Home() {
         <LichidareStoc />
       </div>
 
-      {/* Ofertele lunii — cele patru produse de pe pagina de oferte a
-          catalogului, coborâte cu o secțiune sub banda de lichidare. */}
-      <OferteleLunii />
+      {/* Mărcile din catalog — perete de sigle cu numărul de produse.
+          A ÎNLOCUIT „Ofertele lunii", secțiune care arăta exact aceleași patru
+          produse ca bannerul din capul paginii și ca prima filă de mai sus.
+          Ofertele apar acum o singură dată, acolo. */}
+      <Marci />
 
       {/* Condițiile B2B — ultima secțiune înainte de footer, și ultima din
           ordinea firească a paginii: întâi „ce acoperim", apoi „ce e bun luna

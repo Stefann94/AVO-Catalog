@@ -54,11 +54,121 @@
   --color-avo-950: #00153b;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   SISTEMUL DE DESIGN — tokeni semantici
+   ──────────────────────────────────────────────────────────────────────────
+   Adăugat 28.09.2026. Scara `avo-*` de mai sus RĂMÂNE: e folosită în tot codul
+   existent și e verificată la contrast. Peste ea vine un strat semantic.
+
+   ─── DE CE ────────────────────────────────────────────────────────────────
+
+   Pe aceeași pagină existau patru culori de accent — albastru la butoane,
+   verde la „Sisteme Industriale", roșu la banda de anunț, galben la „Cont
+   Gold" — plus trei raze de colț și două scări de umbră. Nimeni nu greșise
+   nimic: pur și simplu nu exista un vocabular comun, deci fiecare componentă
+   și-a ales singură. Ăsta e semnalul numărul unu de site făcut în grabă, mai
+   puternic decât orice machetă.
+
+   Un token numit `avo-600` spune CE CULOARE e. Unul numit `action` spune LA CE
+   FOLOSEȘTE. Pe a doua o poți respecta; pe prima doar o copiezi.
+
+   ─── DE UNDE VIN VALORILE ────────────────────────────────────────────────
+
+   Structura e preluată din Projects/Solarone.ro/stil-v2.css, prototipul de
+   design al aceleiași firme. Sistemul de acolo e strâns și bine ales: două
+   raze, două umbre, trei trepte de text, un albastru cu patru variante.
+
+   CULORILE SUNT ÎNSĂ ALE NOASTRE, măsurate din public/logo.png:
+     #002154 .... albastrul închis al literelor
+     #E00008 .... roșul lui „O"
+
+   `action` rămâne #004A99, albastrul deja folosit peste tot — mai închis decât
+   cel din siglă tocmai ca prețurile să aibă greutate pe alb (8,61:1).
+
+   `accent` e roșul siglei, pus unde prototipul avea galben: drumul
+   profesional, B2B, etichetele care cer privirea. Alb pe el dă 5,02:1, deci
+   trece AA. Text închis pe el dă 3,5:1 și NU trece — accentul cere
+   întotdeauna alb, niciodată gri sau negru.
+
+   ─── CUM SE FOLOSEȘTE ─────────────────────────────────────────────────────
+
+   În cod nou: `bg-surface`, `text-muted`, `border-line`, `bg-action`,
+   `rounded-card`, `shadow-lift`. Codul vechi rămâne pe `avo-*` și merge mai
+   departe — se mută pe măsură ce se atinge, nu într-o rescriere de o zi.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Suprafețe */
+  --canvas: #f7f9fc;
+  --surface: #ffffff;
+  --sunken: #f0f3f7;
+
+  /* Text, de la cel mai citit la cel mai discret */
+  --fg: #10151c;
+  --muted: #47535f;
+  --faint: #7d8a97;
+
+  /* Contururi. `line` pentru carduri, `line-soft` pentru despărțiri interne */
+  --line: #e5eaf0;
+  --line-soft: #f0f3f7;
+
+  /* Acțiunea principală */
+  --action: #004a99;
+  --action-dark: #003b7d;
+  --action-light: #2a75d1;
+  --action-soft: #f0f6ff;
+  --onaction: #ffffff;
+
+  /* A doua voce: roșul siglei. Cere text alb. */
+  --accent: #e00008;
+  --accent-dark: #b80007;
+  --onaccent: #ffffff;
+
+  /* Albastrul închis al siglei — fundaluri de secțiune, nu text */
+  --navy: #002154;
+
+  /* Singura culoare de stare folosită: disponibil */
+  --ok: #0e8a43;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans-app), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-app), ui-monospace, monospace;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-action: var(--action);
+  --color-action-dark: var(--action-dark);
+  --color-action-light: var(--action-light);
+  --color-action-soft: var(--action-soft);
+  --color-onaction: var(--onaction);
+
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-onaccent: var(--onaccent);
+
+  --color-navy: var(--navy);
+  --color-ok: var(--ok);
+
+  /* Două raze, nu șapte: `card` pentru cutii, `control` pentru butoane și
+     câmpuri. Exact cele din prototip. */
+  --radius-card: 12px;
+  --radius-control: 8px;
+
+  /* Două umbre. A doua e starea de hover a primei — nu un al treilea nivel. */
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -8px rgb(16 24 40 / 0.10);
+  --shadow-lift: 0 2px 6px rgb(16 24 40 / 0.06), 0 16px 40px -12px rgb(16 24 40 / 0.18);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -398,4 +508,75 @@ body {
 
 .fara-bara-derulare::-webkit-scrollbar {
   display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FILE DE PRODUSE — schimbarea panoului, fără JavaScript
+   ──────────────────────────────────────────────────────────────────────────
+   Componenta e components/acasa/ProduseCuFile.tsx. Acolo sunt `<input
+   type="radio">` ascunse, câte unul per filă, plus `<label>`-urile care le
+   comută. Aici e singurul lucru care nu se poate scrie în utilitare Tailwind:
+   „când radio-ul N e bifat, arată panoul N și subliniază eticheta N".
+
+   `:has()` face asta curat — fără el ar fi trebuit selectori pe frați, care
+   cer ca panourile să stea imediat după input-uri în DOM și leagă structura
+   HTML de CSS. E susținut în toate browserele curente din 2023 încoace.
+
+   DE CE ȘASE REGULI, SCRISE DE MÂNĂ. Numărul de file e dat de date — o filă
+   de oferte plus cele mai mari cinci categorii. Șase acoperă maximul; dacă
+   vreodată crește, se adaugă aici, iar o filă fără regulă pur și simplu nu se
+   deschide, în loc să strice restul.
+
+   FĂRĂ `:has()` — browsere vechi — rămân toate panourile vizibile, unul sub
+   altul. Arată aglomerat, dar tot conținutul e acolo și toate linkurile merg.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.file-produse > input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-produse [data-fila] {
+  display: none;
+}
+
+.file-produse:has(#fila-0:checked) [data-fila="0"],
+.file-produse:has(#fila-1:checked) [data-fila="1"],
+.file-produse:has(#fila-2:checked) [data-fila="2"],
+.file-produse:has(#fila-3:checked) [data-fila="3"],
+.file-produse:has(#fila-4:checked) [data-fila="4"],
+.file-produse:has(#fila-5:checked) [data-fila="5"] {
+  display: block;
+}
+
+/* Eticheta filei deschise: text închis și linie sub ea, ca în orice set de
+   file. Culoarea e `--color-avo-600`, aceeași cu a prețurilor. */
+.file-produse:has(#fila-0:checked) label[for="fila-0"],
+.file-produse:has(#fila-1:checked) label[for="fila-1"],
+.file-produse:has(#fila-2:checked) label[for="fila-2"],
+.file-produse:has(#fila-3:checked) label[for="fila-3"],
+.file-produse:has(#fila-4:checked) label[for="fila-4"],
+.file-produse:has(#fila-5:checked) label[for="fila-5"] {
+  color: var(--color-avo-600);
+  border-bottom-color: var(--color-avo-600);
+}
+
+/* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar
+   vedea pe ce filă ești când navighezi cu Tab și săgețile. */
+.file-produse > input[type="radio"]:focus-visible + input + input + input + input + input + div label,
+.file-produse:has(> input[type="radio"]:focus-visible) label {
+  outline: none;
+}
+.file-produse:has(#fila-0:focus-visible) label[for="fila-0"],
+.file-produse:has(#fila-1:focus-visible) label[for="fila-1"],
+.file-produse:has(#fila-2:focus-visible) label[for="fila-2"],
+.file-produse:has(#fila-3:focus-visible) label[for="fila-3"],
+.file-produse:has(#fila-4:focus-visible) label[for="fila-4"],
+.file-produse:has(#fila-5:focus-visible) label[for="fila-5"] {
+  outline: 2px solid var(--color-avo-600);
+  outline-offset: -2px;
+  border-radius: 6px;
 }
