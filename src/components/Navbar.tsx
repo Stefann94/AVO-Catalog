@@ -173,22 +173,27 @@ export default function Navbar() {
         }
       >
         {/*
-          Sigla stă la jumătatea distanței dintre marginea din stânga și primul
-          buton, fără nicio măsurătoare în JavaScript.
+          Sigla stă lipită de marginea din stânga a coloanei, la aceeași
+          verticală cu titlurile secțiunilor de dedesubt și cu telefonul din
+          bara de contact.
 
-          Mecanica: acest container și cel cu acțiunile din dreapta cresc
-          (`grow`), meniul rămâne la lățimea lui naturală. Spațiul rămas se
-          împarte în două părți egale — una intră în containerul siglei, una în
-          cel al acțiunilor. Siglei i se spune `justify-center`, deci se așază
-          fix la mijlocul primei părți; acțiunilor `justify-end`, deci rămân
-          lipite de marginea dreaptă. Meniul nu se mișcă din locul pe care îl
-          avea cu `justify-between`.
+          ─── A STAT CENTRATĂ ÎN SPAȚIUL DIN STÂNGA ──────────────────────────
 
-          `pl-3` nu e ornament: rândul are `gap-3`, iar spațiul acela stă în
-          afara containerului. Fără el, distanța până la buton ar ieși cu 12px
-          mai mare decât cea până la margine. Padding-ul aduce aceiași 12px
-          înăuntru, în stânga, și cele două distanțe devin egale. La `xl`, unde
-          rândul trece pe `gap-4`, trece și el pe `pl-4`.
+          Containerul creștea (`grow`) iar sigla primea `justify-center`, deci
+          se așeza la jumătatea distanței dintre marginea ferestrei și primul
+          buton de meniu. Avea sens cât timp bara mergea pe toată lățimea
+          ferestrei: acolo nu exista nicio muchie de care să se lipească, iar
+          centrarea era singura poziție care nu părea aleasă la întâmplare.
+
+          De când bara e în `coloana` (28.09.2026), muchia există. Sigla
+          centrată începea cu ~90px mai la dreapta decât conținutul paginii, pe
+          o pagină construită tocmai pe ideea că totul pornește de pe aceeași
+          linie. `lg:pl-3 xl:pl-4`, care compensau `gap-3` al rândului, au ieșit
+          odată cu ea — împingeau sigla exact de la muchia pe care acum o vrem.
+
+          `grow` RĂMÂNE, deși sigla nu-l mai folosește ca să se centreze: el
+          e cel care ține meniul unde era. Containerul ia spațiul liber, iar
+          meniul rămâne la lățimea lui naturală, între siglă și acțiuni.
 
           `min-w-52` e podeaua sub care sigla nu mai coboară. Fără ea, când bara
           se aglomerează, containerul se strânge înaintea celorlalte și sigla
@@ -197,12 +202,8 @@ export default function Navbar() {
           Nu e `flex-auto`, deși ar părea mai scurt: `flex-auto` scrie
           proprietatea `flex` întreagă, iar Tailwind o emite după `flex-shrink`,
           deci ar anula orice `shrink-*` pus pe același element.
-
-          Sub `lg` meniul nu există, deci nu există nici distanța de înjumătățit
-          — acolo sigla rămâne la stânga, lângă butonul de meniu. Pragul era
-          `xl`; a coborât la `lg` odată cu meniul.
         */}
-        <Link href="/" className="flex items-center shrink min-w-0 lg:grow lg:min-w-52 lg:justify-center lg:pl-3 xl:pl-4">
+        <Link href="/" className="flex shrink items-center min-w-0 lg:min-w-52 lg:grow">
           {/* Import static, nu șirul "/logo.png": Next scoate fișierul sub o
               adresă care conține un hash al conținutului. La orice modificare a
               siglei se schimbă adresa, deci browserele și optimizatorul de
