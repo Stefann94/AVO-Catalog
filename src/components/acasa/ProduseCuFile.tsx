@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
 import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
 import { BRANDURI } from "@/lib/branduri";
@@ -95,10 +96,16 @@ function Card({ a }: { a: Articol }) {
   const sigla = a.brand ? SIGLA.get(a.brand.toLowerCase()) : undefined;
 
   return (
-    <Link
-      href={adresa}
-      className="group flex flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,box-shadow] duration-150 hover:border-avo-600 hover:shadow-[0_0_0_1px_var(--color-avo-600)]"
-    >
+    /* `<article>`, nu `<Link>`, de când cardul are DOUĂ acțiuni: deschide
+       produsul și pune în coș. Un `<a>` înăuntrul altui `<a>` nu e marcaj
+       valid, iar browserele îl repară imprevizibil.
+
+       Cardul rămâne apăsabil pe toată suprafața prin linkul de pe denumire,
+       care își întinde zona de clic cu `after:absolute after:inset-0`. Butonul
+       de coș stă peste el, cu `relative z-10`. Pentru un cititor de ecran sunt
+       două linkuri cu nume diferite, exact cât trebuie — nu unul singur, spus
+       de două ori. */
+    <article className="group relative flex flex-col overflow-hidden rounded-card border border-[#dfe5ee] bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-[border-color,box-shadow] duration-150 focus-within:border-avo-600 hover:border-avo-600 hover:shadow-[0_0_0_1px_var(--color-avo-600),0_8px_24px_-8px_rgb(16_24_40/0.12)]">
       {/* Înălțime fixă: altfel cardurile de pe un rând ies de înălțimi
           diferite, după cât de înaltă e fiecare fotografie. Fondul e alb, nu
           gri: pozele din catalog vin pe alb, iar un gri în spate le-ar desena
@@ -141,42 +148,67 @@ function Card({ a }: { a: Articol }) {
           ) : null}
         </div>
 
-        <span className="line-clamp-3 min-h-14 text-[13.6px] leading-[1.38] font-semibold text-fg">
+        {/* Linkul care face tot cardul apăsabil. `after:inset-0` îi întinde
+            zona de clic peste `<article>`, care e `relative`. */}
+        <Link
+          href={adresa}
+          className="line-clamp-3 min-h-14 text-[13.6px] leading-[1.38] font-semibold text-fg after:absolute after:inset-0 focus-visible:outline-none"
+        >
           {a.nume}
-        </span>
+        </Link>
 
         <span className="mt-1 mb-2.5 truncate font-mono text-[11.5px] text-faint">{a.sku}</span>
 
-        {/* `mt-auto` ține prețul lipit de talpa cardului, oricât de scurtă ar
-            fi denumirea. */}
-        <div className="mt-auto border-t border-line-soft pt-2.5">
-          {typeof a.pret === "number" && a.pret > 0 ? (
-            <>
-              <span className="text-[21px] font-extrabold tracking-[-0.03em] text-fg">
-                {euro(a.pret)} €
-              </span>
-              <span className="ml-1 text-[12px] text-muted">/ {a.unitate}</span>
-              <div className="h-[18px] text-[11.8px] text-faint">
-                {a.pretVolum && a.prag ? `${euro(a.pretVolum)} € de la ${a.prag}` : null}
-              </div>
-            </>
-          ) : (
-            <>
-              <span className="text-[16px] font-bold text-muted">Preț la cerere</span>
-              <div className="h-[18px]" />
-            </>
-          )}
-        </div>
+        {/* ── Talpa: prețul la stânga, coșul la dreapta ──
+            `mt-auto` o ține lipită de fundul cardului, oricât de scurtă ar fi
+            denumirea. `items-end` aliniază butonul cu ultimul rând de preț, nu
+            cu primul — altfel, pe cardurile fără preț la volum, butonul s-ar
+            ridica cu 18px față de vecinii lui. */}
+        <div className="mt-auto flex items-end justify-between gap-2 border-t border-line-soft pt-3">
+          <div className="min-w-0">
+            {typeof a.pret === "number" && a.pret > 0 ? (
+              <>
+                <div className="truncate">
+                  <span className="text-[21px] font-extrabold tracking-[-0.03em] text-fg">
+                    {euro(a.pret)} €
+                  </span>
+                  <span className="ml-1 text-[12px] text-muted">/ {a.unitate}</span>
+                </div>
+                {/* Înălțime rezervată și când e gol: fără ea, cardurile cu preț
+                    la volum sunt cu 18px mai înalte decât celelalte. */}
+                <div className="h-[18px] truncate text-[11.8px] text-faint">
+                  {a.pretVolum && a.prag ? `${euro(a.pretVolum)} € de la ${a.prag}` : null}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-[16px] font-bold text-muted">Preț la cerere</div>
+                <div className="h-[18px]" />
+              </>
+            )}
+          </div>
 
-        {/* Nu e un al doilea link — tot cardul e deja unul. E semnul că se
-            poate apăsa, pus acolo unde îl caută ochiul într-un magazin. Un
-            `<a>` înăuntrul altui `<a>` n-ar fi nici marcaj valid, nici de
-            folos cuiva cu cititor de ecran: ar auzi aceeași țintă de două ori. */}
-        <span className="mt-3 flex h-10 items-center justify-center rounded-control bg-avo-600 text-[13.5px] font-semibold text-white transition-colors group-hover:bg-avo-700">
-          Vezi produsul
-        </span>
+          {/* ── Butonul de coș ──
+              `relative z-10` îl scoate de sub zona de clic a denumirii; fără
+              el, apăsarea ar deschide produsul, nu ar adăuga în coș.
+
+              NU EXISTĂ COȘ ÎNCĂ — magazinul e amânat. Până se deschide, duce
+              la cererea de ofertă, singura acțiune care chiar se poate duce la
+              capăt. Când apare coșul, se schimbă `href`-ul și atât.
+
+              `aria-label` cu numele produsului: într-o grilă de cinci carduri,
+              cinci butoane numite toate „Adaugă în coș" sunt de nefolosit la
+              cititorul de ecran. */}
+          <Link
+            href="/cerere-oferta"
+            aria-label={`Cere ofertă pentru ${a.nume}`}
+            className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-avo-600 text-white transition-colors hover:bg-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+          >
+            <ShoppingCart size={18} aria-hidden />
+          </Link>
+        </div>
       </div>
-    </Link>
+    </article>
   );
 }
 
@@ -221,7 +253,14 @@ export default function ProduseCuFile({
   if (file.length === 0) return null;
 
   return (
-    <section className="bg-white py-10 sm:py-14 lg:py-16">
+    /* FONDUL SECȚIUNII E DESCHIS, NU ALB. Cardurile sunt albe: pe alb, singurul
+       lucru care le desparte de pagină e rama de 1px, iar grila se citea ca o
+       listă de text cu linii, nu ca un rând de obiecte. Pe `--canvas` (#f7f9fc)
+       cardurile ies în față fără să fie nevoie de umbre mari.
+
+       Fotografia dinăuntrul cardului rămâne pe alb — acolo contrastul trebuie
+       să fie invers, ca produsul să nu pară lipit pe un fond gri. */
+    <section className="bg-canvas py-10 sm:py-14 lg:py-16">
       {/* `file-produse` cuprinde ACUM ȘI CAPUL SECȚIUNII, nu doar panourile:
           etichetele filelor au urcat lângă titlu, iar `:has()` din globals.css
           le caută înăuntrul aceluiași înveliș ca radio-urile. */}
@@ -271,7 +310,7 @@ export default function ProduseCuFile({
               etichete nu încap: acolo se trag cu degetul, nu se rup pe două
               rânduri. `shrink-0` pe grup, ca titlul să cedeze lățime primul. */}
           <div className="fara-bara-derulare -mx-4 overflow-x-auto px-4 lg:mx-0 lg:shrink-0 lg:px-0">
-            <div className="inline-flex gap-1.5 rounded-full bg-sunken p-1">
+            <div className="inline-flex gap-1 rounded-full border border-line bg-surface p-1">
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}

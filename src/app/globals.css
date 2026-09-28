@@ -615,18 +615,24 @@ body {
    lățimea paginii pentru șase cuvinte.
 
    Ca pastile, grupul intră lângă titlu, în capul secțiunii, și se citește ca
-   un comutator, nu ca o navigație. Grupul are fundal `--sunken`, pastila
-   deschisă e albă cu o umbră de 1px — adâncimea o face contrastul dintre ele,
-   nu o linie în plus. */
+   un comutator, nu ca o navigație.
+
+   PASTILA DESCHISĂ E ALBASTRĂ PLINĂ, nu albă cu umbră. Prototipul o face albă
+   pe un grup gri, și merge acolo: secțiunea lui e pe alb, deci grupul gri se
+   vede. La noi secțiunea a trecut pe `--canvas` (#f7f9fc) ca să iasă
+   cardurile în față, iar între grupul gri (#f0f3f7) și pastila albă rămâneau
+   patru puncte de luminozitate — nu se mai vedea care filă e deschisă.
+
+   Albastrul e cel al butonului de coș din card: în secțiunea asta, albastru
+   plin înseamnă „aici ai apăsat" sau „aici poți apăsa", peste tot. */
 .file-produse:has(#fila-0:checked) label[for="fila-0"],
 .file-produse:has(#fila-1:checked) label[for="fila-1"],
 .file-produse:has(#fila-2:checked) label[for="fila-2"],
 .file-produse:has(#fila-3:checked) label[for="fila-3"],
 .file-produse:has(#fila-4:checked) label[for="fila-4"],
 .file-produse:has(#fila-5:checked) label[for="fila-5"] {
-  color: var(--color-avo-600);
-  background: var(--surface);
-  box-shadow: 0 1px 3px rgb(16 24 40 / 0.1);
+  color: #fff;
+  background: var(--color-avo-600);
 }
 
 /* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar
