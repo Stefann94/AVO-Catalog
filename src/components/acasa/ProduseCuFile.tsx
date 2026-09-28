@@ -6,7 +6,7 @@ import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
 import { BRANDURI } from "@/lib/branduri";
 import { dimensiuneTitluSectiune } from "../stiluri";
-import BandaDerulare from "../BandaDerulare";
+import SagetiFile from "./SagetiFile";
 
 /* ══════════════════════════════════════════════════════════════════════════
    PRODUSE, PE FILE
@@ -397,7 +397,13 @@ export default function ProduseCuFile({
               se desenează cu `::after`, din globals.css, și are nevoie de un
               părinte poziționat. `pb-4` îi face loc — fără el, bara ar sta
               lipită de textul de deasupra. */}
-          <div className="fara-bara-derulare -mx-4 mt-6 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
+          {/* Rândul de comandă al secțiunii: bara de file la stânga, săgețile
+              benzii la dreapta. `flex-1 min-w-0` pe pista filelor înseamnă că
+              ea cedează lățime prima, iar săgețile rămân lipite de marginea
+              dreaptă a coloanei — aceeași muchie pe care se termină ultimul card
+              de sub ele. */}
+          <div className="mt-6 flex items-center gap-4">
+          <div className="fara-bara-derulare -mx-4 min-w-0 flex-1 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
             {/* ── Comutator segmentat: șină colorată, plăcuță albă pe ea ──
 
                 ȘINA E #e9eff6, MAI ÎNCHISĂ DECÂT PAGINA. Ăsta e tot trucul:
@@ -428,6 +434,9 @@ export default function ProduseCuFile({
               ))}
             </div>
           </div>
+
+            <SagetiFile />
+          </div>
         </div>
 
         {file.map((f, i) => (
@@ -450,48 +459,72 @@ export default function ProduseCuFile({
 
                 PE TELEFON cardul e o fracțiune din ecran — lățimea vizibilă
                 împărțită la 2,4, ca la banda de lichidare. Se văd două carduri
-                întregi și o bucată din al treilea. */}
-            <BandaDerulare
-              eticheta="Produsele"
-              actiuni={
-                /* ── Butonul de închidere a filei, în dreapta jos ──
+                întregi și o bucată din al treilea.
 
-                   Stă pe rândul săgeților, la capătul opus: navigarea prin
-                   fereastră la stânga, ieșirea din ea la dreapta. Aceeași ramă
-                   `line-strong` ca bara de file — sunt singurele comenzi din
-                   secțiune, deci aceeași familie.
-
-                   ACELAȘI TEXT PE TOATE FILELE. A fost compus din etichetă —
-                   „Vezi tot " + numele filei — și ieșea „Vezi tot oferte", „Vezi
-                   tot sisteme de montaj". Adresa diferă de la o filă la alta, dar
-                   pentru cititorul de ecran fiecare panou are deja numele lui,
-                   deci un text identic nu pierde nimic.
-
-                   SĂGEATA ALUNECĂ 2px la hover, nu butonul. Mișcarea arată
-                   direcția, dar fiindcă e a unui element de 17px dinăuntru, nu
-                   urnește nimic din așezare. */
-                <Link
-                  href={f.adresa}
-                  className="group inline-flex h-11 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-6 text-[14.5px] font-semibold text-fg shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-colors hover:border-avo-600 hover:bg-avo-50 hover:text-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
-                >
-                  Vezi toate produsele
-                  <ArrowRight
-                    size={17}
-                    aria-hidden
-                    className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  />
-                </Link>
-              }
+                PISTA E MARCAJ DE SERVER CURAT, fără nicio componentă de client.
+                Derularea nativă merge cu degetul, cu trackpad-ul și cu Tab-ul,
+                fără o linie de JavaScript; `data-pista` e cârligul prin care
+                săgețile din capul secțiunii o găsesc pe cea deschisă (vezi
+                SagetiFile.tsx). Așa, cele șase file încarcă un singur control,
+                nu șase componente de client. */}
+            <div
+              data-pista
+              className="fara-bara-derulare -my-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 py-1 lg:mx-0 lg:scroll-px-0 lg:px-0"
             >
               {f.articole.map((a) => (
                 <div
                   key={a.sku}
-                  className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-3 sm:w-[278px] sm:pr-4"
+                  /* ULTIMUL CARD N-ARE SPAȚIU DUPĂ EL: 262px lățime, zero padding.
+                     Cele cinci carduri ale filei „Oferte" ieșeau altfel 1390px
+                     într-o pistă de 1376 — 14px de derulat, adică săgeata se
+                     aprindea, muta banda cu 14px și se stingea. Arăta a defect.
+                     Acum fac 4 × 278 + 262 = 1374, deci banda chiar nu se
+                     derulează, iar ambele săgeți sunt stinse pe bună dreptate.
+
+                     LĂȚIMEA SE SCHIMBĂ, NU DOAR PADDING-UL. Cu `pr-0` singur,
+                     cutia rămânea la 278 — padding-ul e în interiorul lățimii —
+                     deci ultimul card se lățea la 278, cu 16px mai mult decât
+                     vecinii lui, și cei 14px de derulat rămâneau pe loc.
+
+                     Pe telefon nu se aplică: acolo nu există săgeți, iar banda se
+                     trage cu degetul, deci un spațiu la capăt nu deranjează. */
+                  className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-3 sm:w-[278px] sm:pr-4 sm:last:w-[262px] sm:last:pr-0"
                 >
                   <Card a={a} />
                 </div>
               ))}
-            </BandaDerulare>
+            </div>
+
+            {/* ── Butonul de închidere a filei, în stânga jos ──
+
+                Aliniat cu prima coloană a benzii și cu titlul secțiunii. Navigarea
+                prin fereastră a urcat sus, lângă file; aici rămâne doar ieșirea
+                din ea, iar coloana din stânga e locul unde începe orice rând din
+                pagina asta.
+
+                Aceeași ramă `line-strong` ca bara de file — sunt comenzile
+                secțiunii, deci aceeași familie.
+
+                ACELAȘI TEXT PE TOATE FILELE. A fost compus din etichetă — „Vezi
+                tot " + numele filei — și ieșea „Vezi tot oferte", „Vezi tot
+                sisteme de montaj". Adresa diferă de la o filă la alta, dar pentru
+                cititorul de ecran fiecare panou are deja numele lui, deci un text
+                identic nu pierde nimic.
+
+                SĂGEATA ALUNECĂ 2px la hover, nu butonul. */}
+            <div className="mt-6">
+              <Link
+                href={f.adresa}
+                className="group inline-flex h-11 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-6 text-[14.5px] font-semibold text-fg shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-colors hover:border-avo-600 hover:bg-avo-50 hover:text-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+              >
+                Vezi toate produsele
+                <ArrowRight
+                  size={17}
+                  aria-hidden
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
           </div>
         ))}
       </div>
