@@ -1,0 +1,7 @@
+{
+  "_citeste": "Corecții manuale pe product_id OpenCart. Câmpuri: cale, brand, mpn, atribute. Fiecare intrare are `sursa` — de unde vine valoarea. Fără sursă, nu se trece.",
+  "1181": {
+    "atribute": { "tensiune_baterie": "high-voltage" },
+    "sursa": "Descrierea produsului în OpenCart: „Baterie 120-800 V”."
+  }
+}
