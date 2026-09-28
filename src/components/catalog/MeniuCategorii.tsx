@@ -169,25 +169,28 @@ export default function MeniuCategorii({
        hover, iar pe ecran tactil hover-ul nu există. Pe telefon, placa duce
        direct la categorie, ceea ce e oricum ce vrea degetul. */
     /* ══════════════════════════════════════════════════════════════════════
-       BANDA E ÎN COLOANĂ, PRIMA DE SUB BARA CU SIGLA
+       BANDA TRAVERSEAZĂ ECRANUL, PLĂCILE STAU ÎN COLOANĂ
        ──────────────────────────────────────────────────────────────────────
-       Mergea de la o margine a ferestrei la cealaltă. Culoarea a coborât de pe
-       `<nav>` pe `<ul>`: pe `<nav>` se întindea cât fereastra, iar la 1440px
-       ieșea cu 152px în fiecare parte față de restul paginii. Acum banda începe
-       și se termină pe aceeași verticală cu bannerul de dedesubt și cu
-       titlurile secțiunilor.
+       Culoarea e pe `<nav>`, deci albastrul merge de la o margine a ferestrei
+       la cealaltă. Plăcile dinăuntru rămân în `coloana`, aliniate cu bannerul
+       de dedesubt și cu titlurile secțiunilor.
 
-       Plăcile rămân lipite de muchiile benzii, fără padding orizontal: banda
-       ESTE rândul de categorii, nu un chenar în jurul lui. Bannerul de dedesubt
-       are padding interior fiindcă acolo e text, nu butoane.
+       A FOST ȘI INVERS o vreme — culoarea pe `<ul>`, deci banda cât coloana.
+       Arăta îngrijit, dar banda e singurul element de navigare din pagină, iar
+       o navigare care se oprește înainte de marginea ecranului se citește ca o
+       secțiune de conținut, nu ca o bară. Acum e iar bară.
+
+       Plăcile sunt lipite de muchiile coloanei, fără padding orizontal propriu:
+       banda ESTE rândul de categorii, nu un chenar în jurul lui. Bannerul de
+       dedesubt are padding interior fiindcă acolo e text, nu butoane.
 
        FĂRĂ SPAȚIU, NICI SUS, NICI JOS. Sus se lipește de bara cu sigla, jos de
        hero. Cele trei formează un singur cap de pagină; aerul vine abia după
        hero, din el.
        ══════════════════════════════════════════════════════════════════════ */
-    <nav aria-label="Categorii principale" className="relative z-40 bg-slate-50">
+    <nav aria-label="Categorii principale" className="relative z-40 bg-avo-900">
       <div className="coloana">
-      <ul className="fara-bara-derulare flex gap-2 overflow-x-auto bg-avo-900 py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
+      <ul className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
         {categorii.map((c, i) => {
           const promovat = produsPromovat(c.slug, produse);
           const sigla = promovat?.p.brand ? gasesteBrand(promovat.p.brand) : undefined;
