@@ -404,25 +404,29 @@ export default function ProduseCuFile({
               de sub ele. */}
           <div className="mt-6 flex items-center gap-4">
           <div className="fara-bara-derulare -mx-4 min-w-0 flex-1 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
-            {/* ── Comutator segmentat: șină colorată, plăcuță albă pe ea ──
+            {/* ── Comutator segmentat, fără fond propriu ──
 
-                ȘINA E #e9eff6, MAI ÎNCHISĂ DECÂT PAGINA. Ăsta e tot trucul:
-                fila deschisă nu primește o culoare, primește ALBUL — adică exact
-                fondul cardurilor de sub ea. Nu e nevoie nici de umbră care s-o
-                ridice de pe pagină, nici de vreo linie: bara se vede fiindcă e
-                mai închisă decât ce e în jur, iar plăcuța se vede fiindcă e mai
-                deschisă decât șina.
+                ȘINA N-ARE CULOARE, doar conturul rotund de `line-strong`. Fondul
+                care se vede prin ea e al secțiunii. A fost o tură cu șina
+                colorată (#e9eff6) ca plăcuța albă să se desprindă de ea, dar pata
+                aia de gri-albăstrui n-avea rudă nicăieri în pagină: toate
+                celelalte suprafețe din site sunt ori albe, ori `--canvas`.
 
-                Plăcuța are un inel de 1px la 6% și o umbră de 2px — cât să pară
-                așezată peste șină, nu decupată din ea.
+                CE ȚINE PLĂCUȚA LIZIBILĂ ACUM, când și ea, și fondul sunt aproape
+                albe: conturul. Fila deschisă primește exact aceeași ramă de 1px
+                `line-strong` ca bara din jur, ca butonul „Vezi toate produsele" și
+                ca fiecare card de dedesubt. Nu se vede fiindcă e mai deschisă
+                decât fondul — nu e, sunt două puncte între ele — ci fiindcă e
+                singurul lucru din bară care are margini.
+
+                Rama e desenată ca `box-shadow`, nu ca `border`: un `border` ar fi
+                adăugat 2px la cutie, deci eticheta s-ar fi lărgit la fiecare
+                schimbare de filă și restul barei s-ar fi mutat.
 
                 FILELE ÎNCHISE NU PRIMESC FUNDAL SUB MOUSE, doar textul li se
-                închide. Am încercat cu alb la 55%, tocmai ca hover-ul să nu
-                semene cu fila deschisă — dar peste #e9eff6 ieșea #f6f9fc, adică
-                practic tot alb: fila de sub mouse arăta ca fila deschisă, doar cu
-                text negru în loc de albastru. Pe un comutator segmentat, albul e
-                marcajul filei deschise și n-are voie să însemne altceva. */}
-            <div className="inline-flex gap-0.5 rounded-full border border-line-strong bg-[#e9eff6] p-1.5">
+                închide. Un fond pe hover ar fi pus în bară un al doilea
+                dreptunghi, iar cel de sub mouse s-ar fi bătut cu cel deschis. */}
+            <div className="inline-flex gap-0.5 rounded-full border border-line-strong p-1.5">
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}

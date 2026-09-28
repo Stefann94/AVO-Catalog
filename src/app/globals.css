@@ -720,22 +720,29 @@ body {
    3. TEXT ALBASTRU CU BARĂ DE 3px sub el, în grup alb cu umbră. Marcajul era
       bun, grupul nu: un dreptunghi alb cu umbră joasă, pe o pagină aproape
       albă, se citește ca o fereastră care tocmai a apărut — părea animat.
-   4. ASTA: COMUTATOR SEGMENTAT. Șina se colorează (#e9eff6, mai închisă decât
-      pagina), iar fila deschisă primește ALBUL.
+   4. COMUTATOR SEGMENTAT CU ȘINA COLORATĂ (#e9eff6) și plăcuța albă pe ea.
+      Marcajul era bun, dar griul-albăstrui al șinei n-avea rudă nicăieri: toate
+      celelalte suprafețe din site sunt ori albe, ori `--canvas`.
+   5. ASTA: aceeași plăcuță, șină fără culoare. Fila deschisă e albă, cu ramă de
+      1px `line-strong` și o umbră de 2px.
 
-   ─── DE CE MERGE ACUM, DEȘI VARIANTA 2 A FOST SCOASĂ TOCMAI PENTRU ASTA ──
+   ─── ALB PE APROAPE-ALB, ȘI TOTUȘI SE VEDE ───────────────────────────────
 
-   Alb pe alb a fost respins o dată, pe bună dreptate: grupul era alb, deci
-   plăcuța albă n-avea de ce să se desprindă. Ce s-a schimbat nu e plăcuța, e
-   ȘINA. Între #e9eff6 și alb sunt vreo nouă puncte de luminozitate, plus inelul
-   de 1px; între #f0f3f7 și alb erau patru.
+   Între alb și `--canvas` (#f7f9fc) sunt două puncte de luminozitate, deci
+   plăcuța NU se distinge prin culoare. Se distinge prin CONTUR: e singurul lucru
+   din bară care are margini.
 
-   Și mai e un motiv, mai bun decât cifrele: albul plăcuței e exact fondul
-   cardurilor de dedesubt. Fila deschisă arată din ce material e făcut panoul pe
-   care îl deschide. Albastrul e păstrat doar pentru text.
+   De-aia rama ei e exact `line-strong`, aceeași cu a barei din jur, cu a
+   butonului „Vezi toate produsele" și cu a cardurilor de dedesubt. În secțiunea
+   asta, 1px de #cbd6e4 înseamnă „obiect", peste tot. Fila deschisă e singura care
+   devine obiect; celelalte cinci rămân text.
 
-   Grupul nu mai are nevoie nici de umbră ca să se ridice de pe pagină: se vede
-   fiindcă e mai închis decât ce e în jur, nu fiindcă plutește deasupra. */
+   Varianta 2 (plăcuță albă în grup alb) a picat tocmai fiindcă îi lipsea rama —
+   n-avea nimic care s-o facă obiect.
+
+   RAMA E `box-shadow`, NU `border`. Un `border` ar fi adăugat 2px la cutia
+   etichetei, deci eticheta deschisă s-ar fi lărgit și restul barei s-ar fi mutat
+   la fiecare apăsare. `box-shadow` se desenează în afara așezării. */
 .file-produse:has(#fila-0:checked) label[for="fila-0"],
 .file-produse:has(#fila-1:checked) label[for="fila-1"],
 .file-produse:has(#fila-2:checked) label[for="fila-2"],
@@ -745,8 +752,8 @@ body {
   color: var(--color-avo-600);
   background: var(--color-surface);
   box-shadow:
-    0 0 0 1px rgb(16 24 40 / 0.06),
-    0 1px 2px rgb(16 24 40 / 0.1);
+    0 0 0 1px var(--color-line-strong),
+    0 1px 2px rgb(16 24 40 / 0.08);
 }
 
 /* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar
