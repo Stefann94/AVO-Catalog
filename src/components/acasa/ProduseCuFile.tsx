@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
 import { BRANDURI } from "@/lib/branduri";
@@ -287,12 +287,16 @@ export default function ProduseCuFile({
     dupaCategorie.set(p.categorie.slug, intrare);
   }
 
-  const file: { eticheta: string; adresa: string; articole: Articol[] }[] = [];
+  /* `actiune` e textul de pe butonul din josul filei. E scris de mână, nu
+     compus din etichetă: „Vezi tot " + eticheta dădea „Vezi tot oferte" și
+     „Vezi tot sisteme de montaj", adică dezacord la fiecare filă. */
+  const file: { eticheta: string; adresa: string; actiune: string; articole: Articol[] }[] = [];
 
   if (oferte.length) {
     file.push({
       eticheta: "Oferte",
       adresa: "/catalog",
+      actiune: "Vezi toate ofertele",
       articole: completeazaRandul(oferte.slice(0, PE_FILA), produse),
     });
   }
@@ -304,6 +308,7 @@ export default function ProduseCuFile({
     file.push({
       eticheta: c.nume,
       adresa: `/catalog/${c.slug}`,
+      actiune: `Vezi toate produsele din ${c.nume}`,
       articole: c.produse.slice(0, PE_FILA),
     });
   }
@@ -380,13 +385,18 @@ export default function ProduseCuFile({
               se desenează cu `::after`, din globals.css, și are nevoie de un
               părinte poziționat. `pb-4` îi face loc — fără el, bara ar sta
               lipită de textul de deasupra. */}
-          <div className="fara-bara-derulare -mx-4 mt-6 overflow-x-auto px-4 lg:mx-0 lg:px-0">
-            <div className="inline-flex gap-0.5 rounded-full border border-line bg-surface p-1.5">
+          <div className="fara-bara-derulare -mx-4 mt-6 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
+            {/* RAMA E `line-strong`, NU `line`. Pe fondul secțiunii (#f7f9fc),
+                #e5eaf0 dădea patru puncte de luminozitate — bara arăta ca niște
+                cuvinte lăsate pe pagină. Umbra joasă și foarte întinsă
+                (`-18px` răspândire negativă) o ridică un milimetru de pe fond,
+                cât să se citească drept obiect, fără să pară că plutește. */}
+            <div className="inline-flex gap-0.5 rounded-full border border-line-strong bg-surface p-1.5 shadow-[0_1px_2px_rgb(16_24_40/0.04),0_10px_24px_-18px_rgb(16_24_40/0.45)]">
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}
                   htmlFor={`fila-${i}`}
-                  className="relative shrink-0 cursor-pointer rounded-full px-5 pt-3 pb-4 text-[14.5px] font-semibold whitespace-nowrap text-muted transition-colors hover:text-fg"
+                  className="relative shrink-0 cursor-pointer rounded-full px-5 pt-3 pb-4 text-[14.5px] font-semibold whitespace-nowrap text-muted transition-colors hover:bg-avo-50 hover:text-fg"
                 >
                   {f.eticheta}
                 </label>
@@ -403,12 +413,29 @@ export default function ProduseCuFile({
               ))}
             </div>
 
-            <div className="mt-6">
+            {/* ── Butonul de închidere a filei ──
+
+                CENTRAT, NU LA STÂNGA. Stătea aliniat cu prima coloană a grilei,
+                iar sub cinci carduri egale arăta ca un card care n-a încăput.
+                În centru se citește ca sfârșitul secțiunii.
+
+                Aceeași ramă `line-strong` ca bara de file: sunt singurele două
+                comenzi din secțiune, deci trebuie să fie din aceeași familie.
+
+                SĂGEATA ALUNECĂ 2px la hover, nu butonul. Mișcarea arată direcția
+                („mergi mai departe"), dar fiindcă e a unui element de 17px
+                dinăuntru, nu urnește nimic din așezare. */}
+            <div className="mt-8 flex justify-center">
               <Link
                 href={f.adresa}
-                className="inline-flex h-11 items-center rounded-control border border-line px-5 text-sm font-semibold text-fg transition-colors hover:border-avo-600 hover:text-avo-600"
+                className="group inline-flex h-12 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-7 text-[14.5px] font-semibold text-fg shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-colors hover:border-avo-600 hover:bg-avo-50 hover:text-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
               >
-                Vezi tot {f.eticheta.toLowerCase()}
+                {f.actiune}
+                <ArrowRight
+                  size={17}
+                  aria-hidden
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
               </Link>
             </div>
           </div>

@@ -108,9 +108,22 @@
   --muted: #47535f;
   --faint: #7d8a97;
 
-  /* Contururi. `line` pentru carduri, `line-soft` pentru despărțiri interne */
+  /* Contururi. `line` pentru carduri, `line-soft` pentru despărțiri interne,
+     `line-strong` pentru comenzi.
+
+     DE CE TREI, ȘI NU DOUĂ. Un card e o suprafață mare: are fotografie, text și
+     preț înăuntru, deci se vede că e un obiect chiar dacă linia din jur e abia
+     ghicită — de-aia `--line` e atât de palid. O comandă (bara de file, butonul
+     „vezi tot") n-are conținut care s-o delimiteze; ea E conturul plus un cuvânt.
+     Cu #e5eaf0 pe fondul secțiunii (#f7f9fc) rămân patru puncte de luminozitate
+     între ele, adică nimic: bara de file arăta ca niște cuvinte lăsate pe pagină,
+     nu ca un comutator.
+
+     #cbd6e4 dă ~14 puncte față de fond. Se vede de la distanță ca margine de
+     obiect, fără să ajungă un chenar gros. */
   --line: #e5eaf0;
   --line-soft: #f0f3f7;
+  --line-strong: #cbd6e4;
 
   /* Acțiunea principală */
   --action: #004a99;
@@ -152,6 +165,7 @@
 
   --color-line: var(--line);
   --color-line-soft: var(--line-soft);
+  --color-line-strong: var(--line-strong);
 
   --color-action: var(--action);
   --color-action-dark: var(--action-dark);
