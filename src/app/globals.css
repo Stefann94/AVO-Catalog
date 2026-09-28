@@ -587,8 +587,18 @@ body {
   display: block;
 }
 
-/* Eticheta filei deschise: text închis și linie sub ea, ca în orice set de
-   file. Culoarea e `--color-avo-600`, aceeași cu a prețurilor. */
+/* Eticheta filei deschise.
+
+   ─── ERA O LINIE SUB TEXT, ACUM E O PASTILĂ ──────────────────────────────
+
+   Filele stăteau într-un rând cu linie despărțitoare dedesubt, iar cea
+   deschisă primea o bordură colorată. Merge, dar cere un rând întreg din
+   lățimea paginii pentru șase cuvinte.
+
+   Ca pastile, grupul intră lângă titlu, în capul secțiunii, și se citește ca
+   un comutator, nu ca o navigație. Grupul are fundal `--sunken`, pastila
+   deschisă e albă cu o umbră de 1px — adâncimea o face contrastul dintre ele,
+   nu o linie în plus. */
 .file-produse:has(#fila-0:checked) label[for="fila-0"],
 .file-produse:has(#fila-1:checked) label[for="fila-1"],
 .file-produse:has(#fila-2:checked) label[for="fila-2"],
@@ -596,7 +606,8 @@ body {
 .file-produse:has(#fila-4:checked) label[for="fila-4"],
 .file-produse:has(#fila-5:checked) label[for="fila-5"] {
   color: var(--color-avo-600);
-  border-bottom-color: var(--color-avo-600);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgb(16 24 40 / 0.1);
 }
 
 /* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar
@@ -612,6 +623,6 @@ body {
 .file-produse:has(#fila-4:focus-visible) label[for="fila-4"],
 .file-produse:has(#fila-5:focus-visible) label[for="fila-5"] {
   outline: 2px solid var(--color-avo-600);
-  outline-offset: -2px;
-  border-radius: 6px;
+  outline-offset: 1px;
+  border-radius: 20px;
 }

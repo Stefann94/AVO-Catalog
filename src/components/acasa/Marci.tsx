@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { BRANDURI } from "@/lib/branduri";
 import { dimensiuneTitluSectiune } from "../stiluri";
@@ -43,8 +44,19 @@ export default function Marci() {
 
   return (
     <section className="bg-canvas py-10 sm:py-14 lg:py-16">
-      <div className="coloana">
-        <h2 className={`${dimensiuneTitluSectiune} font-extrabold text-fg`}>
+      {/* ACELAȘI CORP CA LA CELELALTE SECȚIUNI, din etalonul comun. Corpul se
+          calculează în `cqi`, deci are nevoie de `@container` — aici pe toată
+          coloana, ca și la „Produse din catalog", altfel cele două ies la
+          corpuri diferite.
+
+          Funcția era pusă în `className` fără să fie apelată, deci în HTML
+          ajungea `class="function dimensiuneTitluSectiune(plafonPx = 42) {…"`
+          — nicio clasă validă, iar titlul rămânea la 16px. */}
+      <div
+        className="@container coloana"
+        style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
+      >
+        <h2 className="text-[22px] leading-tight font-extrabold text-fg sm:text-[length:var(--dim-titlu)]">
           Mărcile din catalog
         </h2>
         <p className="mt-2 text-sm text-muted">
