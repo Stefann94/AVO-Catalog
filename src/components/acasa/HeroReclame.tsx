@@ -37,14 +37,143 @@ import "./hero-reclame.css";
    număra — câte produse, ce mărci, de la ce preț.
    ══════════════════════════════════════════════════════════════════════════ */
 
-/** Categoriile care intră în hero, în ordinea diapozitivelor și a reclamelor. */
-const IN_HERO = [
-  { slug: "invertoare", tema: "rc-d-invertoare", inchis: true },
-  { slug: "panouri-fotovoltaice", tema: "rc-d-panouri", inchis: false },
-  { slug: "stocare-energie", tema: "rc-d-stocare", inchis: true },
-  { slug: "sisteme-de-montaj", tema: "rc-d-montaj", inchis: false },
-  { slug: "statii-de-incarcare-auto", tema: "rc-d-incarcare", inchis: true },
-] as const;
+/* ══════════════════════════════════════════════════════════════════════════
+   CELE CINCI RECLAME DE CATEGORIE
+   ──────────────────────────────────────────────────────────────────────────
+   Fiecare are o compoziție scrisă de mână: fotografie decupată, marcă, unde
+   stă sigla, ce poartă în colț. Nu se calculează, fiindcă sunt RECLAME — o
+   reclamă e aleasă, nu dedusă dintr-un `sort()`.
+
+   ─── FOTOGRAFIILE ────────────────────────────────────────────────────────
+
+   PNG-uri detourate, din prototipul Projects/Solarone.ro. Alea din catalog
+   sunt JPEG-uri pe alb: peste degradeuri arătau ca dreptunghiuri albe, iar
+   alese automat („primul produs cu poză din categorie") nimereau prost — pe
+   dala de montaj ieșea un șurub.
+
+   ─── MĂRCILE SUNT DOAR CELE PE CARE LE DISTRIBUIM ────────────────────────
+
+   Prototipul pune Huawei pe dala de stocare. Noi n-avem Huawei în catalog,
+   deci acolo e Pytes, iar fotografia e acumulatorul Pytes, nu cel Huawei.
+   Restul se potrivesc unu-la-unu: Deye, Canadian Solar, K2 Systems, Growatt
+   sunt toate în BRANDURI.
+
+   ─── PREȚ SAU FANION, NU AMÂNDOUĂ ────────────────────────────────────────
+
+   Eticheta de preț stă jos-stânga, unde stă și sigla pe dalele deschise. În
+   prototip nu se ating fiindcă dalele cu sigla jos poartă fanion în colț, nu
+   preț. Păstrăm regula: `fanion` și `pret` se exclud.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+type Reclama = {
+  slug: string;
+  /** Clasa de compoziție din hero-reclame.css. */
+  tema: string;
+  /** Fundal închis: sigla se albește și textul e deschis. */
+  inchis: boolean;
+  /** Decupajul din public/produse-png/. */
+  poza: string;
+  /** Slug-ul mărcii, pentru sigla din public/branduri/color/. */
+  marca: string;
+  /** Sigla jos-stânga în loc de sus-dreapta. Atunci dala poartă fanion. */
+  siglaJos?: boolean;
+  /** Cuvintele-cheie de deasupra titlului. */
+  kicker: string;
+  /** Titlul, pe două rânduri, ca în prototip. */
+  titlu: [string, string];
+  /** Rândul mic de sub titlu. */
+  sub: string;
+  /** Eticheta de preț din colțul de jos-stânga. */
+  pret?: string;
+  /** Fanionul diagonal din colțul de sus-dreapta. */
+  fanion?: string;
+  /** Fanion albastru în loc de chihlimbar (`ad2-flag alt` în prototip). */
+  fanionAlt?: boolean;
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COPIE FIDELĂ A PROTOTIPULUI
+   ──────────────────────────────────────────────────────────────────────────
+   Textele, siglele și fotografiile sunt EXACT cele din
+   Projects/Solarone.ro/index.html, cerute așa explicit. Nimic nu se
+   calculează din catalogul nostru.
+
+   ─── CE NU CORESPUNDE CATALOGULUI AVO, CA SĂ SE ȘTIE ─────────────────────
+
+     prețurile în lei ..... 1.387,00 / 381,00 / 623,00 sunt ale prototipului.
+                            Ale noastre sunt în euro, fără TVA, iar cel mai
+                            ieftin invertor e 355 €, nu 1.387 lei.
+     „93 produse" ......... la montaj avem 51.
+     „Distribuitor platinum" statut neconfirmat de nimeni în scris.
+     Huawei ............... marcă pe care n-o distribuim; apare sigla și
+                            acumulatorul ei pe dala de stocare.
+     „de la 5 kWh" ........ cel mai mic acumulator al nostru e de 2 kWh.
+     „7–22 kW" ............ ale noastre pornesc de la 3,5 kW.
+     „ISO", „carport" ..... nu există în catalogul nostru.
+
+   Rămân scrise aici, într-un singur loc, ca să poată fi schimbate într-o
+   singură trecere când se decide. Cele adevărate sunt în istoricul git,
+   commit-ul de dinainte.
+   ══════════════════════════════════════════════════════════════════════════ */
+const RECLAME: Reclama[] = [
+  {
+    slug: "invertoare",
+    tema: "rc-d-invertoare",
+    inchis: true,
+    poza: "invertor-deye",
+    marca: "deye",
+    kicker: "Distribuitor platinum",
+    titlu: ["Invertoare", "Deye"],
+    sub: "hibride · on-grid · off-grid",
+    pret: "1.387,00 lei",
+  },
+  {
+    slug: "panouri-fotovoltaice",
+    tema: "rc-d-panouri",
+    inchis: false,
+    poza: "panou",
+    marca: "canadian-solar",
+    siglaJos: true,
+    kicker: "N-Type TOPCon",
+    titlu: ["Panouri de la", "381,00 lei"],
+    sub: "Aiko · Canadian Solar · Jinko",
+    fanion: "preț pe palet",
+  },
+  {
+    slug: "stocare-energie",
+    tema: "rc-d-stocare",
+    inchis: true,
+    poza: "acumulator-huawei",
+    marca: "huawei",
+    kicker: "Stocare de energie",
+    titlu: ["Stocare de la", "5 kWh"],
+    sub: "low & high voltage",
+  },
+  {
+    slug: "sisteme-de-montaj",
+    tema: "rc-d-montaj",
+    inchis: false,
+    poza: "montaj",
+    marca: "k2-systems",
+    siglaJos: true,
+    kicker: "K2 Systems · ISO",
+    titlu: ["Montaj pentru", "orice acoperiș"],
+    sub: "țiglă · tablă · plat · carport",
+    fanion: "93 produse",
+    fanionAlt: true,
+  },
+  {
+    slug: "statii-de-incarcare-auto",
+    tema: "rc-d-incarcare",
+    inchis: true,
+    poza: "statie-growatt",
+    marca: "growatt",
+    kicker: "Mașini electrice",
+    titlu: ["Stații de", "încărcare 7–22 kW"],
+    sub: "monofazate și trifazate",
+    pret: "623,00 lei",
+  },
+];
 
 const euro = (n: number) =>
   n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -66,7 +195,32 @@ function strange(produse: Produs[], slug: string): Strans | null {
   const ale = produse.filter((p) => p.categorie?.slug === slug);
   if (ale.length === 0) return null;
 
-  const preturi = ale.map((p) => p.pret).filter((n): n is number => typeof n === "number" && n > 0);
+  const preturi = ale
+    .map((p) => p.pret)
+    .filter((n): n is number => typeof n === "number" && n > 0)
+    .sort((a, b) => a - b);
+
+  /* ─── „DE LA X €" SARE PESTE ACCESORII ──────────────────────────────────
+     Prețul minim brut al unei categorii e aproape întotdeauna al unui
+     accesoriu, nu al produsului pe care îl vinde reclama:
+
+       Stații de încărcare ... 55 € e un dongle LoRa, nu o stație (283 €)
+       Sisteme de montaj ..... 0,21 € e un colier de plastic
+       Stocare ............... 60 € e o bază cu cabluri
+
+     „De la 55 €" pe o reclamă cu o stație de încărcare nu e greșit, dar
+     induce în eroare — cine dă clic găsește stații de la 283 €.
+
+     Regula: se ia cel mai mic preț dintre produsele care costă măcar o
+     cincime din mediana categoriei. Un accesoriu e, prin definiție, mult mai
+     ieftin decât marfa; o cincime taie exact acolo, fără să atingă produsele
+     de intrare. Verificat pe catalogul curent: stațiile trec de la 55 € la
+     283 €, invertoarele rămân la 355 €, panourile la 54 €.
+
+     Nu e un prag ales din ochi pe fiecare categorie: e aceeași regulă pentru
+     toate, deci nu trebuie reglată la fiecare import. */
+  const mediana = preturi.length ? preturi[Math.floor(preturi.length / 2)] : 0;
+  const fataMarfa = preturi.filter((n) => n >= mediana / 5);
 
   /* Marca reprezentativă: cea cu cele mai multe produse în categorie, dintre
      cele care au siglă. Fără sigla, plăcuța ar rămâne goală. */
@@ -93,7 +247,7 @@ function strange(produse: Produs[], slug: string): Strans | null {
     slug,
     nume: ale[0].categorie?.nume ?? slug,
     cate: ale.length,
-    minPret: preturi.length ? Math.min(...preturi) : undefined,
+    minPret: fataMarfa.length ? fataMarfa[0] : undefined,
     marca,
     poza: ales?.imagine ? { url: ales.imagine.url, alt: ales.imagine.alt ?? ales.nume } : undefined,
   };
@@ -108,7 +262,7 @@ export default function HeroReclame({
   lichidare: number;
 }) {
   const cat = new Map<string, Strans>();
-  for (const { slug } of IN_HERO) {
+  for (const { slug } of RECLAME) {
     const s = strange(produse, slug);
     if (s) cat.set(slug, s);
   }
@@ -302,58 +456,61 @@ export default function HeroReclame({
 
         {/* ══ CELE CINCI RECLAME DE CATEGORIE ══ */}
         <div className="rc-dale">
-          {IN_HERO.map(({ slug, tema, inchis }) => {
-            const c = cat.get(slug);
-            if (!c) return null;
-            return (
-              <Link key={slug} href={`/catalog/${slug}`} className={`rc-dala ${tema}`}>
-                {/* SIGLA STĂ MEREU SUS-DREAPTA. În prototip, dalele deschise o
-                    aveau jos-stânga — arăta bine acolo, fiindcă acele dale
-                    n-aveau etichetă de preț. La noi o au toate: sigla, cu
-                    `z-index` mai mare, acoperea exact prețul. Se vedea pe
-                    „Panouri", unde „de la 65 €" dispărea sub sigla Aiko. */}
-                {c.marca ? (
-                  <Image
-                    className="rc-dala-marca rc-sus-dreapta"
-                    src={`/branduri/color/${c.marca.slug}.webp`}
-                    alt={c.marca.nume}
-                    width={140}
-                    height={38}
-                    sizes="140px"
-                    loading="lazy"
-                  />
-                ) : null}
+          {RECLAME.map((r) => (
+              <Link key={r.slug} href={`/catalog/${r.slug}`} className={`rc-dala ${r.tema}`}>
+                {/* Siglele din public/branduri/proto/, nu din branduri/color/:
+                    sunt fișierele prototipului, ca desenul să fie același. Tot
+                    de acolo vine și Huawei, pe care catalogul nostru nu-l are
+                    deloc. */}
+                <Image
+                  className={`rc-dala-marca ${r.siglaJos ? "rc-jos-stanga" : "rc-sus-dreapta"}`}
+                  src={`/branduri/proto/${r.marca}.png`}
+                  alt={r.marca}
+                  width={140}
+                  height={38}
+                  sizes="140px"
+                  loading="lazy"
+                />
 
                 <span className="rc-dala-t">
-                  <span className={`rc-dala-k${inchis ? "" : " rc-deschis"}`}>
-                    {c.marca ? c.marca.nume : "În catalog"}
-                  </span>
-                  <b>{c.nume}</b>
-                  <span className={`rc-dala-sub${inchis ? "" : " rc-inchis"}`}>
-                    {c.cate} {c.cate === 1 ? "produs" : "de produse"} în catalog
-                  </span>
+                  <span className={`rc-dala-k${r.inchis ? "" : " rc-deschis"}`}>{r.kicker}</span>
+                  {/* Titlul pe două rânduri, cu ruptura scrisă, nu lăsată pe
+                      seama lățimii. În prototip e un `<br>`: așa „Montaj
+                      pentru / orice acoperiș" se rupe mereu în același loc,
+                      indiferent de fereastră. */}
+                  <b>
+                    {r.titlu[0]}
+                    <br />
+                    {r.titlu[1]}
+                  </b>
+                  <span className={`rc-dala-sub${r.inchis ? "" : " rc-inchis"}`}>{r.sub}</span>
                 </span>
 
-                {c.poza ? (
-                  <Image
-                    className="rc-dala-img"
-                    src={c.poza.url}
-                    alt=""
-                    width={260}
-                    height={200}
-                    sizes="(max-width: 820px) 180px, 260px"
-                    loading="lazy"
-                  />
-                ) : null}
+                {/* Decupajul, din public/produse-png/. Lățimea și poziția sunt
+                    ale fiecărei dale, în hero-reclame.css. */}
+                <Image
+                  className="rc-dala-img"
+                  src={`/produse-png/${r.poza}.png`}
+                  alt=""
+                  width={300}
+                  height={300}
+                  sizes="(max-width: 820px) 180px, 300px"
+                  loading="lazy"
+                />
 
-                {c.minPret ? (
+                {/* FANION SAU PREȚ, NICIODATĂ AMÂNDOUĂ — și în prototip e la
+                    fel. Eticheta de preț stă jos-stânga, unde stă și sigla pe
+                    dalele cu `siglaJos`; acolo prețul ar dispărea sub ea, iar
+                    fanionul îi ține locul, sus-dreapta. */}
+                {r.fanion ? (
+                  <span className={`rc-fanion${r.fanionAlt ? " rc-alt" : ""}`}>{r.fanion}</span>
+                ) : r.pret ? (
                   <span className="rc-dala-pret">
-                    de la <b>{euro(c.minPret)} €</b>
+                    de la <b>{r.pret}</b>
                   </span>
                 ) : null}
               </Link>
-            );
-          })}
+          ))}
         </div>
       </div>
     </section>

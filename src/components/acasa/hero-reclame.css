@@ -537,46 +537,31 @@
   background: var(--rc-actiune);
 }
 
-/* ── FOTOGRAFIA E UN CARTONAȘ ALB, NU UN DECUPAJ ───────────────────────────
+/* ── PRODUSE DECUPATE, FĂRĂ FUNDAL ─────────────────────────────────────────
 
-   Prototipul pune în dale PNG-uri decupate, fără fundal (`produse-png/`).
-   Fotografiile noastre vin din WooCommerce și sunt JPEG-uri pe alb: puse
-   direct peste degradeuri, arătau ca niște dreptunghiuri albe scăpate peste
-   text, nu ca produse.
+   Cele cinci fotografii sunt PNG-uri detourate, din `public/produse-png/`.
+   Nu vin din WooCommerce și nu se schimbă de la o lună la alta: sunt reclame,
+   nu listări. O reclamă e aleasă, nu calculată.
 
-   Trei variante, și de ce nu merg primele două:
-     `mix-blend-mode: multiply` ... curăță albul, dar numai pe fundal deschis;
-                                    pe cele trei dale închise produsul dispare.
-     decuparea fotografiilor ..... 343 din 845 n-au nicio poză, iar celelalte
-                                    ar trebui detourate una câte una.
-     CARTONAȘ ALB ................ albul devine intenționat: colț rotunjit,
-                                    puțin aer înăuntru, umbră. Citește ca o
-                                    fotografie de produs pusă pe afiș.
+   A FOST ALTFEL O ZI. Pozele veneau din catalog, prin `produs.imagine`, și
+   erau JPEG-uri pe alb — peste degradeuri arătau ca dreptunghiuri albe
+   scăpate peste text. Soluția de atunci a fost să le facem cartonașe albe cu
+   colț rotunjit, ca albul să pară intenționat. Funcționa, dar nu era ce
+   trebuia: pe dala de montaj nimerea un șurub, fiindcă era primul produs cu
+   poză din categorie.
 
-   E și soluția pe care a folosit-o prototipul înainte să aibă PNG-uri — se
-   vede în straturile lui de corecții.
+   Cu decupaje, poziția și mărimea sunt ale fiecărei dale, exact ca în
+   prototip: produsul se așază pe compoziție, nu într-o casetă.
 
-   MĂSURILE SUNT ALESE CA SĂ NU ATINGĂ TEXTUL. Textul are `max-width: 54%`,
-   cartonașul `width: 42%` la `right: 4%`: 54 + 42 + 4 = 100%, deci nu se
-   suprapun niciodată, oricât de lung ar fi numele categoriei.
-   `max-height: 58%` îl ține sub rândul de titlu. */
+   `object-fit: contain` și nimic altceva la comun — restul e mai jos, pe
+   fiecare dală. */
 .rc-dala-img {
-  background: #fff;
-  border-radius: 10px;
-  padding: 7px;
-  box-shadow: 0 12px 26px rgb(3 16 43 / 0.35);
-  right: 4%;
-  bottom: 9%;
-  width: 42%;
-  height: auto;
-  max-height: 58%;
-}
-.rc-dala-t {
-  max-width: 54%;
+  object-fit: contain;
 }
 
-/* Fiecare dală are compoziția ei: fundal și poziția siglei. */
+/* Fiecare dală are compoziția ei: fundal, poziția produsului, a siglei. */
 .rc-d-invertoare { background: linear-gradient(150deg, #08265f 0%, #0b3aae 62%, #0a2e86 100%); }
+.rc-d-invertoare .rc-dala-img { right: 6%; bottom: -2%; width: auto; height: 74%; }
 .rc-d-invertoare .rc-dala-marca { max-height: 24px; max-width: 78px; }
 
 .rc-d-panouri {
@@ -585,10 +570,19 @@
     linear-gradient(42deg, #f0fafc 0%, #c6e9f2 32%, #8bd2e6 64%, #369cc4 100%);
 }
 .rc-d-panouri b { color: #0f172a; }
-.rc-d-panouri .rc-dala-marca { max-height: 30px; max-width: 110px; }
+.rc-d-panouri .rc-dala-img {
+  right: 4%; bottom: 6%; width: auto; height: 58%;
+  filter: drop-shadow(0 8px 14px rgb(16 24 40 / 0.16));
+}
+.rc-d-panouri .rc-dala-marca { left: 16px; bottom: 16px; max-height: 32px; max-width: 120px; }
 .rc-d-panouri .rc-fanion { color: #fff; background: #0b2a5b; }
 
 .rc-d-stocare { background: linear-gradient(160deg, #06213f 0%, #0c3f73 58%, #04152c 100%); }
+/* `width: 62%`, valoarea prototipului. A fost o vreme pe înălțime, cât timp
+   aici stătea decupajul Pytes, aproape pătrat (394×403): pe lățime creștea
+   până acoperea titlul. Acumulatorul Huawei e lat și scund (887×541), deci
+   merge cum e în original. */
+.rc-d-stocare .rc-dala-img { right: 4%; bottom: 12%; width: 62%; height: auto; }
 .rc-d-stocare .rc-dala-marca { max-height: 38px; max-width: 38px; }
 
 .rc-d-montaj {
@@ -598,9 +592,14 @@
 }
 .rc-d-montaj b { color: #0f172a; }
 .rc-d-montaj .rc-dala-k.rc-deschis { color: #0b4a6b; }
-.rc-d-montaj .rc-dala-marca { max-height: 30px; max-width: 36px; }
+.rc-d-montaj .rc-dala-img {
+  right: -2%; bottom: 10%; width: 82%; height: auto;
+  filter: drop-shadow(0 8px 14px rgb(16 24 40 / 0.16));
+}
+.rc-d-montaj .rc-dala-marca { left: 18px; bottom: 20px; max-height: 30px; max-width: 36px; }
 
 .rc-d-incarcare { background: linear-gradient(155deg, #141b2b 0%, #25334f 60%, #0c1220 100%); }
+.rc-d-incarcare .rc-dala-img { right: 6%; bottom: 8%; width: auto; height: 66%; }
 .rc-d-incarcare .rc-dala-marca { top: 16px; right: 16px; max-height: 18px; max-width: 88px; }
 
 /* Pe fundal închis, siglele închise la culoare devin albe. */
