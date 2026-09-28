@@ -187,8 +187,27 @@ export default function MeniuCategorii({
        FĂRĂ SPAȚIU, NICI SUS, NICI JOS. Sus se lipește de bara cu sigla, jos de
        hero. Cele trei formează un singur cap de pagină; aerul vine abia după
        hero, din el.
+
+       ─── RĂMÂNE PE ECRAN LA DERULARE ─────────────────────────────────────
+
+       `sticky top-(--inaltime-navbar)`: se oprește exact sub bara cu sigla,
+       care e `fixed` și are aceeași înălțime scrisă în aceeași variabilă
+       (globals.css). Cele două nu se pot despărți, oricât s-ar schimba
+       înălțimea barei la praguri — 68px pe telefon, 100px de la `lg`, 104px de
+       la `2xl`.
+
+       `sticky`, nu `fixed`: banda rămâne în fluxul paginii, deci nu trebuie ca
+       nimeni să-i lase loc cu un padding. Un al doilea element `fixed` ar fi
+       însemnat o a doua cifră de întreținut, exact problema pe care o rezolvă
+       `--inaltime-navbar`.
+
+       `z-40`, sub cei `z-50` ai barei: dacă s-ar egala, banda ar trece peste
+       ea la derulare.
        ══════════════════════════════════════════════════════════════════════ */
-    <nav aria-label="Categorii principale" className="relative z-40 bg-avo-900">
+    <nav
+      aria-label="Categorii principale"
+      className="sticky top-(--inaltime-navbar) z-40 bg-avo-900"
+    >
       <div className="coloana">
       <ul className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
         {categorii.map((c, i) => {
