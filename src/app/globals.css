@@ -532,6 +532,78 @@ body {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   CARDUL DE PRODUS — ce se întâmplă la trecerea cu mouse-ul
+   ──────────────────────────────────────────────────────────────────────────
+   ELEVARE. Cardul urcă 3px, umbra se adâncește, rama se închide cu o treaptă.
+   Atât.
+
+   E convenția magazinelor: Amazon, eMAG, Bol, Coolblue fac toate același
+   lucru, cu aceleași cifre. Nimeni nu trebuie să învețe ce înseamnă — cardul
+   se ridică spre tine, deci e cel de sub mouse.
+
+   ─── CE A FOST ÎNAINTE, ȘI DE CE A IEȘIT ─────────────────────────────────
+
+   O linie albastră care se trăgea din stânga peste marginea de sus, plus o
+   umbră colorată, plus butonul care creștea. Arăta bine izolat, dar era un
+   efect inventat: pe o grilă de cinci carduri identice, mișcarea aia atrăgea
+   atenția asupra ei înseși, nu asupra produsului. Într-un magazin, hover-ul
+   n-are voie să fie ce ții minte.
+
+   ─── CIFRELE ─────────────────────────────────────────────────────────────
+
+     3px .......... cât să se simtă, nu cât să sară. Peste 6px începe să pară
+                    că plutește
+     180 ms ....... sub 120 arată sacadat, peste 250 se simte moale
+     umbră neutră . nu albastră. Umbra e lumină, nu marcaj; o umbră colorată
+                    sub un card alb se citește ca o greșeală de randare
+     #cfd8e6 ...... rama, cu o treaptă mai închisă decât în repaus (#dfe5ee)
+
+   Fotografia se mărește cu 5%, din componentă. Aia rămâne — o fac și Zalando,
+   și temele Shopify, și e singurul lucru care arată PRODUSUL, nu cardul.
+
+   ─── DE CE ARE VOIE SĂ MIȘTE CARDUL ──────────────────────────────────────
+
+   `transform` și `box-shadow`, nimic altceva. Amândouă se fac pe compozitor,
+   fără recalcularea așezării: rândul de cinci carduri nu se mișcă, se mișcă
+   doar cel de sub mouse. O ridicare făcută cu `margin-top` ar fi împins
+   vecinii și ar fi cerut o reașezare la fiecare cadru.
+
+   ─── FOCUS, NU DOAR HOVER ────────────────────────────────────────────────
+
+   `:focus-within` face același lucru când cardul e atins cu Tab. Fără el, cine
+   navighează de la tastatură ar vedea doar conturul butonului, nu și care card
+   e cel curent.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.card-produs {
+  transition:
+    transform 0.18s ease-out,
+    box-shadow 0.18s ease-out,
+    border-color 0.18s ease-out;
+}
+
+.card-produs:hover,
+.card-produs:focus-within {
+  transform: translateY(-3px);
+  border-color: #cfd8e6;
+  box-shadow:
+    0 10px 22px -8px rgb(16 24 40 / 0.18),
+    0 2px 6px rgb(16 24 40 / 0.06);
+}
+
+/* Cine a cerut mai puțină mișcare primește umbra și rama, care spun la fel de
+   clar care card e cel curent, dar fără deplasare. */
+@media (prefers-reduced-motion: reduce) {
+  .card-produs {
+    transition: none;
+  }
+  .card-produs:hover,
+  .card-produs:focus-within {
+    transform: none;
+  }
+}
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    PISTA DE OFERTE — derulare orizontală fără bară vizibilă

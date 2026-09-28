@@ -105,7 +105,10 @@ function Card({ a }: { a: Articol }) {
        de coș stă peste el, cu `relative z-10`. Pentru un cititor de ecran sunt
        două linkuri cu nume diferite, exact cât trebuie — nu unul singur, spus
        de două ori. */
-    <article className="group relative flex flex-col overflow-hidden rounded-card border border-[#dfe5ee] bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-[border-color,box-shadow] duration-150 focus-within:border-avo-600 hover:border-avo-600 hover:shadow-[0_0_0_1px_var(--color-avo-600),0_8px_24px_-8px_rgb(16_24_40/0.12)]">
+    /* `card-produs` aduce elevarea la hover — ridicare de 3px, umbră, ramă cu
+       o treaptă mai închisă. E în globals.css, lângă explicație: acolo încap
+       și `:focus-within`, și regula pentru cine a cerut mai puțină mișcare. */
+    <article className="card-produs group relative flex flex-col overflow-hidden rounded-card border border-[#dfe5ee] bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
       {/* Înălțime fixă: altfel cardurile de pe un rând ies de înălțimi
           diferite, după cât de înaltă e fiecare fotografie. Fondul e alb, nu
           gri: pozele din catalog vin pe alb, iar un gri în spate le-ar desena
