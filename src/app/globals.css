@@ -710,29 +710,32 @@ body {
 
 /* Eticheta filei deschise.
 
-   ─── TREI ÎNCERCĂRI, ASTA E A TREIA ──────────────────────────────────────
+   ─── PATRU ÎNCERCĂRI, ASTA E A PATRA ─────────────────────────────────────
 
    1. LINIE SUB TEXT, pe un rând propriu, cu linie despărțitoare dedesubt.
       Mergea, dar cerea un rând întreg din lățimea paginii pentru șase cuvinte.
-   2. PASTILĂ ALBASTRĂ PLINĂ. Grupul a intrat lângă titlu și a câștigat rândul
-      înapoi, dar fila deschisă devenea o bulă grea: pe un cap de secțiune cu
-      un titlu de 42px, două blocuri albastre pline se băteau între ele.
-   3. ASTA: pilula rămâne, marcajul se subțiază. Fila deschisă are textul
-      albastru și o bară de 3px sub el, ca la filele clasice — dar bara stă
-      ÎNĂUNTRUL pilulei, nu pe o linie despărțitoare care ar mai cere un rând.
+   2. PASTILĂ ALBASTRĂ PLINĂ, în grup alb. Grupul a intrat lângă titlu și a
+      câștigat rândul înapoi, dar fila deschisă devenea o bulă grea: pe un cap
+      de secțiune cu titlu de 42px, două blocuri albastre pline se băteau.
+   3. TEXT ALBASTRU CU BARĂ DE 3px sub el, în grup alb cu umbră. Marcajul era
+      bun, grupul nu: un dreptunghi alb cu umbră joasă, pe o pagină aproape
+      albă, se citește ca o fereastră care tocmai a apărut — părea animat.
+   4. ASTA: COMUTATOR SEGMENTAT. Șina se colorează (#e9eff6, mai închisă decât
+      pagina), iar fila deschisă primește ALBUL.
 
-   Grupul se citește tot ca un comutator, nu ca o navigație, fiindcă rama
-   rotundă ține cele șase etichete împreună. Se schimbă doar cât de tare
-   strigă fila deschisă.
+   ─── DE CE MERGE ACUM, DEȘI VARIANTA 2 A FOST SCOASĂ TOCMAI PENTRU ASTA ──
 
-   DE CE O BARĂ ȘI NU UN FOND PAL. Un fond albastru la 6% pe o pilulă albă,
-   pusă pe `--canvas` (#f7f9fc), dă cam trei puncte de luminozitate diferență —
-   adică exact problema care a scos varianta albă de la punctul 2. O bară de
-   3px în albastru plin se vede la orice fond.
+   Alb pe alb a fost respins o dată, pe bună dreptate: grupul era alb, deci
+   plăcuța albă n-avea de ce să se desprindă. Ce s-a schimbat nu e plăcuța, e
+   ȘINA. Între #e9eff6 și alb sunt vreo nouă puncte de luminozitate, plus inelul
+   de 1px; între #f0f3f7 și alb erau patru.
 
-   BARA E TRASĂ ÎNTRE `left` ȘI `right` DE 1.25rem, adică fix cât `px-5` de pe
-   etichetă: se aliniază cu textul, nu cu marginea pastilei. De-aia eticheta are
-   `pb-4` și nu `py-3` — cei 4px în plus de jos sunt locul barei. */
+   Și mai e un motiv, mai bun decât cifrele: albul plăcuței e exact fondul
+   cardurilor de dedesubt. Fila deschisă arată din ce material e făcut panoul pe
+   care îl deschide. Albastrul e păstrat doar pentru text.
+
+   Grupul nu mai are nevoie nici de umbră ca să se ridice de pe pagină: se vede
+   fiindcă e mai închis decât ce e în jur, nu fiindcă plutește deasupra. */
 .file-produse:has(#fila-0:checked) label[for="fila-0"],
 .file-produse:has(#fila-1:checked) label[for="fila-1"],
 .file-produse:has(#fila-2:checked) label[for="fila-2"],
@@ -740,22 +743,10 @@ body {
 .file-produse:has(#fila-4:checked) label[for="fila-4"],
 .file-produse:has(#fila-5:checked) label[for="fila-5"] {
   color: var(--color-avo-600);
-}
-
-.file-produse:has(#fila-0:checked) label[for="fila-0"]::after,
-.file-produse:has(#fila-1:checked) label[for="fila-1"]::after,
-.file-produse:has(#fila-2:checked) label[for="fila-2"]::after,
-.file-produse:has(#fila-3:checked) label[for="fila-3"]::after,
-.file-produse:has(#fila-4:checked) label[for="fila-4"]::after,
-.file-produse:has(#fila-5:checked) label[for="fila-5"]::after {
-  content: "";
-  position: absolute;
-  right: 1.25rem;
-  bottom: 0.5rem;
-  left: 1.25rem;
-  height: 3px;
-  border-radius: 999px;
-  background: var(--color-avo-600);
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px rgb(16 24 40 / 0.06),
+    0 1px 2px rgb(16 24 40 / 0.1);
 }
 
 /* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar

@@ -6,6 +6,7 @@ import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
 import { BRANDURI } from "@/lib/branduri";
 import { dimensiuneTitluSectiune } from "../stiluri";
+import BandaDerulare from "../BandaDerulare";
 
 /* ══════════════════════════════════════════════════════════════════════════
    PRODUSE, PE FILE
@@ -51,8 +52,24 @@ type Articol = {
   unitate: string;
 };
 
-/** Câte produse arată o filă. Cinci intră pe un rând la 1280px. */
-const PE_FILA = 5;
+/**
+ * Câte produse intră în banda unei file.
+ *
+ * DE CE 12, CÂND SE VĂD 5. Filele sunt benzi derulabile, nu rânduri: cele cinci
+ * carduri de pe ecran sunt o fereastră, nu tot conținutul. 12 înseamnă puțin
+ * peste două ferestre — destul cât săgețile să aibă ce face, destul de puțin cât
+ * fila să rămână un rezumat al categoriei, nu categoria însăși. Pentru ea există
+ * butonul din dreapta jos.
+ */
+const PE_BANDA = 12;
+
+/**
+ * Câte carduri se văd deodată, și minimul ca o categorie să merite o filă.
+ *
+ * Aceeași cifră pentru două lucruri, fiindcă sunt același lucru: o filă care
+ * n-ar umple măcar fereastra ar arăta a greșeală, nu a alegere.
+ */
+const PE_RAND = 5;
 
 /** Câte categorii devin file, pe lângă „Oferte". */
 const FILE_CATEGORII = 5;
@@ -89,14 +106,14 @@ const SIGLA = new Map(BRANDURI.map((b) => [b.nume.toLowerCase(), b.slug]));
    pune cinci sau mai multe pe copertă, funcția nu face nimic.
    ══════════════════════════════════════════════════════════════════════════ */
 function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
-  if (alese.length >= PE_FILA) return alese;
+  if (alese.length >= PE_RAND) return alese;
 
   const rand = [...alese];
   const luate = new Set(rand.map((a) => a.sku).filter(Boolean));
 
   const adauga = (candidati: Produs[]) => {
     for (const p of candidati) {
-      if (rand.length >= PE_FILA) return;
+      if (rand.length >= PE_RAND) return;
       if (!p.sku || luate.has(p.sku)) continue;
       luate.add(p.sku);
       rand.push(p);
@@ -287,29 +304,24 @@ export default function ProduseCuFile({
     dupaCategorie.set(p.categorie.slug, intrare);
   }
 
-  /* `actiune` e textul de pe butonul din josul filei. E scris de mână, nu
-     compus din etichetă: „Vezi tot " + eticheta dădea „Vezi tot oferte" și
-     „Vezi tot sisteme de montaj", adică dezacord la fiecare filă. */
-  const file: { eticheta: string; adresa: string; actiune: string; articole: Articol[] }[] = [];
+  const file: { eticheta: string; adresa: string; articole: Articol[] }[] = [];
 
   if (oferte.length) {
     file.push({
       eticheta: "Oferte",
       adresa: "/catalog",
-      actiune: "Vezi toate ofertele",
-      articole: completeazaRandul(oferte.slice(0, PE_FILA), produse),
+      articole: completeazaRandul(oferte.slice(0, PE_BANDA), produse),
     });
   }
 
   for (const c of [...dupaCategorie.values()]
-    .filter((c) => c.produse.length >= PE_FILA)
+    .filter((c) => c.produse.length >= PE_RAND)
     .sort((a, b) => b.produse.length - a.produse.length)
     .slice(0, FILE_CATEGORII)) {
     file.push({
       eticheta: c.nume,
       adresa: `/catalog/${c.slug}`,
-      actiune: `Vezi toate produsele din ${c.nume}`,
-      articole: c.produse.slice(0, PE_FILA),
+      articole: c.produse.slice(0, PE_BANDA),
     });
   }
 
@@ -386,17 +398,30 @@ export default function ProduseCuFile({
               părinte poziționat. `pb-4` îi face loc — fără el, bara ar sta
               lipită de textul de deasupra. */}
           <div className="fara-bara-derulare -mx-4 mt-6 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
-            {/* RAMA E `line-strong`, NU `line`. Pe fondul secțiunii (#f7f9fc),
-                #e5eaf0 dădea patru puncte de luminozitate — bara arăta ca niște
-                cuvinte lăsate pe pagină. Umbra joasă și foarte întinsă
-                (`-18px` răspândire negativă) o ridică un milimetru de pe fond,
-                cât să se citească drept obiect, fără să pară că plutește. */}
-            <div className="inline-flex gap-0.5 rounded-full border border-line-strong bg-surface p-1.5 shadow-[0_1px_2px_rgb(16_24_40/0.04),0_10px_24px_-18px_rgb(16_24_40/0.45)]">
+            {/* ── Comutator segmentat: șină colorată, plăcuță albă pe ea ──
+
+                ȘINA E #e9eff6, MAI ÎNCHISĂ DECÂT PAGINA. Ăsta e tot trucul:
+                fila deschisă nu primește o culoare, primește ALBUL — adică exact
+                fondul cardurilor de sub ea. Nu e nevoie nici de umbră care s-o
+                ridice de pe pagină, nici de vreo linie: bara se vede fiindcă e
+                mai închisă decât ce e în jur, iar plăcuța se vede fiindcă e mai
+                deschisă decât șina.
+
+                Plăcuța are un inel de 1px la 6% și o umbră de 2px — cât să pară
+                așezată peste șină, nu decupată din ea.
+
+                FILELE ÎNCHISE NU PRIMESC FUNDAL SUB MOUSE, doar textul li se
+                închide. Am încercat cu alb la 55%, tocmai ca hover-ul să nu
+                semene cu fila deschisă — dar peste #e9eff6 ieșea #f6f9fc, adică
+                practic tot alb: fila de sub mouse arăta ca fila deschisă, doar cu
+                text negru în loc de albastru. Pe un comutator segmentat, albul e
+                marcajul filei deschise și n-are voie să însemne altceva. */}
+            <div className="inline-flex gap-0.5 rounded-full border border-line-strong bg-[#e9eff6] p-1.5">
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}
                   htmlFor={`fila-${i}`}
-                  className="relative shrink-0 cursor-pointer rounded-full px-5 pt-3 pb-4 text-[14.5px] font-semibold whitespace-nowrap text-muted transition-colors hover:bg-avo-50 hover:text-fg"
+                  className="shrink-0 cursor-pointer rounded-full px-5 py-3 text-[14.5px] font-semibold whitespace-nowrap text-muted transition-colors hover:text-fg"
                 >
                   {f.eticheta}
                 </label>
@@ -407,37 +432,66 @@ export default function ProduseCuFile({
 
         {file.map((f, i) => (
           <div key={f.eticheta} data-fila={i} className="pt-7">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+            {/* ── Banda ──
+
+                A FOST O GRILĂ DE CINCI. Grila arăta exact atâtea produse câte
+                încăpeau pe un rând, deci fila era un rând, nu o categorie. Banda
+                ține 12 și arată 5: restul se aduc cu săgețile, fără să crească
+                secțiunea pe verticală.
+
+                LĂȚIMEA CARDULUI E SCRISĂ AICI, nu în bandă. 278px include cei
+                16px de spațiu din dreapta (`pr-4`), deci cardul rămâne la 262 —
+                exact cât avea în grila de cinci: (1376 − 4 × 16) / 5. Banda nu
+                introduce o a doua dimensiune de card, o poartă pe aceeași.
+
+                La 1440 intră patru carduri întregi și 95% din al cincilea. Bucata
+                tăiată e intenționată: e singurul lucru care spune, înainte de
+                orice săgeată, că lista continuă.
+
+                PE TELEFON cardul e o fracțiune din ecran — lățimea vizibilă
+                împărțită la 2,4, ca la banda de lichidare. Se văd două carduri
+                întregi și o bucată din al treilea. */}
+            <BandaDerulare
+              eticheta="Produsele"
+              actiuni={
+                /* ── Butonul de închidere a filei, în dreapta jos ──
+
+                   Stă pe rândul săgeților, la capătul opus: navigarea prin
+                   fereastră la stânga, ieșirea din ea la dreapta. Aceeași ramă
+                   `line-strong` ca bara de file — sunt singurele comenzi din
+                   secțiune, deci aceeași familie.
+
+                   ACELAȘI TEXT PE TOATE FILELE. A fost compus din etichetă —
+                   „Vezi tot " + numele filei — și ieșea „Vezi tot oferte", „Vezi
+                   tot sisteme de montaj". Adresa diferă de la o filă la alta, dar
+                   pentru cititorul de ecran fiecare panou are deja numele lui,
+                   deci un text identic nu pierde nimic.
+
+                   SĂGEATA ALUNECĂ 2px la hover, nu butonul. Mișcarea arată
+                   direcția, dar fiindcă e a unui element de 17px dinăuntru, nu
+                   urnește nimic din așezare. */
+                <Link
+                  href={f.adresa}
+                  className="group inline-flex h-11 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-6 text-[14.5px] font-semibold text-fg shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-colors hover:border-avo-600 hover:bg-avo-50 hover:text-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                >
+                  Vezi toate produsele
+                  <ArrowRight
+                    size={17}
+                    aria-hidden
+                    className="transition-transform duration-200 group-hover:translate-x-0.5"
+                  />
+                </Link>
+              }
+            >
               {f.articole.map((a) => (
-                <Card key={a.sku} a={a} />
+                <div
+                  key={a.sku}
+                  className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-3 sm:w-[278px] sm:pr-4"
+                >
+                  <Card a={a} />
+                </div>
               ))}
-            </div>
-
-            {/* ── Butonul de închidere a filei ──
-
-                CENTRAT, NU LA STÂNGA. Stătea aliniat cu prima coloană a grilei,
-                iar sub cinci carduri egale arăta ca un card care n-a încăput.
-                În centru se citește ca sfârșitul secțiunii.
-
-                Aceeași ramă `line-strong` ca bara de file: sunt singurele două
-                comenzi din secțiune, deci trebuie să fie din aceeași familie.
-
-                SĂGEATA ALUNECĂ 2px la hover, nu butonul. Mișcarea arată direcția
-                („mergi mai departe"), dar fiindcă e a unui element de 17px
-                dinăuntru, nu urnește nimic din așezare. */}
-            <div className="mt-8 flex justify-center">
-              <Link
-                href={f.adresa}
-                className="group inline-flex h-12 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-7 text-[14.5px] font-semibold text-fg shadow-[0_1px_2px_rgb(16_24_40/0.04)] transition-colors hover:border-avo-600 hover:bg-avo-50 hover:text-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
-              >
-                {f.actiune}
-                <ArrowRight
-                  size={17}
-                  aria-hidden
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
-                />
-              </Link>
-            </div>
+            </BandaDerulare>
           </div>
         ))}
       </div>

@@ -4,7 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
- * Banda cu ofertele lunii — derulare pe orizontală, condusă de utilizator.
+ * Bandă derulabilă pe orizontală, condusă de utilizator.
+ *
+ * ─── DOUĂ BENZI, O SINGURĂ COMPONENTĂ ─────────────────────────────────────
+ *
+ * S-a numit `BandaOferte` cât timp a avut un singur client — lichidarea de stoc
+ * de pe prima pagină. Acum o folosesc două: aceea și filele de produse din
+ * „Produse din catalog". Numele vechi ar fi însemnat că grila de invertoare e
+ * o bandă de oferte, ceea ce n-ar fi ajutat pe nimeni peste șase luni.
+ *
+ * Ce se schimbă de la un client la altul stă în `props`: conținutul, cuvântul
+ * din `aria-label`-ul săgeților, și ce se pune la dreapta lor. Mecanica —
+ * derularea, snap-ul, pasul, stingerea la capete — e aceeași, și de-aia nu se
+ * scrie de două ori.
  *
  * ─── CE A FOST ÎNAINTE ────────────────────────────────────────────────────
  *
@@ -60,7 +72,24 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  * prima apăsare, în loc să se acumuleze — deci marginea din stânga cade mereu
  * fix pe muchia unui card, iar pe ecran rămân produse întregi.
  */
-export default function BandaOferte({ children }: { children: React.ReactNode }) {
+export default function BandaDerulare({
+  children,
+  eticheta = "Ofertele",
+  actiuni,
+}: {
+  children: React.ReactNode;
+  /**
+   * Cuvântul din `aria-label`-ul săgeților: „<eticheta> anterioare" și
+   * „<eticheta> următoare". La cititorul de ecran, două benzi pe aceeași pagină
+   * cu patru butoane numite toate „anterioare / următoare" sunt de nefolosit.
+   */
+  eticheta?: string;
+  /**
+   * Ce se așază la dreapta săgeților, pe același rând. Filele de produse pun
+   * acolo „Vezi toate produsele"; lichidarea nu pune nimic.
+   */
+  actiuni?: React.ReactNode;
+}) {
   const pista = useRef<HTMLDivElement>(null);
   const [laInceput, setLaInceput] = useState(true);
   const [laSfarsit, setLaSfarsit] = useState(false);
@@ -193,29 +222,36 @@ export default function BandaOferte({ children }: { children: React.ReactNode })
         {children}
       </div>
 
-      {/* Comenzile, în stânga jos, sub carduri.
-          ASCUNSE PE TELEFON (sub `sm`): acolo banda se glisează cu degetul, iar
-          cardul tăiat din dreapta arată deja că mai e. Două butoane de 44px sub
-          carduri ar fi fost doar un rând în plus de parcurs. */}
-      <div className="mt-6 hidden items-center gap-2 sm:flex">
-        <button
-          type="button"
-          onClick={() => gliseaza(-1)}
-          disabled={laInceput}
-          aria-label="Ofertele anterioare"
-          className={`${SAGEATA} ${laInceput ? STINSA : ALBA}`}
-        >
-          <ChevronLeft size={18} strokeWidth={2.5} />
-        </button>
-        <button
-          type="button"
-          onClick={() => gliseaza(1)}
-          disabled={laSfarsit}
-          aria-label="Ofertele următoare"
-          className={`${SAGEATA} ${laSfarsit ? STINSA : ALBASTRA}`}
-        >
-          <ChevronRight size={18} strokeWidth={2.5} />
-        </button>
+      {/* Rândul de comenzi: săgețile în stânga, `actiuni` în dreapta.
+
+          SĂGEȚILE SUNT ASCUNSE PE TELEFON (sub `sm`): acolo banda se glisează cu
+          degetul, iar cardul tăiat din dreapta arată deja că mai e. Două butoane
+          de 44px sub carduri ar fi fost doar un rând în plus de parcurs.
+
+          `actiuni` NU SE ASCUNDE. Pe telefon rămâne singurul copil vizibil, iar
+          `justify-between` îl lasă la stânga — exact unde ar fi stat oricum. */}
+      <div className="mt-6 flex items-center justify-between gap-4">
+        <div className="hidden items-center gap-2 sm:flex">
+          <button
+            type="button"
+            onClick={() => gliseaza(-1)}
+            disabled={laInceput}
+            aria-label={`${eticheta} anterioare`}
+            className={`${SAGEATA} ${laInceput ? STINSA : ALBA}`}
+          >
+            <ChevronLeft size={18} strokeWidth={2.5} />
+          </button>
+          <button
+            type="button"
+            onClick={() => gliseaza(1)}
+            disabled={laSfarsit}
+            aria-label={`${eticheta} următoare`}
+            className={`${SAGEATA} ${laSfarsit ? STINSA : ALBASTRA}`}
+          >
+            <ChevronRight size={18} strokeWidth={2.5} />
+          </button>
+        </div>
+        {actiuni}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaLichidareStoc, type Oferta } from "@/lib/oferte";
 import type { CSSProperties } from "react";
 import { dimensiuneTitluSectiune } from "./stiluri";
-import BandaOferte from "./BandaOferte";
+import BandaDerulare from "./BandaDerulare";
 import CardOferta from "./oferte/CardOferta";
 
 /**
@@ -223,13 +223,13 @@ export default async function LichidareStoc({
             padding-ului de atunci (`px-4`), copiată. Acum spațiul lateral e o
             variabilă (vezi „COLOANA" în globals.css), iar cardul o citește —
             dacă se schimbă vreodată, banda nu rămâne în urmă. */}
-        <BandaOferte>
+        <BandaDerulare>
           {lista.map((o) => (
             <div key={o.sku} className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
               <CardOferta o={o} />
             </div>
           ))}
-        </BandaOferte>
+        </BandaDerulare>
 
         {/* ── Subsol ─────────────────────────────────────────── */}
         <p className="mt-5 sm:mt-10 max-w-2xl text-[11px] sm:text-xs text-gray-500 leading-relaxed">

@@ -364,12 +364,21 @@
   opacity: 0.65;
 }
 
-/* 2. Stoc — deschisă, cu dungă verde și pastile de marcă */
+/* 2. Stoc — deschisă, cu pastile de marcă.
+
+   ERA VERDE, ȘI AVEA O DUNGĂ PE STÂNGA. Amândouă veneau din prototip, unde
+   verdele însemna „în stoc". La noi nu înseamnă nimic: n-avem date de stoc la
+   niciunul dintre cele 845 de produse, iar în restul site-ului verdele nu apare
+   nicăieri — deci era singura pată de culoare fără rudă în pagină.
+
+   Dunga de 3px de pe muchia din stânga a plecat odată cu ea. Era acolo ca să
+   poarte verdele; fără culoare de purtat, rămânea o linie care despărțea caseta
+   de nimic. Celelalte două casete din rând n-au avut niciodată așa ceva, deci
+   plecarea ei le aliniază. */
 .rc-stoc {
   background: linear-gradient(120deg, #eef3fb 0%, #dce7f7 100%);
-  border-left: 3px solid #0e8a43;
 }
-.rc-stoc .rc-caseta-k { color: #0e8a43; }
+.rc-stoc .rc-caseta-k { color: var(--rc-actiune); }
 .rc-stoc b { color: var(--rc-cerneala); font-size: 14px; }
 .rc-stoc .rc-caseta-una {
   filter: drop-shadow(0 6px 14px rgb(16 24 40 / 0.18));
@@ -399,7 +408,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #fff;
-  background: #0e8a43;
+  background: var(--rc-actiune);
   border-radius: 20px;
 }
 
