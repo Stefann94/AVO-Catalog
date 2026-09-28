@@ -513,7 +513,15 @@
   color: var(--rc-accent);
 }
 
-/* Fanionul diagonal din colțul de sus-dreapta. */
+/* Fanionul diagonal din colțul de sus-dreapta.
+
+   ALBASTRU, NU CHIHLIMBAR. În prototip, „preț pe palet" e galben și „93
+   produse" albastru (`.ad2-flag` și `.ad2-flag.alt`). Aici sunt amândouă
+   albastre, la cerere. Varianta albastră exista deja în prototip, deci nu e o
+   culoare nouă — e cea pe care el o folosește pe a doua dală.
+
+   Pe „Panouri" rămâne bleumarinul mai închis de mai jos: fundalul dalei e un
+   degradeu albastru-deschis, iar albastrul obișnuit se pierde în el. */
 .rc-fanion {
   position: absolute;
   z-index: 4;
@@ -527,14 +535,10 @@
   letter-spacing: 0.06em;
   text-align: center;
   text-transform: uppercase;
-  color: var(--rc-pe-accent);
-  background: var(--rc-accent);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.18);
-  transform: rotate(38deg);
-}
-.rc-fanion.rc-alt {
   color: #fff;
   background: var(--rc-actiune);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.18);
+  transform: rotate(38deg);
 }
 
 /* ── PRODUSE DECUPATE, FĂRĂ FUNDAL ─────────────────────────────────────────
@@ -599,7 +603,16 @@
 .rc-d-montaj .rc-dala-marca { left: 18px; bottom: 20px; max-height: 30px; max-width: 36px; }
 
 .rc-d-incarcare { background: linear-gradient(155deg, #141b2b 0%, #25334f 60%, #0c1220 100%); }
-.rc-d-incarcare .rc-dala-img { right: 6%; bottom: 8%; width: auto; height: 66%; }
+/* Ieșită puțin din dală spre dreapta, ca în prototip. A fost `right: 6%;
+   bottom: 8%; height: 66%` — valori dintr-un strat intermediar al lui, nu din
+   cel final. Prototipul mută stația la `-3% / 4% / 60%` într-un bloc numit
+   „revenire la pozitiile anterioare; doar statia de incarcare ramane mutata",
+   iar eu citisem regula de dinaintea acelui bloc.
+
+   Diferența se vedea: la noi stația stătea mai sus și mai înăuntru, deci
+   dala părea mai goală pe dreapta decât celelalte patru. Verificat cu
+   măsurători pe ambele pagini — acum cele cinci coincid la zecime. */
+.rc-d-incarcare .rc-dala-img { right: -3%; bottom: 4%; width: auto; height: 60%; }
 .rc-d-incarcare .rc-dala-marca { top: 16px; right: 16px; max-height: 18px; max-width: 88px; }
 
 /* Pe fundal închis, siglele închise la culoare devin albe. */

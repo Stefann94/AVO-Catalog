@@ -87,8 +87,6 @@ type Reclama = {
   pret?: string;
   /** Fanionul diagonal din colțul de sus-dreapta. */
   fanion?: string;
-  /** Fanion albastru în loc de chihlimbar (`ad2-flag alt` în prototip). */
-  fanionAlt?: boolean;
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -160,7 +158,6 @@ const RECLAME: Reclama[] = [
     titlu: ["Montaj pentru", "orice acoperiș"],
     sub: "țiglă · tablă · plat · carport",
     fanion: "93 produse",
-    fanionAlt: true,
   },
   {
     slug: "statii-de-incarcare-auto",
@@ -503,7 +500,7 @@ export default function HeroReclame({
                     dalele cu `siglaJos`; acolo prețul ar dispărea sub ea, iar
                     fanionul îi ține locul, sus-dreapta. */}
                 {r.fanion ? (
-                  <span className={`rc-fanion${r.fanionAlt ? " rc-alt" : ""}`}>{r.fanion}</span>
+                  <span className="rc-fanion">{r.fanion}</span>
                 ) : r.pret ? (
                   <span className="rc-dala-pret">
                     de la <b>{r.pret}</b>
