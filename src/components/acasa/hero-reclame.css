@@ -171,9 +171,15 @@
   color: #93aad4;
 }
 
-/* Diapozitivul chihlimbariu: aceeași formă, fundal deschis, text închis.
-   Fotografia de lângă el primește un fundal întunecat-neutru, nu albastru,
-   ca tranziția să nu bată în două albastre diferite. */
+/* AL DOILEA DIAPOZITIV NU MAI E CHIHLIMBARIU. În prototip, cel cu programul
+   B2B are fundal galben și text închis, ca să se deosebească de celelalte
+   patru. Scos la cerere: caruselul merge acum numai pe albastru, deci toate
+   cinci folosesc aceeași rețetă.
+
+   Regulile de mai jos nu mai au pe ce se aplica — clasa `rc-chihlimbar` nu se
+   mai pune de nicăieri. Rămân scrise, comentate, fiindcă întoarcerea e o
+   singură linie în HeroReclame.tsx, iar rescrierea lor de la zero n-ar fi.
+
 .rc-diapo-txt.rc-chihlimbar {
   color: var(--rc-cerneala);
   background: linear-gradient(140deg, #ffd429 0%, #ffb800 90%);
@@ -183,19 +189,13 @@
   background: rgb(0 0 0 / 0.1);
   border-color: rgb(0 0 0 / 0.2);
 }
-.rc-diapo-txt.rc-chihlimbar p {
-  color: #4a3a00;
-}
-.rc-diapo-txt.rc-chihlimbar .rc-diapo-btn {
-  color: #fff;
-  background: var(--rc-cerneala);
-}
-.rc-diapo-txt.rc-chihlimbar .rc-nota {
-  color: #6b5400;
-}
+.rc-diapo-txt.rc-chihlimbar p { color: #4a3a00; }
+.rc-diapo-txt.rc-chihlimbar .rc-diapo-btn { color: #fff; background: var(--rc-cerneala); }
+.rc-diapo-txt.rc-chihlimbar .rc-nota { color: #6b5400; }
 .rc-diapo-txt.rc-chihlimbar + .rc-diapo-img {
   background: radial-gradient(circle at 60% 45%, #2a3140, #10151c 72%);
 }
+*/
 
 .rc-diapo-img {
   position: relative;
@@ -404,17 +404,28 @@
 }
 
 /* 3. B2B — galbenă, cu comparația de preț */
+/* ALBASTRĂ, NU CHIHLIMBARIE. În prototip caseta asta e galbenă, ca să se
+   deosebească de celelalte două. Scoasă din galben la cerere.
+
+   Albastrul ei nu e cel al primei casete: aia e bleumarin închis
+   (#071b44 → #0b3aae), asta e albastrul viu al site-ului (#0b44c4 → #2c63ee).
+   Dacă ar fi fost aceeași, cele trei casete s-ar fi citit ca două.
+
+   Panoul translucid din dreapta rămâne — el e ce ascunde marginile albe ale
+   fotografiei de produs, care vine din catalog ca JPEG pe alb. Pe galben era
+   la 50% opacitate; pe albastru are nevoie de mai mult, altfel albul pozei se
+   vede ca o pată. */
 .rc-b2b-caseta {
-  background: linear-gradient(120deg, #ffc800 0%, #ffe06b 100%);
+  background: linear-gradient(120deg, var(--rc-actiune) 0%, var(--rc-actiune-l) 100%);
 }
-.rc-b2b-caseta .rc-caseta-k { color: #6b5100; }
-.rc-b2b-caseta b { color: #2a2100; }
+.rc-b2b-caseta .rc-caseta-k { color: #c6d9f7; }
+.rc-b2b-caseta b { color: #fff; }
 .rc-b2b-caseta .rc-caseta-r {
-  background: rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.85);
   clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
 }
 .rc-b2b-caseta .rc-caseta-una {
-  filter: drop-shadow(0 8px 16px rgb(90 70 0 / 0.28));
+  filter: drop-shadow(0 8px 16px rgb(3 16 43 / 0.28));
 }
 .rc-pret {
   display: flex;
@@ -422,15 +433,17 @@
   gap: 8px;
   margin-top: 3px;
 }
+/* Prețul tăiat: destul de deschis cât să se citească pe albastru, destul de
+   stins cât să nu concureze cu cel nou de lângă el. */
 .rc-pret s {
   font-size: 11.5px;
-  color: #7a6200;
+  color: #a9c4ee;
 }
 .rc-pret strong {
   font-size: 17px;
   font-weight: 850;
   letter-spacing: -0.03em;
-  color: #1b1500;
+  color: #fff;
 }
 
 /* ══════════════════════════ CELE CINCI RECLAME ══════════════════════════ */

@@ -555,8 +555,12 @@ function construieste(c: {
     });
   }
 
-  /* Diapozitivul chihlimbariu: singurul care nu vinde o categorie, ci
-     relația. E al doilea, nu primul — cineva ajunge aici după marfă. */
+  /* Al doilea diapozitiv: singurul care nu vinde o categorie, ci relația. E
+     al doilea, nu primul — cineva ajunge aici după marfă.
+
+     A FOST CHIHLIMBARIU, ca în prototip, unde fundalul galben îl deosebea de
+     celelalte patru. Scos din galben la cerere; rețeta lui stă comentată în
+     hero-reclame.css, iar întoarcerea e `chihlimbar: true` înapoi aici. */
   d.push({
     eticheta: "Pentru instalatori",
     titlu: "Lucrezi în fotovoltaice?",
@@ -566,7 +570,6 @@ function construieste(c: {
     adresa: "/cerere-oferta",
     nota: "Prețurile din catalog sunt în euro, fără TVA.",
     poza: c.sto?.poza,
-    chihlimbar: true,
   });
 
   if (c.sto) {
