@@ -137,6 +137,11 @@
   --font-sans: var(--font-sans-app), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-app), ui-monospace, monospace;
 
+  /* Fontul titlurilor de secțiune — Archivo Expanded, vezi app/layout.tsx.
+     Rezerva e fontul de text: până sosește, titlul se vede cu Libre Franklin,
+     deci se schimbă lățimea literei, nu existența textului. */
+  --font-titlu: var(--font-titlu-app), var(--font-sans-app), ui-sans-serif, sans-serif;
+
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-sunken: var(--sunken);
@@ -303,6 +308,20 @@
   :root {
     --coloana-pad: 32px;
   }
+}
+
+/* ── Titlurile de secțiune ─────────────────────────────────────────────────
+   Archivo 800. De ce tocmai el, și de ce nu varianta lată, e scris în
+   app/layout.tsx, lângă import.
+
+   Spațierea e mai strânsă decât la Libre Franklin (−0.03em față de −0.02em):
+   Archivo are deschiderile mai închise și literele mai apropiate din desen,
+   iar spațierea potrivită celuilalt font o face să pară destrămată. */
+@utility titlu-sectiune {
+  font-family: var(--font-titlu);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
 }
 
 /* `@utility`, nu `.coloana {}`: așa Tailwind 4 o tratează ca pe utilitarele

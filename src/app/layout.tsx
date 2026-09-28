@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Libre_Franklin, IBM_Plex_Mono } from "next/font/google";
+import { Libre_Franklin, IBM_Plex_Mono, Archivo } from "next/font/google";
 import "./globals.css";
 import { FIRMA, NUME_SITE, SITE_URL, urlAbsolut } from "@/lib/site";
 import { curata, jsonLd } from "@/lib/jsonld";
@@ -68,6 +68,71 @@ const plexMono = IBM_Plex_Mono({
 });
 
 /**
+ * Archivo Expanded, numai pentru titlurile de secțiune.
+ *
+ * ─── DE CE UN AL DOILEA FONT ──────────────────────────────────────────────
+ *
+ * Libre Franklin e o grotescă bună de text, dar la 42px arată ca orice alt
+ * titlu de pe internet. Un site care se compară cu altul are nevoie să fie
+ * recunoscut dintr-o privire, iar litera e primul lucru care se vede — înainte
+ * de culoare și de așezare.
+ *
+ * ─── DE CE TOCMAI ASTA ────────────────────────────────────────────────────
+ *
+ * Comparate pe textul real al site-ului: Archivo Expanded, Archivo, Bricolage
+ * Grotesque, Space Grotesk, Chivo, Familjen Grotesk, Oswald, Anton, Sora.
+ *
+ *   LĂȚIMEA e ce o deosebește. E o grotescă întinsă, adică exact forma pe care
+ *   o au capetele de catalog tipărit și plăcuțele de pe utilaje. Se potrivește
+ *   cu ce vindem, fără să fie un font „de caracter" care obosește.
+ *
+ *   NU SEAMĂNĂ CU ROBOTO, fontul de pe site-ul cu care ne comparăm. Oswald și
+ *   Anton se deosebeau și ele, dar sunt înguste și grele — citesc a afiș de
+ *   concert, nu a distribuitor. Familjen și Archivo simplu erau prea aproape
+ *   de ce avem deja.
+ *
+ *   DIACRITICELE SUNT CORECTE: ș și ț cu virgulă dedesubt, nu cu sedilă.
+ *   Verificat pe „Stații de Încărcare Auto" și „Șine și Profile", cele mai
+ *   lungi nume de categorie din catalog.
+ *
+ * ─── LĂȚIME NORMALĂ, NU EXTINSĂ ───────────────────────────────────────────
+ *
+ * Prima încercare a fost varianta lată, la `font-stretch: 125%`. Două motive
+ * pentru care n-a rămas:
+ *
+ *   SE VEDEA PREA LAT. La 42px, un titlu de trei cuvinte ocupa jumătate din
+ *   coloană și trăgea ochiul de la marfă.
+ *
+ *   COSTA 172 KB. Google servește „Archivo Expanded" ca familie separată, pe
+ *   care next/font/google n-o are în listă — importul se oprea cu „Unknown
+ *   font". Singura cale era Archivo variabil cu `axes: ["wdth"]`, adică toată
+ *   plaja de lățimi 62–125 ȘI toate greutățile, pe două subseturi: 88 + 84 KB,
+ *   pentru un singur titlu.
+ *
+ * Archivo la lățime normală, o singură greutate, păstrează ce conta: litera e
+ * altfel decât Libre Franklin — `a` cu coadă dreaptă, `g` cu o singură buclă,
+ * deschideri mai strânse — deci titlurile se recunosc, fără să strige.
+ *
+ * DACĂ SE VREA TOTUȘI MAI LAT, e nevoie de `axes: ["wdth"]` aici și de
+ * `font-stretch` în `titlu-sectiune` din globals.css. Plata e cea de sus.
+ *
+ * ─── CE COSTĂ ACUM ────────────────────────────────────────────────────────
+ *
+ * `preload: false`: titlurile de secțiune sunt toate sub prima vizualizare,
+ * iar o preîncărcare le-ar pune să concureze cu fotografia care decide LCP-ul.
+ * Aceeași socoteală ca la fontul mono.
+ *
+ * `display: swap`: până sosește, titlul se vede cu Libre Franklin.
+ */
+const archivo = Archivo({
+  variable: "--font-titlu-app",
+  subsets: ["latin", "latin-ext"],
+  weight: ["800"],
+  display: "swap",
+  preload: false,
+});
+
+/**
  * Ce moștenește fiecare pagină în `<head>`.
  *
  * `metadataBase` e obligatoriu ca adresele relative (canonical, imagini Open
@@ -111,7 +176,7 @@ export default function RootLayout({
   return (
     <html
       lang="ro"
-      className={`${libreFranklin.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${libreFranklin.variable} ${plexMono.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
         {/* Cine e firma, o singură dată pe site. Google leagă de ea toate

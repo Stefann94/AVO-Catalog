@@ -255,7 +255,11 @@ export default function ProduseCuFile({
           style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
         >
           <div className="min-w-0 flex-1">
-            <h2 className="text-[22px] leading-tight font-extrabold text-fg sm:text-[length:var(--dim-titlu)]">
+            {/* `titlu-sectiune` aduce Archivo în varianta lată, plus greutatea,
+                spațierea și interlinia potrivite ei (vezi globals.css).
+                Deocamdată e pusă DOAR AICI, ca să se vadă pe un titlu real
+                înainte de a trece tot site-ul pe ea. */}
+            <h2 className="titlu-sectiune text-[22px] text-fg sm:text-[length:var(--dim-titlu)]">
               Produse din catalog
             </h2>
             <p className="mt-2 max-w-xl text-[14px] text-muted">
