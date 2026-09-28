@@ -168,8 +168,26 @@ export default function MeniuCategorii({
        Fereastra cu subcategorii rămâne doar de la lg în sus: se deschide la
        hover, iar pe ecran tactil hover-ul nu există. Pe telefon, placa duce
        direct la categorie, ceea ce e oricum ce vrea degetul. */
-    <nav aria-label="Categorii principale" className="relative z-40 bg-avo-900">
-      <ul className="coloana fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
+    /* ══════════════════════════════════════════════════════════════════════
+       BANDA E ÎN COLOANĂ, SUB BANNER
+       ──────────────────────────────────────────────────────────────────────
+       Mergea de la o margine a ferestrei la cealaltă. Culoarea a coborât de pe
+       `<nav>` pe `<ul>`: pe `<nav>` se întindea cât fereastra, iar la 1440px
+       ieșea cu 152px în fiecare parte față de restul paginii. Acum banda începe
+       și se termină pe aceeași verticală cu sigla, cu bannerul de deasupra și
+       cu titlurile secțiunilor.
+
+       Plăcile rămân lipite de muchiile benzii, fără padding orizontal: banda
+       ESTE rândul de categorii, nu un chenar în jurul lui. Bannerul de deasupra
+       are padding interior fiindcă acolo e text, nu butoane.
+
+       Fără spațiu sus — se lipește de banner. Aerul de jos e al ei, fiindcă e
+       ultima din capul paginii: fără el, secțiunea albă care urmează s-ar lipi
+       de bandă.
+       ══════════════════════════════════════════════════════════════════════ */
+    <nav aria-label="Categorii principale" className="relative z-40 bg-slate-50 pb-4 lg:pb-6">
+      <div className="coloana">
+      <ul className="fara-bara-derulare flex gap-2 overflow-x-auto bg-avo-900 py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
         {categorii.map((c, i) => {
           const promovat = produsPromovat(c.slug, produse);
           const sigla = promovat?.p.brand ? gasesteBrand(promovat.p.brand) : undefined;
@@ -383,6 +401,7 @@ export default function MeniuCategorii({
           );
         })}
       </ul>
+      </div>
     </nav>
   );
 }

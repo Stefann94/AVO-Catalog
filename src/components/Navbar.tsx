@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.png";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, Search, User, ShoppingCart } from "lucide-react";
 import NavbarInteractiv from "./navbar/NavbarInteractiv";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -84,22 +84,44 @@ const BUTON_BARA =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
 /**
- * Singurul buton plin din bară: cererea de ofertă.
+ * Singurul buton plin din bară.
  *
- * Într-un catalog fără coș, asta E conversia — nu există altă acțiune pe care
- * un vizitator s-o poată duce la capăt. De-aceea e singurul element colorat
- * plin din bară: dacă ar fi două, n-ar mai fi niciunul.
+ * A fost „Cere ofertă": într-un catalog fără coș, aia era conversia. Acum e
+ * coșul, fiindcă bara a primit forma de magazin — dar regula rămâne, un singur
+ * element colorat plin. Dacă ar fi două, n-ar mai fi niciunul.
  */
 const BUTON_PRINCIPAL =
   "shrink-0 whitespace-nowrap flex items-center justify-center " +
-  "h-11 px-4 xl:px-5 2xl:px-6 rounded-xl text-[13px] xl:text-sm font-semibold " +
+  "h-11 px-4 xl:px-5 rounded-xl text-[13px] xl:text-sm font-semibold " +
   "bg-avo-600 text-white border border-avo-600 transition-all " +
   "hover:bg-avo-700 hover:border-avo-700 hover:shadow-md hover:shadow-avo-900/15 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
-/** Butoanele de navigare: se lățesc pe măsură ce e loc. */
-const BUTON_MENIU =
-  BUTON_BARA + " gap-2 h-11 px-3.5 xl:px-4 2xl:px-5 text-[13px] xl:text-sm";
+/**
+ * Contact și Autentificare: aceeași rețetă ca butoanele de meniu de dinainte.
+ *
+ * Eticheta apare pe trepte diferite, după cât loc e: „Contact" de la `xl`,
+ * „Autentificare" abia de la `2xl`, fiindcă e de două ori mai lungă. Sub
+ * praguri rămâne doar pictograma, iar `title` spune ce e.
+ */
+const BUTON_ACTIUNE = BUTON_BARA + " gap-2 h-11 px-3 xl:px-4 text-[13px] xl:text-sm";
+
+/** Coșul: același desen, dar plin. Vezi `BUTON_PRINCIPAL`. */
+const BUTON_COS = BUTON_PRINCIPAL + " gap-2.5";
+
+/**
+ * Butonul din capătul câmpului de căutare.
+ *
+ * `absolute`, nu lipit lângă input: câmpul trebuie să rămână un singur
+ * dreptunghi, cu butonul înăuntru, altfel cele două se citesc ca elemente
+ * separate care se întâmplă să stea alături. Padding-ul `pr-28` de pe input îi
+ * ține locul, ca textul scris să nu ajungă sub el.
+ */
+const BUTON_CAUTARE =
+  "absolute right-1.5 shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 " +
+  "h-8 px-3 rounded-lg text-[12px] xl:text-[13px] font-semibold " +
+  "bg-avo-600 text-white transition-colors hover:bg-avo-700 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
 export default function Navbar() {
   return (
@@ -158,16 +180,54 @@ export default function Navbar() {
 
       <NavbarInteractiv
         meniuMobil={
-          <div className="p-6 flex flex-col">
-            <Link href="/catalog" className="text-slate-700 text-lg py-3 border-b border-slate-100">Catalog</Link>
-            <Link href="/catalog/lichidare-stoc" className="text-slate-700 text-lg py-3 border-b border-slate-100">Lichidare de stoc</Link>
-            <Link href="/despre-noi" className="text-slate-700 text-lg py-3 border-b border-slate-100">Despre noi</Link>
-            <Link href="/contact" className="text-slate-700 text-lg py-3 border-b border-slate-100">Contact</Link>
+          /* Aceleași patru lucruri ca în bara de desktop, în aceeași ordine:
+             căutare, Contact, Autentificare, Coș. Meniul de telefon și bara nu
+             pot oferi lucruri diferite — cine caută „Despre noi" pe telefon și
+             nu-l găsește nu deduce că pe desktop ar fi fost acolo.
+
+             Categoriile NU sunt aici: rândul albastru de sub bară le arată pe
+             toate opt, inclusiv pe telefon, unde se trage cu degetul. Ar fi
+             fost a doua listă cu același conținut. */
+          <div className="flex flex-col p-6">
+            <form action="/catalog" role="search" className="relative flex items-center">
+              <label htmlFor="cauta-mobil" className="sr-only">
+                Caută în catalog
+              </label>
+              <input
+                id="cauta-mobil"
+                name="q"
+                type="search"
+                autoComplete="off"
+                placeholder="Caută în catalog"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-base text-slate-700 placeholder:text-slate-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-avo-600/30"
+              />
+              <button
+                type="submit"
+                aria-label="Caută"
+                className="absolute right-1.5 flex h-9 w-9 items-center justify-center rounded-lg bg-avo-600 text-white"
+              >
+                <Search size={18} />
+              </button>
+            </form>
+
+            <Link
+              href="/contact"
+              className="mt-4 flex items-center gap-3 border-b border-slate-100 py-3 text-lg text-slate-700"
+            >
+              <Phone size={18} className="text-avo-600" /> Contact
+            </Link>
             <Link
               href="/cerere-oferta"
-              className="mt-5 flex items-center justify-center h-12 rounded-xl bg-avo-600 text-white text-base font-semibold hover:bg-avo-700 transition-colors"
+              className="flex items-center gap-3 border-b border-slate-100 py-3 text-lg text-slate-700"
             >
-              Cere ofertă
+              <User size={18} className="text-avo-600" /> Autentificare
+            </Link>
+            <Link
+              href="/cerere-oferta"
+              className="mt-5 flex h-12 items-center justify-center gap-2.5 rounded-xl bg-avo-600 text-base font-semibold text-white transition-colors hover:bg-avo-700"
+            >
+              <ShoppingCart size={18} /> Coș
+              <span className="ml-1 rounded-full bg-white/20 px-2 text-[12px] font-extrabold">0</span>
             </Link>
           </div>
         }
@@ -199,11 +259,16 @@ export default function Navbar() {
           se aglomerează, containerul se strânge înaintea celorlalte și sigla
           ajunge la câțiva pixeli lățime.
 
+          `grow` A IEȘIT. Îl avea ca să împartă spațiul liber cu containerul
+          acțiunilor și să țină meniul centrat. Meniul nu mai există, iar
+          spațiul liber îl ia acum câmpul de căutare — dacă l-ar lua și sigla,
+          căutarea ar rămâne un ciot lipit de acțiuni.
+
           Nu e `flex-auto`, deși ar părea mai scurt: `flex-auto` scrie
           proprietatea `flex` întreagă, iar Tailwind o emite după `flex-shrink`,
           deci ar anula orice `shrink-*` pus pe același element.
         */}
-        <Link href="/" className="flex shrink items-center min-w-0 lg:min-w-52 lg:grow">
+        <Link href="/" className="flex shrink items-center min-w-0 lg:min-w-52">
           {/* Import static, nu șirul "/logo.png": Next scoate fișierul sub o
               adresă care conține un hash al conținutului. La orice modificare a
               siglei se schimbă adresa, deci browserele și optimizatorul de
@@ -229,48 +294,77 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* ── Meniul ─────────────────────────────────────────
-            Patru linkuri, toate către pagini care există.
+        {/* ── Căutarea ───────────────────────────────────────────────────
+            Ia tot spațiul liber dintre siglă și acțiuni, plafonat la 620px:
+            peste atât câmpul arată gol, fiindcă nimeni nu scrie 80 de
+            caractere într-o căutare de produs.
 
-            CE A IEȘIT DE AICI ȘI DE CE:
+            NU CAUTĂ ÎNCĂ. Site-ul n-are index de căutare — cele 845 de produse
+            n-au fost încă indexate la construcție. Formularul trimite pe
+            /catalog, cu termenul în `q`: măcar duce unde se caută, în loc să
+            înghită tastele. Când indexul există, se schimbă `action` și atât.
 
-              „Parteneri B2B” ....... fereastră cu „Cont Gold −10%” și „Cont
-                                     Platinum −15%”. Conturile nu există, iar
-                                     reducerile erau afișate ca și cum ar fi
-                                     reale. Linkul ei, /devino-partener, dă 404.
-              „Sisteme Industriale” . ducea la /oferte-en-gros, care nu există.
-                                     Era și singurul buton verde din bară,
-                                     a cincea culoare de accent din pagină.
-              „Cont B2B” ............ nu deschidea nimic. Site-ul n-are conturi.
-              căutarea ............. câmpul și butonul cu lupă nu făceau nimic.
-                                     Se întorc când căutarea chiar funcționează;
-                                     o lupă care nu caută e mai rău decât niciuna.
+            ERA SCOASĂ DIN BARĂ exact pentru că nu făcea nimic — „o lupă care
+            nu caută e mai rău decât niciuna". Se întoarce la cerere, cu o
+            țintă reală de data asta. */}
+        <form
+          action="/catalog"
+          role="search"
+          className="hidden lg:flex relative grow items-center max-w-[620px]"
+        >
+          <label htmlFor="cauta-bara" className="sr-only">
+            Caută în catalog
+          </label>
+          <input
+            id="cauta-bara"
+            name="q"
+            type="search"
+            autoComplete="off"
+            placeholder="Caută invertoare, panouri fotovoltaice sau acumulatori"
+            className="h-11 w-full rounded-xl border border-white/80 bg-white/70 pr-28 pl-4 text-[13px] text-slate-700 transition-all placeholder:text-slate-500 hover:bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-avo-600/30 xl:text-sm"
+          />
+          <button type="submit" className={BUTON_CAUTARE}>
+            <Search size={16} />
+            Caută
+          </button>
+        </form>
 
-            Au rămas patru linkuri și o singură acțiune. Navigarea prin marfă o
-            face rândul de categorii de sub bară (catalog/MeniuCategorii.tsx),
-            prezent acum și pe prima pagină — deci bara n-are de ce s-o repete. */}
-        <div className="hidden lg:flex shrink-0 items-center gap-2 xl:gap-2.5 2xl:gap-3">
-          <Link href="/catalog" className={BUTON_MENIU}>
-            Catalog
-          </Link>
-          <Link href="/catalog/lichidare-stoc" className={BUTON_MENIU}>
-            Lichidare de stoc
-          </Link>
-          <Link href="/despre-noi" className={BUTON_MENIU}>
-            Despre noi
-          </Link>
-          <Link href="/contact" className={BUTON_MENIU}>
-            Contact
-          </Link>
-        </div>
+        {/* ── Acțiunile ──────────────────────────────────────────────────
+            Contact, Autentificare, Coș.
 
-        {/* ── Acțiunea principală ──────────────────────────────────
-            `grow` împinge butonul la marginea dreaptă și, îmreună cu `grow`-ul
-            de pe containerul siglei, ține meniul centrat — aceeași mecanică de
-            dinainte, cu un singur element în loc de patru. */}
-        <div className="hidden lg:flex lg:grow lg:justify-end items-center">
-          <Link href="/cerere-oferta" className={BUTON_PRINCIPAL}>
-            Cere ofertă
+            DOUĂ DINTRE ELE N-AU ÎNCĂ UNDE SĂ DUCĂ. Site-ul n-are conturi și
+            n-are coș — magazinul e amânat până decide conducerea. Până atunci
+            amândouă trimit la cererea de ofertă, singura acțiune pe care un
+            vizitator chiar o poate duce la capăt aici.
+
+            Fuseseră scoase din bară tocmai fiindcă nu duceau nicăieri. Se
+            întorc la cerere; când magazinul se deschide, li se schimbă doar
+            `href`-ul. Bulina coșului arată `0`, nu o cifră inventată. */}
+        <div className="hidden lg:flex shrink-0 items-center gap-2 xl:gap-2.5">
+          <Link href="/contact" className={BUTON_ACTIUNE} title="Contact">
+            <Phone size={17} className="shrink-0" />
+            <span className="hidden xl:inline">Contact</span>
+          </Link>
+
+          <Link href="/cerere-oferta" className={BUTON_ACTIUNE} title="Autentificare">
+            <User size={17} className="shrink-0" />
+            {/* Eticheta apare de la `xl`, ca și „Contact". A fost `2xl`, ca
+                rezervă de lățime — dar la 1440 butonul rămânea o pictogramă
+                singură lângă două butoane cu text, deci arăta a element
+                neterminat, nu a element strâns. Măsurat la 1440: acțiunile cer
+                ~380px din 1136, iar căutarea rămâne la 516px, peste minimul de
+                la care un câmp de căutare e încă folosibil. */}
+            <span className="hidden xl:inline">Autentificare</span>
+          </Link>
+
+          <Link href="/cerere-oferta" className={BUTON_COS} title="Coș">
+            <span className="relative flex shrink-0">
+              <ShoppingCart size={17} />
+              <em className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-avo-600 bg-white px-1 text-[9px] font-extrabold not-italic text-avo-700">
+                0
+              </em>
+            </span>
+            <span className="hidden xl:inline">Coș</span>
           </Link>
         </div>
       </NavbarInteractiv>

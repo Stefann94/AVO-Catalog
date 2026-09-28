@@ -1,0 +1,626 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   HERO CU RECLAME — carusel, trei casete, cinci reclame de categorie
+   ──────────────────────────────────────────────────────────────────────────
+   Structura și cifrele vin din prototipul Projects/Solarone.ro, măsurate la
+   1440px cu un rezolvator scris pentru asta (vezi arhiva/README.md). Nu e CSS
+   importat: prototipul are ~30 de straturi de corecții peste aceleași
+   selectoare, iar aici stă doar valoarea finală, o dată fiecare.
+
+   Prefixul `rc-` („reclame") ține clasele astea departe de restul site-ului.
+
+   ─── CULORILE SUNT ÎNCĂ ALE PROTOTIPULUI ─────────────────────────────────
+
+   Albastru #0b44c4 și chihlimbar #ffce0a, ca să se poată compara 1:1 cu
+   originalul. Trecerea pe paleta AVO se face SCHIMBÂND DOAR BLOCUL DE
+   VARIABILE de mai jos — și atenție, nu e o înlocuire unu-la-unu: roșul AVO e
+   un accent închis, deci cere text alb, nu închis. Detaliile, lângă variabile.
+
+   ─── VINE DIN src/components/proba/ ──────────────────────────────────────
+
+   Fișierul ăsta e partea de hero din proba.css, scoasă ca să intre în site.
+   Antetul și bara albastră au rămas acolo: bara de sus a site-ului e cea
+   existentă, neschimbată la cerere.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.rc {
+  /* ── Culorile prototipului ────────────────────────────────────────────
+     Pe paleta AVO devin:
+       --rc-actiune: #004a99;  --rc-actiune-d: #003b7d;  --rc-actiune-l: #2a75d1;
+       --rc-accent:  #e00008;  --rc-accent-d:  #b80007;
+       --rc-pe-accent: #ffffff   ← alb, NU #10151c
+     Motivul: pe #e00008, albul dă 5.02:1 (trece AA), textul închis 3.5:1 (cade).
+     Galbenul prototipului e un accent deschis, roșul AVO e unul închis. */
+  --rc-actiune: #0b44c4;
+  --rc-actiune-d: #062e8c;
+  --rc-actiune-l: #2c63ee;
+  --rc-accent: #ffce0a;
+  --rc-accent-d: #e3b500;
+  --rc-accent-l: #ffe87a;
+  --rc-pe-accent: #10151c;
+
+  --rc-cerneala: #10151c;
+  --rc-linie: #e2e8f0;
+}
+
+/* `.rc-wrap` NU EXISTĂ AICI. În prototip, secțiunea își ducea propriul
+   container centrat. La noi lățimea o dă `coloana` din globals.css, aceeași
+   pentru tot site-ul — două containere cu aceeași treabă ar fi însemnat două
+   locuri de schimbat la fiecare reglaj de lățime. */
+
+/* ══════════════════════════ HERO ══════════════════════════ */
+
+.rc-promo {
+  padding: 0 0 8px;
+}
+.rc-promo-sus {
+  display: grid;
+  grid-template-columns: 1fr 348px;
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+/* ── Caruselul ──
+   Fără JavaScript: cinci input[type=radio] ascunse țin starea, iar :has()
+   mută pista. Același tipar ca la filele de produse din prima pagină — o
+   secțiune de deasupra ecranului n-are voie să aducă JS care întârzie
+   imaginea principală. */
+.rc-carusel {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  background: #071b47;
+}
+.rc-carusel input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rc-pista {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0.05, 0.2, 1);
+}
+.rc-carusel:has(#rc-d1:checked) .rc-pista { transform: translateX(-100%); }
+.rc-carusel:has(#rc-d2:checked) .rc-pista { transform: translateX(-200%); }
+.rc-carusel:has(#rc-d3:checked) .rc-pista { transform: translateX(-300%); }
+.rc-carusel:has(#rc-d4:checked) .rc-pista { transform: translateX(-400%); }
+
+.rc-diapo {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.rc-diapo-txt {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 42px 40px 42px 80px;
+  color: #fff;
+  background: linear-gradient(140deg, #04102b 0%, #082a7f 62%, #0b3aae 100%);
+}
+/* Pana oblică din dreapta textului: aceeași umplutură, înclinată 9°.
+   Ea face ca despărțirea de fotografie să nu fie o linie dreaptă. */
+.rc-diapo-txt::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -70px;
+  width: 140px;
+  background: inherit;
+  transform: skewX(-9deg);
+}
+
+.rc-eticheta {
+  align-self: flex-start;
+  max-width: 400px;
+  margin-bottom: 14px;
+  padding: 5px 11px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rc-accent);
+  background: rgb(255 206 10 / 0.14);
+  border: 1px solid rgb(255 206 10 / 0.35);
+  border-radius: 20px;
+}
+.rc-diapo-txt h2 {
+  margin: 0 0 10px;
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+}
+.rc-diapo-txt p {
+  margin: 0 0 18px;
+  max-width: 400px;
+  font-size: 14.5px;
+  color: #c6d6f2;
+}
+.rc-diapo-btn {
+  align-self: flex-start;
+  padding: 13px 26px;
+  font-size: 14.5px;
+  font-weight: 750;
+  color: var(--rc-pe-accent);
+  background: var(--rc-accent);
+  border-radius: 9px;
+}
+.rc-nota {
+  max-width: 400px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #93aad4;
+}
+
+/* Diapozitivul chihlimbariu: aceeași formă, fundal deschis, text închis.
+   Fotografia de lângă el primește un fundal întunecat-neutru, nu albastru,
+   ca tranziția să nu bată în două albastre diferite. */
+.rc-diapo-txt.rc-chihlimbar {
+  color: var(--rc-cerneala);
+  background: linear-gradient(140deg, #ffd429 0%, #ffb800 90%);
+}
+.rc-diapo-txt.rc-chihlimbar .rc-eticheta {
+  color: #3b2d00;
+  background: rgb(0 0 0 / 0.1);
+  border-color: rgb(0 0 0 / 0.2);
+}
+.rc-diapo-txt.rc-chihlimbar p {
+  color: #4a3a00;
+}
+.rc-diapo-txt.rc-chihlimbar .rc-diapo-btn {
+  color: #fff;
+  background: var(--rc-cerneala);
+}
+.rc-diapo-txt.rc-chihlimbar .rc-nota {
+  color: #6b5400;
+}
+.rc-diapo-txt.rc-chihlimbar + .rc-diapo-img {
+  background: radial-gradient(circle at 60% 45%, #2a3140, #10151c 72%);
+}
+
+.rc-diapo-img {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: radial-gradient(circle at 60% 45%, #0a2e86, #04102b 72%);
+}
+.rc-diapo-img img {
+  max-height: 300px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 34px rgb(0 0 0 / 0.45));
+}
+
+/* ── Săgeți și buline ──
+   Fiecare diapozitiv are perechea lui de săgeți; se arată doar cea a
+   diapozitivului bifat. Așa htmlFor poate trimite la vecinul corect. */
+.rc-sageti {
+  display: none;
+}
+.rc-carusel:has(#rc-d0:checked) .rc-sageti[data-i="0"],
+.rc-carusel:has(#rc-d1:checked) .rc-sageti[data-i="1"],
+.rc-carusel:has(#rc-d2:checked) .rc-sageti[data-i="2"],
+.rc-carusel:has(#rc-d3:checked) .rc-sageti[data-i="3"],
+.rc-carusel:has(#rc-d4:checked) .rc-sageti[data-i="4"] {
+  display: block;
+}
+.rc-sageata {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+  color: #fff;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: background 0.16s;
+}
+.rc-sageata:hover {
+  background: rgb(255 255 255 / 0.3);
+}
+.rc-sageata.rc-inapoi { left: 18px; }
+.rc-sageata.rc-inainte { right: 18px; }
+
+.rc-buline {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  gap: 7px;
+}
+.rc-buline label {
+  width: 8px;
+  height: 8px;
+  background: rgb(255 255 255 / 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: width 0.2s, background 0.2s, border-radius 0.2s;
+}
+.rc-carusel:has(#rc-d0:checked) .rc-buline label:nth-child(1),
+.rc-carusel:has(#rc-d1:checked) .rc-buline label:nth-child(2),
+.rc-carusel:has(#rc-d2:checked) .rc-buline label:nth-child(3),
+.rc-carusel:has(#rc-d3:checked) .rc-buline label:nth-child(4),
+.rc-carusel:has(#rc-d4:checked) .rc-buline label:nth-child(5) {
+  width: 22px;
+  border-radius: 5px;
+  background: var(--rc-accent);
+}
+
+/* ── Cele trei casete din dreapta ── */
+.rc-casete {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  height: 400px;
+}
+.rc-caseta {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.rc-caseta:hover {
+  box-shadow: 0 14px 30px -14px rgb(3 16 43 / 0.5);
+}
+.rc-caseta-l {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 10px 14px 18px;
+}
+.rc-caseta-k {
+  font-size: 9.6px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.rc-caseta b {
+  font-size: 14.6px;
+  font-weight: 750;
+  line-height: 1.26;
+  letter-spacing: -0.015em;
+}
+.rc-caseta-c {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.rc-caseta-r {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.rc-caseta-una {
+  max-height: 88px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / 0.28));
+}
+
+/* 1. Configurator — bleumarin, două produse pe un podium */
+.rc-cfg {
+  background: linear-gradient(130deg, #071b44 0%, #0b3aae 100%);
+}
+.rc-cfg .rc-caseta-k,
+.rc-cfg .rc-caseta-c { color: var(--rc-accent); }
+.rc-cfg b { color: #fff; }
+.rc-cfg .rc-caseta-r {
+  background: linear-gradient(180deg, #fff 0%, #eaf0fa 100%);
+}
+.rc-duo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 10px;
+}
+.rc-duo img {
+  max-height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+.rc-plus {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--rc-actiune);
+  opacity: 0.65;
+}
+
+/* 2. Stoc — deschisă, cu dungă verde și pastile de marcă */
+.rc-stoc {
+  background: linear-gradient(120deg, #eef3fb 0%, #dce7f7 100%);
+  border-left: 3px solid #0e8a43;
+}
+.rc-stoc .rc-caseta-k { color: #0e8a43; }
+.rc-stoc b { color: var(--rc-cerneala); font-size: 14px; }
+.rc-stoc .rc-caseta-una {
+  filter: drop-shadow(0 6px 14px rgb(16 24 40 / 0.18));
+}
+.rc-marci {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.rc-marci span {
+  padding: 2px 7px;
+  font-size: 9.6px;
+  font-weight: 700;
+  color: #3a4c61;
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid #cbd8ea;
+  border-radius: 20px;
+}
+.rc-insigna {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 8px;
+  font-size: 9.4px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #0e8a43;
+  border-radius: 20px;
+}
+
+/* 3. B2B — galbenă, cu comparația de preț */
+.rc-b2b-caseta {
+  background: linear-gradient(120deg, #ffc800 0%, #ffe06b 100%);
+}
+.rc-b2b-caseta .rc-caseta-k { color: #6b5100; }
+.rc-b2b-caseta b { color: #2a2100; }
+.rc-b2b-caseta .rc-caseta-r {
+  background: rgb(255 255 255 / 0.5);
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+}
+.rc-b2b-caseta .rc-caseta-una {
+  filter: drop-shadow(0 8px 16px rgb(90 70 0 / 0.28));
+}
+.rc-pret {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 3px;
+}
+.rc-pret s {
+  font-size: 11.5px;
+  color: #7a6200;
+}
+.rc-pret strong {
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: #1b1500;
+}
+
+/* ══════════════════════════ CELE CINCI RECLAME ══════════════════════════ */
+
+.rc-dale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.rc-dala {
+  position: relative;
+  display: block;
+  height: 230px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.rc-dala-t {
+  position: relative;
+  z-index: 3;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 16px 0;
+}
+.rc-dala-k {
+  font-size: 9.6px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--rc-accent);
+}
+.rc-dala-k.rc-deschis { color: #0a3577; }
+.rc-dala b {
+  font-size: 16.4px;
+  font-weight: 800;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.rc-dala-sub {
+  font-size: 11.2px;
+  line-height: 1.3;
+  color: #afc2e0;
+}
+.rc-dala-sub.rc-inchis { color: #3f4e5f; }
+
+.rc-dala-img {
+  position: absolute;
+  z-index: 1;
+  object-fit: contain;
+}
+.rc-dala-marca {
+  position: absolute;
+  z-index: 5;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+.rc-dala-marca.rc-sus-dreapta { top: 14px; right: 14px; }
+.rc-dala-marca.rc-jos-stanga { left: 16px; bottom: 14px; }
+
+.rc-dala-pret {
+  position: absolute;
+  z-index: 4;
+  left: 16px;
+  bottom: 14px;
+  padding: 6px 11px;
+  font-size: 11.4px;
+  font-weight: 600;
+  color: #cbd9f2;
+  background: rgb(3 14 40 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 8px;
+  backdrop-filter: blur(3px);
+}
+.rc-dala-pret b {
+  font-size: 14.4px;
+  letter-spacing: -0.02em;
+  color: var(--rc-accent);
+}
+
+/* Fanionul diagonal din colțul de sus-dreapta. */
+.rc-fanion {
+  position: absolute;
+  z-index: 4;
+  top: 20px;
+  right: -36px;
+  display: block;
+  padding: 7px 38px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--rc-pe-accent);
+  background: var(--rc-accent);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.18);
+  transform: rotate(38deg);
+}
+.rc-fanion.rc-alt {
+  color: #fff;
+  background: var(--rc-actiune);
+}
+
+/* ── FOTOGRAFIA E UN CARTONAȘ ALB, NU UN DECUPAJ ───────────────────────────
+
+   Prototipul pune în dale PNG-uri decupate, fără fundal (`produse-png/`).
+   Fotografiile noastre vin din WooCommerce și sunt JPEG-uri pe alb: puse
+   direct peste degradeuri, arătau ca niște dreptunghiuri albe scăpate peste
+   text, nu ca produse.
+
+   Trei variante, și de ce nu merg primele două:
+     `mix-blend-mode: multiply` ... curăță albul, dar numai pe fundal deschis;
+                                    pe cele trei dale închise produsul dispare.
+     decuparea fotografiilor ..... 343 din 845 n-au nicio poză, iar celelalte
+                                    ar trebui detourate una câte una.
+     CARTONAȘ ALB ................ albul devine intenționat: colț rotunjit,
+                                    puțin aer înăuntru, umbră. Citește ca o
+                                    fotografie de produs pusă pe afiș.
+
+   E și soluția pe care a folosit-o prototipul înainte să aibă PNG-uri — se
+   vede în straturile lui de corecții.
+
+   MĂSURILE SUNT ALESE CA SĂ NU ATINGĂ TEXTUL. Textul are `max-width: 54%`,
+   cartonașul `width: 42%` la `right: 4%`: 54 + 42 + 4 = 100%, deci nu se
+   suprapun niciodată, oricât de lung ar fi numele categoriei.
+   `max-height: 58%` îl ține sub rândul de titlu. */
+.rc-dala-img {
+  background: #fff;
+  border-radius: 10px;
+  padding: 7px;
+  box-shadow: 0 12px 26px rgb(3 16 43 / 0.35);
+  right: 4%;
+  bottom: 9%;
+  width: 42%;
+  height: auto;
+  max-height: 58%;
+}
+.rc-dala-t {
+  max-width: 54%;
+}
+
+/* Fiecare dală are compoziția ei: fundal și poziția siglei. */
+.rc-d-invertoare { background: linear-gradient(150deg, #08265f 0%, #0b3aae 62%, #0a2e86 100%); }
+.rc-d-invertoare .rc-dala-marca { max-height: 24px; max-width: 78px; }
+
+.rc-d-panouri {
+  background:
+    radial-gradient(90% 70% at 88% 6%, rgb(255 255 255 / 0.42) 0%, rgb(255 255 255 / 0) 60%),
+    linear-gradient(42deg, #f0fafc 0%, #c6e9f2 32%, #8bd2e6 64%, #369cc4 100%);
+}
+.rc-d-panouri b { color: #0f172a; }
+.rc-d-panouri .rc-dala-marca { max-height: 30px; max-width: 110px; }
+.rc-d-panouri .rc-fanion { color: #fff; background: #0b2a5b; }
+
+.rc-d-stocare { background: linear-gradient(160deg, #06213f 0%, #0c3f73 58%, #04152c 100%); }
+.rc-d-stocare .rc-dala-marca { max-height: 38px; max-width: 38px; }
+
+.rc-d-montaj {
+  background:
+    radial-gradient(90% 70% at 86% 8%, rgb(255 255 255 / 0.4) 0%, rgb(255 255 255 / 0) 58%),
+    linear-gradient(42deg, #eaf7f1 0%, #b4e3d0 30%, #74c7a8 62%, #2e9b78 100%);
+}
+.rc-d-montaj b { color: #0f172a; }
+.rc-d-montaj .rc-dala-k.rc-deschis { color: #0b4a6b; }
+.rc-d-montaj .rc-dala-marca { max-height: 30px; max-width: 36px; }
+
+.rc-d-incarcare { background: linear-gradient(155deg, #141b2b 0%, #25334f 60%, #0c1220 100%); }
+.rc-d-incarcare .rc-dala-marca { top: 16px; right: 16px; max-height: 18px; max-width: 88px; }
+
+/* Pe fundal închis, siglele închise la culoare devin albe. */
+.rc-d-invertoare .rc-dala-marca,
+.rc-d-stocare .rc-dala-marca,
+.rc-d-incarcare .rc-dala-marca {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+
+@media (max-width: 1180px) {
+  .rc-promo-sus { grid-template-columns: 1fr; }
+  .rc-casete { grid-template-rows: none; grid-template-columns: repeat(3, 1fr); height: auto; }
+  .rc-caseta { min-height: 118px; }
+  .rc-dale { grid-template-columns: repeat(3, 1fr); }
+  .rc-dala { height: 205px; }
+}
+
+@media (max-width: 820px) {
+  .rc-carusel { height: auto; }
+  .rc-diapo { grid-template-columns: 1fr; }
+  .rc-diapo-txt { padding: 26px 22px; }
+  .rc-diapo-txt::after { display: none; }
+  .rc-diapo-txt h2 { font-size: 23px; }
+  .rc-diapo-img { display: none; }
+  .rc-casete { grid-template-columns: 1fr; }
+  .rc-dale { grid-template-columns: repeat(2, 1fr); }
+  .rc-dala { height: 190px; }
+  .rc-dala b { font-size: 15px; }
+}

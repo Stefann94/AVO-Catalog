@@ -61,7 +61,9 @@ export default async function CatalogPage() {
       <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
 
       {/* ── Rândul de categorii, cu subcategoriile la hover ──
-          Aceleași date ca meniul din stânga, care rămâne. */}
+          Aceleași date ca meniul din stânga, care rămâne. Sub banner, ca pe
+          prima pagină: cele două trebuie să arate la fel pe ambele, altfel
+          capul paginii se schimbă când treci dintr-una în alta. */}
       <MeniuCategorii categorii={categorii} produse={toateProdusele} />
 
       {/* ── Catalogul: meniul din stânga și grila, neschimbate ── */}

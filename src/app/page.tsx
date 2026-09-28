@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import HeroCatalog from "@/components/catalog/HeroCatalog";
+import HeroReclame from "@/components/acasa/HeroReclame";
 import MeniuCategorii from "@/components/catalog/MeniuCategorii";
 import { incarcaBaraFiltre } from "@/lib/panou";
 import { incarcaToateProdusele } from "@/lib/produs";
 import { incarcaOferte } from "@/lib/oferte";
-import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import ProduseCuFile from "@/components/acasa/ProduseCuFile";
 import Marci from "@/components/acasa/Marci";
 import LichidareStoc from "@/components/LichidareStoc";
@@ -49,21 +48,25 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // În paralel: n-au nicio dependență între ele. Aceleași două încărcări pe care
-  // le face și /catalog pentru același banner.
-  const [perioada, oferte, bara, toateProdusele] = await Promise.all([
-    incarcaPerioadaCatalog(),
+  // În paralel: n-au nicio dependență între ele.
+  const [oferte, bara, toateProdusele] = await Promise.all([
     incarcaOferte(),
     incarcaBaraFiltre(),
     incarcaToateProdusele(),
   ]);
+
+  /* Câte produse sunt în lichidare — cifra din caseta verde a hero-ului.
+     Vine din bara de filtre, nu numărată din nou aici: e aceeași sursă care
+     alimentează și secțiunea „Lichidare de stoc" de mai jos, deci nu pot
+     ajunge să spună lucruri diferite. */
+  const lichidare = bara.stari.find((s) => s.slug === "lichidare-stoc")?.produse ?? 0;
 
   return (
     /* ══════════════════════════════════════════════════════════════════════
        O SINGURĂ COLOANĂ, DE SUS PÂNĂ JOS
        ──────────────────────────────────────────────────────────────────────
        Fiecare secțiune de dedesubt își pune conținutul într-un `.coloana`
-       (globals.css): 1200px lățime maximă, centrat, cu 16/24/32px de spațiu
+       (globals.css): 1500px lățime maximă, centrat, cu 16/24/32px de spațiu
        pe laturi. Fundalurile rămân pe toată lățimea ferestrei, conținutul nu.
 
        AICI AU STAT TREI COMPONENTE CARE TRĂIAU ÎN AFARA COLOANEI:
@@ -77,20 +80,23 @@ export default async function Home() {
        sunt în arhiva/componente/, cu tot cu motivul — vezi arhiva/README.md.
        ══════════════════════════════════════════════════════════════════════ */
     <div className="flex min-h-screen flex-col bg-slate-50 pt-(--inaltime-navbar)">
-      {/* ── Bannerul: ofertele lunii ──
-          Același component ca în capul paginii /catalog.
+      {/* ── Capul de magazin: carusel, trei casete, cinci reclame ──
+          Structura prototipului Projects/Solarone.ro, cu datele noastre.
 
-          A ÎNLOCUIT hero-ul cu videouri și banda de branduri, șterse la cerere.
-          Ocupau un ecran întreg cu 3 MB de filmări de stoc care arătau case
-          rezidențiale — un mesaj care nu spunea nimic despre distribuție — în
-          timp ce bannerul ăsta arată marfă, coduri și prețuri reale.
+          A ÎNLOCUIT `HeroCatalog`, bannerul cu ofertele lunii, care rămâne pe
+          /catalog. Acolo e potrivit — pagina aia ARE un singur subiect. Prima
+          pagină a unui magazin are mai multe deodată, și de-aia are nevoie de
+          mai multe casete, nu de un banner mai mare.
 
-          Amândouă rămân în istoricul git dacă vor fi vreodată nevoie. */}
-      <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
+          Culorile sunt încă ale prototipului, ca să se poată compara 1:1.
+          Trecerea pe paleta AVO e blocul de variabile din hero-reclame.css. */}
+      <HeroReclame produse={toateProdusele} lichidare={lichidare} />
 
       {/* ── Rândul de categorii ──
-          Același component ca pe /catalog, cu aceleași date. Prima pagină și
-          catalogul au aceeași intrare în marfă. */}
+          Sub banner, lipit de el. Cele două blocuri au aceeași lățime și nu
+          au spațiu între ele, deci se citesc ca un singur cap de pagină.
+
+          Același component ca pe /catalog, cu aceleași date. */}
       <MeniuCategorii categorii={bara.categorii} produse={toateProdusele} />
 
       {/* Produsele, pe file: „Oferte" plus cele mai mari categorii. */}

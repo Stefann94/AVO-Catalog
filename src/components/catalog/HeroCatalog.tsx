@@ -101,29 +101,49 @@ export default function HeroCatalog({
     branduri.length > 1 ? `Ofertele lunii de la ${branduri.length} branduri` : "Ofertele lunii";
 
   return (
-    <section className="relative overflow-hidden bg-avo-950">
-      {/* ── Fondul deschis din dreapta, tăiat în diagonală ──
-          Marginea lui stângă cade la 20px după coloana de text (jumătate din
-          `gap-10`), iar diagonala o împinge încă 64px spre dreapta sus. Așa
-          titlul nu atinge niciodată zona deschisă, la nicio lățime.
+    /* ══════════════════════════════════════════════════════════════════════
+       BANNERUL E ÎN COLOANĂ, LIPIT SUB BANDA DE CATEGORII
+       ──────────────────────────────────────────────────────────────────────
+       Mergea de la o margine a ferestrei la cealaltă: fondul bleumarin ieșea
+       cu 152px în stânga și în dreapta față de restul paginii, la 1440px. Acum
+       e un bloc de lățimea coloanei, cu muchia stângă pe aceeași verticală cu
+       sigla și cu titlurile secțiunilor.
 
-          O SINGURĂ VALOARE, nu două ca înainte (`lg:` și `xl:`). Erau două
-          fiindcă sub 1280px containerul era fereastra, iar peste el era fix;
-          între pragul lui `xl` (1280px) și lățimea containerului rămânea o
-          bandă în care formula „fixă" se aplica pe un container care încă
-          creștea. Coloana de acum — 1200px plafon, 32px spațiu lateral — se
-          descrie cu o singură expresie, care acoperă amândouă cazurile.
+       Trei straturi, fiecare cu treaba lui:
+         section .... fundalul paginii, pe toată lățimea, plus aerul de jos
+         .coloana ... lățimea și marginile laterale
+         blocul ..... culoarea, decuparea diagonalei și padding-ul interior
 
-          CALCULUL E ÎN globals.css (`--hero-diagonala`), nu aici. Scris ca
-          valoare arbitrară pe element, oprea construcția cu stack overflow:
-          `min()` imbricat într-un `[...]` duce parserul Tailwind în recursie.
-          Motivul complet e lângă declarație. */}
-      <div
-        aria-hidden
-        className="absolute inset-y-0 right-0 hidden bg-[#EEF3F9] [clip-path:polygon(64px_0,100%_0,100%_100%,0_100%)] lg:left-(--hero-diagonala) lg:block"
-      />
+       FĂRĂ SPAȚIU, NICI SUS, NICI JOS. Sus se lipește de bara cu sigla, jos
+       de banda de categorii. Cele trei formează un singur cap de pagină, nu
+       trei blocuri care se întâmplă să stea unul peste altul. Aerul vine abia
+       după bandă (vezi MeniuCategorii).
 
-      <div className="coloana relative grid items-center gap-8 py-8 lg:grid-cols-12 lg:gap-10 lg:py-10">
+       Padding-ul textului e al blocului (`px-6 lg:px-10`), nu al coloanei:
+       altfel s-ar fi adunat cu al ei, iar titlul ar fi început cu 32px mai la
+       dreapta decât muchia blocului.
+       ══════════════════════════════════════════════════════════════════════ */
+    <section className="bg-slate-50">
+      <div className="coloana">
+        <div className="relative overflow-hidden bg-avo-950">
+          {/* ── Fondul deschis din dreapta, tăiat în diagonală ──
+              Marginea lui stângă cade la 20px după coloana de text (jumătate
+              din `gap-10`), iar diagonala o împinge încă 64px spre dreapta
+              sus. Așa titlul nu atinge niciodată zona deschisă.
+
+              SE MĂSOARĂ ÎN PROCENTE DIN BLOC, nu din fereastră. Cât timp
+              bannerul era cât ecranul, poziția ieșea dintr-o expresie cu
+              `min()` și `100vw` — aceeași care a oprit construcția cu stack
+              overflow, când stătea scrisă ca valoare arbitrară pe element.
+              Acum containerul ei E blocul, deci `100%` măsoară exact ce
+              trebuie, iar formula se scurtează la o înmulțire. Rămâne în
+              globals.css (`--hero-diagonala`) fiindcă acolo e explicată. */}
+          <div
+            aria-hidden
+            className="absolute inset-y-0 right-0 hidden bg-[#EEF3F9] [clip-path:polygon(64px_0,100%_0,100%_100%,0_100%)] lg:left-(--hero-diagonala) lg:block"
+          />
+
+          <div className="relative grid items-center gap-8 px-6 py-8 lg:grid-cols-12 lg:gap-10 lg:px-10 lg:py-10">
         {/* ══ STÂNGA: mesajul ══ */}
         <div className="lg:col-span-5">
           {eticheta ? (
@@ -273,6 +293,8 @@ export default function HeroCatalog({
                 );
               })}
             </ul>
+          </div>
+        </div>
           </div>
         </div>
       </div>

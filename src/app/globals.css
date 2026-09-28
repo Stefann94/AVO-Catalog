@@ -275,20 +275,21 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* 1200px, ca la Altex și Dedeman.
-     A fost 1500px, lățimea prototipului — aceeași cu a lui Amazon. Problema
-     n-o făcea cifra în sine, ci raportul ei cu ecranul pe care se lucrează:
-     un laptop are 1440px, deci plafonul de 1500 nu se atingea niciodată și
-     coloana lua toată fereastra. Singurul spațiu rămas pe laturi erau cei
-     32px de padding, adică pagina arăta lipită de margini.
+  /* 1500px, exact ca prototipul Projects/Solarone.ro (`--col` din stil-v2.css).
+     Aceeași cifră o folosește și Amazon; Altex și Dedeman stau pe 1200–1240.
 
-     Marja reală pe laturi, la aceeași fereastră:
+     A FOST 1200px o vreme, iar motivul rămâne adevărat: pe un laptop de
+     1440px, plafonul de 1500 nu se atinge, deci coloana ia toată fereastra și
+     pe laturi rămân doar cei 32px de padding. Marja reală:
 
                      1500        1200
        1440px        32px        152px
        1600px        82px        232px
-       1920px       272px        392px */
-  --coloana-max: 1200px;
+       1920px       272px        392px
+
+     S-a ales 1500 ca site-ul să stea 1:1 lângă prototip, pentru comparație.
+     Se schimbă de aici, singurul loc. */
+  --coloana-max: 1500px;
   --coloana-pad: 16px;
 }
 
@@ -325,12 +326,26 @@
      + 160px ................................. cele patru goluri dintre ele
      + 20px .................................. jumătate din gap-ul până la poză
 
-   NICIO CIFRĂ A COLOANEI SCRISĂ AICI. Erau scrise — 750px și 1500px, jumătate
-   și întregul plafonului de atunci — iar la trecerea coloanei pe 1200px
-   diagonala ar fi rămas unde era, tăind peste titlu. Acum le citește din
-   `--coloana-max` și `--coloana-pad`, deci se mută odată cu ele.
+   NICIO CIFRĂ A FERESTREI SCRISĂ AICI. `100%` e lățimea BLOCULUI bannerului,
+   fiindcă el e containerul poziționat de când bannerul stă în coloană
+   (28.09.2026):
 
-   Verificat aritmetic la 1200/32: 428px la 1024, 622px la 1440 și peste.
+     40px .................. padding-ul interior al blocului (`lg:px-10`)
+     + (100% − 520px) × 5/12 ... cinci coloane din douăsprezece
+                             (520 = 80px padding + 440px de goluri)
+     + 160px ............... cele patru goluri dintre cele cinci
+     + 20px ................ jumătate din gap-ul până la fotografie
+
+   Scris strâns, e ce urmează. Verificat: 477px într-un bloc de 1136px, adică
+   629px de la marginea ferestrei, la 1440.
+
+   ─── A FOST MULT MAI URÂTĂ ───────────────────────────────────────────────
+
+   Cât timp bannerul mergea cât fereastra, poziția nu se putea măsura în
+   procente: containerul era fereastra, iar coloana de text stătea undeva la
+   mijloc. Formula ieșea din `100vw`, `50vw`, plafonul coloanei și padding-ul
+   ei, cu două `min()`. Scrisă așa ca valoare arbitrară pe element, oprea și
+   `next build`, și `next dev`, cu stack overflow.
 
    ─── DE CE AICI, NU ÎN COMPONENTĂ ────────────────────────────────────────
 
@@ -347,10 +362,7 @@
    Aici, în CSS obișnuit, aceeași expresie e doar o declarație. Componenta o
    cere cu `lg:left-(--hero-diagonala)`, o clasă simplă. */
 :root {
-  --hero-diagonala: calc(
-    50% - min(50vw, var(--coloana-max) / 2) + var(--coloana-pad) +
-      (min(100vw, var(--coloana-max)) - var(--coloana-pad) * 2 - 440px) * 5 / 12 + 180px
-  );
+  --hero-diagonala: calc(220px + (100% - 520px) * 5 / 12);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
