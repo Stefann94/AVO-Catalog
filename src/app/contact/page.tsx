@@ -79,7 +79,7 @@ export default function PaginaContact() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
       <div className="coloana">
-        <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] font-extrabold text-gray-900 leading-tight">
+        <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] font-bold text-gray-900 leading-tight">
           {TITLU}
         </h1>
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray-600">

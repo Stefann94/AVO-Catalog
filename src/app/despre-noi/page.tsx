@@ -33,7 +33,7 @@ export default function PaginaDespreNoi() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
       <div className="coloana">
-        <h1 className="max-w-4xl text-[26px] sm:text-[34px] lg:text-[40px] font-extrabold leading-tight text-gray-900">
+        <h1 className="max-w-4xl text-[26px] sm:text-[34px] lg:text-[40px] font-bold leading-tight text-gray-900">
           Importator și distribuitor de echipamente fotovoltaice premium
         </h1>
         <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-gray-600">

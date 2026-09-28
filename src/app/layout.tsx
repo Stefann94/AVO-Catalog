@@ -127,7 +127,10 @@ const plexMono = IBM_Plex_Mono({
 const archivo = Archivo({
   variable: "--font-titlu-app",
   subsets: ["latin", "latin-ext"],
-  weight: ["800"],
+  /* 700, nu 800: la 42px, extra-bold-ul făcea din capul de secțiune un banner.
+     Vezi `titlu-sectiune` în globals.css. O singură greutate, ca înainte — se
+     schimbă care, nu câte. */
+  weight: ["700"],
   display: "swap",
   preload: false,
 });

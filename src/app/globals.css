@@ -331,9 +331,17 @@
    Spațierea e mai strânsă decât la Libre Franklin (−0.03em față de −0.02em):
    Archivo are deschiderile mai închise și literele mai apropiate din desen,
    iar spațierea potrivită celuilalt font o face să pară destrămată. */
+/* GREUTATEA E 700, NU 800. A fost 800, ca la toate titlurile de secțiune din
+   site, și la 42px ieșea prea tare: pe o pagină al cărei conținut e o grilă de
+   carduri cu text de 13–14px, un titlu extra-bold nu mai e un cap de secțiune,
+   e un banner. La 700 rămâne clar cel mai greu lucru din pagină — celelalte
+   texte sunt 400 și 600 — dar nu mai strigă.
+
+   Archivo se încarcă direct pe 700 (layout.tsx), nu pe 800, deci schimbarea nu
+   aduce încă un fișier de font; îl înlocuiește pe cel de dinainte. */
 @utility titlu-sectiune {
   font-family: var(--font-titlu);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.06;
 }

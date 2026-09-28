@@ -56,7 +56,7 @@ export default function Marci() {
         className="@container coloana"
         style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
       >
-        <h2 className="text-[22px] leading-tight font-extrabold text-fg sm:text-[length:var(--dim-titlu)]">
+        <h2 className="text-[22px] leading-tight font-bold text-fg sm:text-[length:var(--dim-titlu)]">
           Mărcile din catalog
         </h2>
         <p className="mt-2 text-sm text-muted">

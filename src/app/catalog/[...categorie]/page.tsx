@@ -345,7 +345,7 @@ export default async function PaginaCategorie({
             altfel Google citește în `<title>` „Invertoare Deye" și în pagină
             „Invertoare", adică două răspunsuri diferite la aceeași întrebare.
             Eticheta cu „×" de dedesubt rămâne: ea e drumul înapoi. */}
-        <h1 className="text-[22px] sm:text-[34px] md:text-[40px] font-extrabold text-slate-900 leading-tight">
+        <h1 className="text-[22px] sm:text-[34px] md:text-[40px] font-bold text-slate-900 leading-tight">
           {brand ? `${nume} ${brand.nume}` : nume}
         </h1>
 

@@ -73,7 +73,7 @@ export default async function PaginaLichidareStoc() {
             className="@container min-w-0 flex-1"
             style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
           >
-            <h1 className="text-[26px] sm:text-[length:var(--dim-titlu)] font-extrabold text-gray-900 leading-tight">
+            <h1 className="text-[26px] sm:text-[length:var(--dim-titlu)] font-bold text-gray-900 leading-tight">
               {TITLU}
             </h1>
           </div>

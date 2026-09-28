@@ -167,7 +167,7 @@ export default async function LichidareStoc({
                  ale celuilalt titlu. Singura diferență a fost treapta de corp. */
               style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
             >
-              <h2 className="text-[22px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-gray-900 leading-tight">
+              <h2 className="text-[22px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-bold text-gray-900 leading-tight">
                 {titlu}
               </h2>
             </div>

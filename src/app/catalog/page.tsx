@@ -198,7 +198,7 @@ export default async function CatalogPage() {
               <p className="text-[10px] font-bold uppercase tracking-wider text-gray-600">
                 {perioada.eticheta ? `Catalog ${perioada.eticheta}` : 'Catalog'}
               </p>
-              <h2 className="mt-1 text-[20px] font-extrabold leading-tight tracking-tight text-gray-900">Categorii</h2>
+              <h2 className="mt-1 text-[20px] font-bold leading-tight tracking-tight text-gray-900">Categorii</h2>
               <div aria-hidden className="mt-4 h-px bg-gray-200" />
             </div>
 

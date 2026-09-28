@@ -184,7 +184,7 @@ export default function ConditiiB2B() {
               className="@container min-w-0 flex-1"
               style={{ "--dim-titlu": dimensiuneTitlu(TITLU) } as CSSProperties}
             >
-              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-extrabold text-white leading-tight">
+              <h2 className="text-[26px] sm:text-[length:var(--dim-titlu)] sm:whitespace-nowrap font-bold text-white leading-tight">
                 {TITLU}
               </h2>
             </div>
