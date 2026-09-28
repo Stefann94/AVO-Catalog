@@ -120,11 +120,11 @@ export const SAGEATA =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
 export const SAGEATA_ALBA =
-  "border-gray-200 bg-white text-gray-900 hover:border-avo-600 hover:text-avo-700 hover:ring-1 hover:ring-avo-600";
+  "border-line-strong bg-white text-gray-900 hover:border-avo-600 hover:text-avo-700 hover:ring-1 hover:ring-avo-600";
 
 export const SAGEATA_ALBASTRA =
   "border-avo-600 bg-avo-600 text-white hover:border-avo-700 hover:bg-avo-700 active:border-avo-800 active:bg-avo-800";
 
-export const SAGEATA_STINSA = "border-gray-200 bg-white text-gray-300";
+export const SAGEATA_STINSA = "border-line-strong bg-white text-gray-300";
 
 export { ChevronLeft, ChevronRight };

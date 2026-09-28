@@ -121,8 +121,14 @@ export const BUTON_CARD =
  * produs are panouri de date, paginile de catalog au stări goale. Toate trebuie
  * să arate ca aceeași familie de suprafețe, dar un contur care se colorează la
  * hover pe ceva ce nu duce nicăieri e o promisiune falsă.
+ *
+ * CHENARUL E `line-strong` (#cbd6e4), NU `gray-200`. A fost gray-200 (#e5e7eb) și
+ * era prea puțin: pe fondurile deschise ale site-ului, cardurile se ghiceau în
+ * loc să se vadă. Acum poartă aceeași ramă ca toate comenzile — bara de file,
+ * butoanele, săgețile — fiindcă sunt toate obiecte, iar în site 1px de #cbd6e4
+ * înseamnă exact asta.
  */
-export const SUPRAFATA = "rounded-xl border border-gray-200 bg-white shadow-sm";
+export const SUPRAFATA = "rounded-xl border border-line-strong bg-white shadow-sm";
 
 export const CARD = SUPRAFATA + " card-produs";
 

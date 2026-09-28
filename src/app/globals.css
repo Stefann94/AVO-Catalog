@@ -576,8 +576,9 @@ body {
 
    RAMĂ ȘI HALOU. Cardul nu se mișcă niciun pixel. Se schimbă două lucruri:
 
-     1. RAMA        cei 1px de contur trec din #dfe5ee în #004a99. Treapta cea
-                    mai tare din efect, și singura care se vede de la 2 metri.
+     1. RAMA        cei 1px de contur trec din `line-strong` (#cbd6e4) în
+                    #004a99. Treapta cea mai tare din efect, și singura care se
+                    vede de la 2 metri.
      2. HALOUL      3px de albastru la 9% în afara cardului. Nu e umbră — n-are
                     deplasare pe verticală, deci nu sugerează ridicare. E o
                     aură, adică „ăsta e selectat", nu „ăsta plutește".

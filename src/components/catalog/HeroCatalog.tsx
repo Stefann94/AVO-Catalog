@@ -262,7 +262,7 @@ export default function HeroCatalog({
                   <li key={o.sku}>
                     <Link
                       href={o.slug ? `/catalog/produs/${o.slug}` : `/catalog/${o.categorie}`}
-                      className="card-produs flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
+                      className="card-produs flex items-center gap-3 rounded-xl border border-line-strong bg-white p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
                     >
                       <div className="relative size-14 shrink-0">
                         {o.imagine ? (

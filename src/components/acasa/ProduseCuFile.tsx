@@ -140,13 +140,20 @@ function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
 
    ─── RAMA ────────────────────────────────────────────────────────────────
 
-   1px `--line` (#e5eaf0), nu umbră. Pe fundal alb, o umbră difuză nu spune
-   unde se termină cardul; o linie spune. Cardurile de dinainte aveau
-   `border-gray-200` plus o umbră la hover, iar pe alb rama abia se ghicea.
+   1px `--line-strong` (#cbd6e4), nu umbră. Pe fundal alb, o umbră difuză nu
+   spune unde se termină cardul; o linie spune.
 
-   La hover rama devine albastră ȘI primește un inel de încă 1px în aceeași
-   culoare: se îngroașă fără să se miște nimic, cum s-ar întâmpla dacă am
-   schimba grosimea bordurii.
+   A FOST #dfe5ee, ȘI ERA PREA PUȚIN. Pe fondul secțiunii (#f7f9fc) rămâneau vreo
+   șase puncte de luminozitate: cardul se ghicea, nu se vedea, iar rândul de cinci
+   arăta ca text așezat pe pagină, nu ca cinci obiecte. #cbd6e4 dă vreo
+   paisprezece — o linie care se citește de la distanță, fără să devină chenar.
+
+   E ACEEAȘI RAMĂ CA A COMENZILOR din secțiune: bara de file, butonul „Vezi toate
+   produsele", săgețile. În site, 1px de #cbd6e4 înseamnă „obiect", indiferent
+   dacă obiectul e un card sau un buton.
+
+   La hover rama devine albastră și primește un halou de 3px: se întărește fără
+   să se miște nimic, cum s-ar întâmpla dacă am schimba grosimea bordurii.
 
    ─── DOUĂ ÎNĂLȚIMI REZERVATE ─────────────────────────────────────────────
 
@@ -173,7 +180,7 @@ function Card({ a }: { a: Articol }) {
        de 1px pe interior, fără să miște cardul din loc. E în globals.css, lângă
        explicație: acolo încap și `:focus-within`, și pseudoelementul care
        desenează fileul peste fondul alb al casetei de poză. */
-    <article className="card-produs group relative flex flex-col overflow-hidden rounded-card border border-[#dfe5ee] bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
+    <article className="card-produs group relative flex flex-col overflow-hidden rounded-card border border-line-strong bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
       {/* Înălțime fixă: altfel cardurile de pe un rând ies de înălțimi
           diferite, după cât de înaltă e fiecare fotografie. Fondul e alb, nu
           gri: pozele din catalog vin pe alb, iar un gri în spate le-ar desena

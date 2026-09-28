@@ -67,7 +67,7 @@ export default function Marci() {
           {marci.map((b) => (
             <div
               key={b.slug}
-              className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-surface px-4 py-6"
+              className="flex flex-col items-center justify-center gap-3 rounded-card border border-line-strong bg-surface px-4 py-6"
             >
               {/*
                 `<img>` prin next/image cu înălțime fixă și lățime automată:
