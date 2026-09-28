@@ -35,7 +35,7 @@ proprie.
 **Depinde de:** variabilele `--bara-sus`, `--bara-banda`, `--bara-latime`,
 `--bara-alipire`, `--bara-stanga` din `globals.css` — **șterse odată cu ea**.
 Erau calculate din `100vw` și din lățimea containerului de 1280px, care nici
-el nu mai există (coloana e 1500px).
+el nu mai există (coloana e 1200px).
 
 **Ce a rămas util:** clasa `.derulare-avo` din `globals.css`, bara de derulare
 subțire, e folosită mai departe de meniul din `/catalog`.

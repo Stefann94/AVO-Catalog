@@ -63,7 +63,7 @@ export default async function Home() {
        O SINGURĂ COLOANĂ, DE SUS PÂNĂ JOS
        ──────────────────────────────────────────────────────────────────────
        Fiecare secțiune de dedesubt își pune conținutul într-un `.coloana`
-       (globals.css): 1500px lățime maximă, centrat, cu 16/24/32px de spațiu
+       (globals.css): 1200px lățime maximă, centrat, cu 16/24/32px de spațiu
        pe laturi. Fundalurile rămân pe toată lățimea ferestrei, conținutul nu.
 
        AICI AU STAT TREI COMPONENTE CARE TRĂIAU ÎN AFARA COLOANEI:

@@ -275,7 +275,20 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --coloana-max: 1500px;
+  /* 1200px, ca la Altex și Dedeman.
+     A fost 1500px, lățimea prototipului — aceeași cu a lui Amazon. Problema
+     n-o făcea cifra în sine, ci raportul ei cu ecranul pe care se lucrează:
+     un laptop are 1440px, deci plafonul de 1500 nu se atingea niciodată și
+     coloana lua toată fereastra. Singurul spațiu rămas pe laturi erau cei
+     32px de padding, adică pagina arăta lipită de margini.
+
+     Marja reală pe laturi, la aceeași fereastră:
+
+                     1500        1200
+       1440px        32px        152px
+       1600px        82px        232px
+       1920px       272px        392px */
+  --coloana-max: 1200px;
   --coloana-pad: 16px;
 }
 
@@ -305,14 +318,19 @@
 /* ── Marginea fondului deschis din bannerul de oferte ──────────────────────
    Unde se termină coloana de text a bannerului, măsurată pe grila lui de 12:
 
-     50% − min(50vw, 750px) ....... unde începe coloana paginii
-     + 32px ....................... spațiul ei lateral
-     + (min(100vw,1500px) − 504px) × 5/12 ... cinci coloane din douăsprezece
-                                    (504 = 64px spațiu lateral + 440px goluri)
-     + 160px ...................... cele patru goluri dintre cele cinci
-     + 20px ....................... jumătate din gap-ul până la fotografie
+     50% − min(50vw, jumătate de coloană) .... unde începe coloana paginii
+     + spațiul ei lateral
+     + (lățimea coloanei − două spații laterale − 440px de goluri) × 5/12
+                                             ... cinci coloane din douăsprezece
+     + 160px ................................. cele patru goluri dintre ele
+     + 20px .................................. jumătate din gap-ul până la poză
 
-   Verificat aritmetic: 428px la 1024, 837px la 1920 și peste.
+   NICIO CIFRĂ A COLOANEI SCRISĂ AICI. Erau scrise — 750px și 1500px, jumătate
+   și întregul plafonului de atunci — iar la trecerea coloanei pe 1200px
+   diagonala ar fi rămas unde era, tăind peste titlu. Acum le citește din
+   `--coloana-max` și `--coloana-pad`, deci se mută odată cu ele.
+
+   Verificat aritmetic la 1200/32: 428px la 1024, 622px la 1440 și peste.
 
    ─── DE CE AICI, NU ÎN COMPONENTĂ ────────────────────────────────────────
 
@@ -330,7 +348,8 @@
    cere cu `lg:left-(--hero-diagonala)`, o clasă simplă. */
 :root {
   --hero-diagonala: calc(
-    50% - min(50vw, 750px) + 32px + (min(100vw, 1500px) - 504px) * 5 / 12 + 180px
+    50% - min(50vw, var(--coloana-max) / 2) + var(--coloana-pad) +
+      (min(100vw, var(--coloana-max)) - var(--coloana-pad) * 2 - 440px) * 5 / 12 + 180px
   );
 }
 

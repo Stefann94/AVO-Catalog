@@ -111,7 +111,7 @@ export default function HeroCatalog({
           fiindcă sub 1280px containerul era fereastra, iar peste el era fix;
           între pragul lui `xl` (1280px) și lățimea containerului rămânea o
           bandă în care formula „fixă" se aplica pe un container care încă
-          creștea. Coloana de acum — 1500px plafon, 32px spațiu lateral — se
+          creștea. Coloana de acum — 1200px plafon, 32px spațiu lateral — se
           descrie cu o singură expresie, care acoperă amândouă cazurile.
 
           CALCULUL E ÎN globals.css (`--hero-diagonala`), nu aici. Scris ca
