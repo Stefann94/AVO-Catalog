@@ -64,6 +64,53 @@ const euro = (n: number) =>
 const SIGLA = new Map(BRANDURI.map((b) => [b.nume.toLowerCase(), b.slug]));
 
 /* ══════════════════════════════════════════════════════════════════════════
+   RÂNDUL DE OFERTE, COMPLETAT PÂNĂ LA CINCI
+   ──────────────────────────────────────────────────────────────────────────
+   Filele de categorie au întotdeauna cinci carduri: categoriile cu mai puțin
+   de atâtea produse nici nu devin file. Fila „Oferte" n-avea cum să respecte
+   regula — ea arată strict ce a pus furnizorul pe coperta catalogului, iar
+   luna asta acolo sunt PATRU produse. Într-o grilă de cinci coloane, al
+   cincilea loc rămânea gol și se citea ca un card care nu s-a încărcat.
+
+   Golul se umple din catalog, pe o cascadă care ia întâi ce seamănă cel mai
+   bine cu o ofertă:
+
+     1. produsele marcate `oferta` în WooCommerce și neajunse în lista de pe
+        copertă (`GET_OFERTE_QUERY` cere doar `featured`; steagul de pe produs
+        e aceeași informație, citită din altă parte)
+     2. produsele cu preț la volum — a doua coloană de preț din catalog. Nu e
+        o promoție, dar e singurul avantaj de preț real pe care îl avem
+     3. orice produs, ca să nu rămână golul
+
+   NU INVENTEAZĂ NIMIC. Produsele completate sunt produse reale din catalog,
+   arătate cu prețul lor real. Ce se pierde e strict înțelesul strict al filei:
+   al cincilea card nu e neapărat de pe copertă. De-aia completarea e ultima
+   soluție și pornește doar când lista scurtă chiar e scurtă — dacă furnizorul
+   pune cinci sau mai multe pe copertă, funcția nu face nimic.
+   ══════════════════════════════════════════════════════════════════════════ */
+function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
+  if (alese.length >= PE_FILA) return alese;
+
+  const rand = [...alese];
+  const luate = new Set(rand.map((a) => a.sku).filter(Boolean));
+
+  const adauga = (candidati: Produs[]) => {
+    for (const p of candidati) {
+      if (rand.length >= PE_FILA) return;
+      if (!p.sku || luate.has(p.sku)) continue;
+      luate.add(p.sku);
+      rand.push(p);
+    }
+  };
+
+  adauga(produse.filter((p) => p.oferta));
+  adauga(produse.filter((p) => typeof p.pretVolum === "number" && p.pretVolum > 0));
+  adauga(produse);
+
+  return rand;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    CARDUL
    ──────────────────────────────────────────────────────────────────────────
    Patru etaje, fiecare cu treaba lui:
@@ -105,9 +152,10 @@ function Card({ a }: { a: Articol }) {
        de coș stă peste el, cu `relative z-10`. Pentru un cititor de ecran sunt
        două linkuri cu nume diferite, exact cât trebuie — nu unul singur, spus
        de două ori. */
-    /* `card-produs` aduce elevarea la hover — ridicare de 3px, umbră, ramă cu
-       o treaptă mai închisă. E în globals.css, lângă explicație: acolo încap
-       și `:focus-within`, și regula pentru cine a cerut mai puțină mișcare. */
+    /* `card-produs` aduce rama de la hover — halou, contur albastru și un fileu
+       de 1px pe interior, fără să miște cardul din loc. E în globals.css, lângă
+       explicație: acolo încap și `:focus-within`, și pseudoelementul care
+       desenează fileul peste fondul alb al casetei de poză. */
     <article className="card-produs group relative flex flex-col overflow-hidden rounded-card border border-[#dfe5ee] bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
       {/* Înălțime fixă: altfel cardurile de pe un rând ies de înălțimi
           diferite, după cât de înaltă e fiecare fotografie. Fondul e alb, nu
@@ -167,7 +215,10 @@ function Card({ a }: { a: Articol }) {
             denumirea. `items-end` aliniază butonul cu ultimul rând de preț, nu
             cu primul — altfel, pe cardurile fără preț la volum, butonul s-ar
             ridica cu 18px față de vecinii lui. */}
-        <div className="mt-auto flex items-end justify-between gap-2 border-t border-line-soft pt-3">
+        {/* `group-hover:border-avo-600/25` duce rama de la hover și în interiorul
+            cardului. Fără ea, tot efectul stă pe contur și mijlocul cardului nu
+            reacționează deloc. */}
+        <div className="mt-auto flex items-end justify-between gap-2 border-t border-line-soft pt-3 transition-colors duration-150 group-hover:border-avo-600/25">
           <div className="min-w-0">
             {typeof a.pret === "number" && a.pret > 0 ? (
               <>
@@ -239,7 +290,11 @@ export default function ProduseCuFile({
   const file: { eticheta: string; adresa: string; articole: Articol[] }[] = [];
 
   if (oferte.length) {
-    file.push({ eticheta: "Oferte", adresa: "/catalog", articole: oferte.slice(0, PE_FILA) });
+    file.push({
+      eticheta: "Oferte",
+      adresa: "/catalog",
+      articole: completeazaRandul(oferte.slice(0, PE_FILA), produse),
+    });
   }
 
   for (const c of [...dupaCategorie.values()]
@@ -279,13 +334,21 @@ export default function ProduseCuFile({
           />
         ))}
 
-        {/* ── Capul secțiunii: titlul la stânga, filele la dreapta ──
+        {/* ── Capul secțiunii: titlul sus, filele pe rândul de sub el ──
 
-            `@container` STĂ PE TOT RÂNDUL, nu pe coloana titlului. Corpul se
-            calculează în `cqi`, adică procent din container; pe coloana
-            îngustă de lângă file ar fi ieșit ~31px, iar la „Lichidare de stoc"
-            și la „Mărcile din catalog" 42px. Trei titluri de secțiune la trei
-            corpuri diferite e exact ce trebuia să împiedice etalonul.
+            FILELE AU COBORÂT PE RÂNDUL LOR. Stăteau la dreapta titlului, și
+            mergea cât erau mici. La corpul de acum (14,5px, `px-5`) pilula
+            ocupă 968px din cei 1376 ai coloanei, iar titlului îi rămâneau 376 —
+            „Produse din catalog" la 42px se rupea pe două rânduri la 1440 și pe
+            trei la 1280. Măsurat, nu presupus.
+
+            Pe rândul lui, titlul stă pe o linie, iar pilula are toată lățimea.
+
+            `@container` STĂ PE TOT ÎNVELIȘUL. Corpul titlului se calculează în
+            `cqi`, adică procent din container; pe o coloană îngustă ar fi ieșit
+            ~31px, iar la „Lichidare de stoc" și la „Mărcile din catalog" 42px.
+            Trei titluri de secțiune la trei corpuri diferite e exact ce trebuia
+            să împiedice etalonul.
 
             ERA ȘI MAI RĂU ÎNAINTE: funcția era pusă în `className` fără să fie
             apelată, deci în HTML ajungea, literal,
@@ -293,10 +356,10 @@ export default function ProduseCuFile({
             Niciun corp de literă nu se aplica, iar titlul rămânea la 16px, cât
             textul din jurul lui. Aceeași greșeală era în Marci.tsx. */}
         <div
-          className="@container flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8"
+          className="@container"
           style={{ "--dim-titlu": dimensiuneTitluSectiune() } as CSSProperties}
         >
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             {/* `titlu-sectiune` aduce Archivo în varianta lată, plus greutatea,
                 spațierea și interlinia potrivite ei (vezi globals.css).
                 Deocamdată e pusă DOAR AICI, ca să se vadă pe un titlu real
@@ -309,16 +372,21 @@ export default function ProduseCuFile({
             </p>
           </div>
 
-          {/* Filele, ca pastile. `overflow-x-auto` fiindcă pe telefon șase
+          {/* Filele, într-o pilulă. `overflow-x-auto` fiindcă pe telefon șase
               etichete nu încap: acolo se trag cu degetul, nu se rup pe două
-              rânduri. `shrink-0` pe grup, ca titlul să cedeze lățime primul. */}
-          <div className="fara-bara-derulare -mx-4 overflow-x-auto px-4 lg:mx-0 lg:shrink-0 lg:px-0">
-            <div className="inline-flex gap-1 rounded-full border border-line bg-surface p-1">
+              rânduri.
+
+              `relative` pe etichetă e pentru bara de 3px de sub fila deschisă:
+              se desenează cu `::after`, din globals.css, și are nevoie de un
+              părinte poziționat. `pb-4` îi face loc — fără el, bara ar sta
+              lipită de textul de deasupra. */}
+          <div className="fara-bara-derulare -mx-4 mt-6 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+            <div className="inline-flex gap-0.5 rounded-full border border-line bg-surface p-1.5">
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}
                   htmlFor={`fila-${i}`}
-                  className="shrink-0 cursor-pointer rounded-full px-4 py-2 text-[13.2px] font-semibold whitespace-nowrap text-muted transition-colors hover:text-fg"
+                  className="relative shrink-0 cursor-pointer rounded-full px-5 pt-3 pb-4 text-[14.5px] font-semibold whitespace-nowrap text-muted transition-colors hover:text-fg"
                 >
                   {f.eticheta}
                 </label>

@@ -535,73 +535,72 @@ body {
 /* ══════════════════════════════════════════════════════════════════════════
    CARDUL DE PRODUS — ce se întâmplă la trecerea cu mouse-ul
    ──────────────────────────────────────────────────────────────────────────
-   ELEVARE. Cardul urcă 3px, umbra se adâncește, rama se închide cu o treaptă.
-   Atât.
+   RAMĂ ȘI HALOU. Cardul nu se mișcă niciun pixel. Se schimbă două lucruri:
 
-   E convenția magazinelor: Amazon, eMAG, Bol, Coolblue fac toate același
-   lucru, cu aceleași cifre. Nimeni nu trebuie să învețe ce înseamnă — cardul
-   se ridică spre tine, deci e cel de sub mouse.
+     1. RAMA        cei 1px de contur trec din #dfe5ee în #004a99. Treapta cea
+                    mai tare din efect, și singura care se vede de la 2 metri.
+     2. HALOUL      3px de albastru la 9% în afara cardului. Nu e umbră — n-are
+                    deplasare pe verticală, deci nu sugerează ridicare. E o
+                    aură, adică „ăsta e selectat", nu „ăsta plutește".
 
-   ─── CE A FOST ÎNAINTE, ȘI DE CE A IEȘIT ─────────────────────────────────
+   Plus linia de deasupra tălpii, care se colorează la 25% (din componentă). Aia
+   duce efectul în interiorul cardului: fără ea, reacția se oprește la margine
+   și interiorul rămâne mort.
 
-   O linie albastră care se trăgea din stânga peste marginea de sus, plus o
-   umbră colorată, plus butonul care creștea. Arăta bine izolat, dar era un
-   efect inventat: pe o grilă de cinci carduri identice, mișcarea aia atrăgea
-   atenția asupra ei înseși, nu asupra produsului. Într-un magazin, hover-ul
-   n-are voie să fie ce ții minte.
+   ─── AICI A FOST UN FILEU, ȘI A IEȘIT ────────────────────────────────────
+
+   Un al treilea strat: încă 1px de albastru la 18%, imediat pe interiorul ramei,
+   desenat prin `::before` ca să treacă peste fondul alb al casetei de poză.
+   Ideea era passe-partout-ul din jurul unei litografii — o linie tare și una
+   stinsă, apropiate.
+
+   Pe ecran n-a funcționat. Un passe-partout se vede pentru că are 6–8 mm între
+   linii; la 1px lângă 1px, cele două nu se citesc ca un contur dublu intenționat,
+   ci ca o margine randată neclar. Adăuga 5px de albastru difuz în jurul cardului
+   și nu spunea nimic în plus față de ramă.
+
+   ─── DE CE NU ELEVARE ────────────────────────────────────────────────────
+
+   Aici a fost `translateY(-3px)` cu umbră neutră — convenția Amazon / eMAG /
+   Coolblue. A ieșit la cerere: cardul trebuie să stea pe loc. Și are un motiv
+   bun dincolo de gust — pe cinci carduri lipite într-un rând, cel ridicat își
+   aruncă umbra peste vecini, iar la trecerea rapidă cu mouse-ul peste rând se
+   vede un val. O ramă nu are cum să facă asta.
 
    ─── CIFRELE ─────────────────────────────────────────────────────────────
 
-     3px .......... cât să se simtă, nu cât să sară. Peste 6px începe să pară
-                    că plutește
-     180 ms ....... sub 120 arată sacadat, peste 250 se simte moale
-     umbră neutră . nu albastră. Umbra e lumină, nu marcaj; o umbră colorată
-                    sub un card alb se citește ca o greșeală de randare
-     #cfd8e6 ...... rama, cu o treaptă mai închisă decât în repaus (#dfe5ee)
+     3px / 9% ..... haloul. La 4px+ se atinge de cardul vecin (grila are 16px
+                    între carduri, 3px de fiecare parte lasă 10px de aer)
+     160 ms ....... mai scurt decât cele 180 de la elevare: nu se deplasează
+                    nimic, deci n-are ce să „cadă" încet
+     #004a99 ...... albastrul AVO, nu o nuanță inventată pentru hover
 
-   Fotografia se mărește cu 5%, din componentă. Aia rămâne — o fac și Zalando,
-   și temele Shopify, și e singurul lucru care arată PRODUSUL, nu cardul.
-
-   ─── DE CE ARE VOIE SĂ MIȘTE CARDUL ──────────────────────────────────────
-
-   `transform` și `box-shadow`, nimic altceva. Amândouă se fac pe compozitor,
-   fără recalcularea așezării: rândul de cinci carduri nu se mișcă, se mișcă
-   doar cel de sub mouse. O ridicare făcută cu `margin-top` ar fi împins
-   vecinii și ar fi cerut o reașezare la fiecare cadru.
+   Fotografia se mărește cu 5%, din componentă. Aia rămâne — e singurul lucru
+   care mișcă PRODUSUL, nu cardul, și nu împinge pe nimeni: crește înăuntrul
+   unei casete cu înălțime fixă.
 
    ─── FOCUS, NU DOAR HOVER ────────────────────────────────────────────────
 
    `:focus-within` face același lucru când cardul e atins cu Tab. Fără el, cine
    navighează de la tastatură ar vedea doar conturul butonului, nu și care card
    e cel curent.
+
+   Nu mai există regulă de `prefers-reduced-motion`: nu se mișcă nimic de
+   dimensionat sau deplasat, iar o tranziție de culoare de 160 ms nu e mișcare.
    ══════════════════════════════════════════════════════════════════════════ */
 
 .card-produs {
   transition:
-    transform 0.18s ease-out,
-    box-shadow 0.18s ease-out,
-    border-color 0.18s ease-out;
+    border-color 0.16s ease-out,
+    box-shadow 0.16s ease-out;
 }
 
 .card-produs:hover,
 .card-produs:focus-within {
-  transform: translateY(-3px);
-  border-color: #cfd8e6;
+  border-color: var(--color-avo-600);
   box-shadow:
-    0 10px 22px -8px rgb(16 24 40 / 0.18),
-    0 2px 6px rgb(16 24 40 / 0.06);
-}
-
-/* Cine a cerut mai puțină mișcare primește umbra și rama, care spun la fel de
-   clar care card e cel curent, dar fără deplasare. */
-@media (prefers-reduced-motion: reduce) {
-  .card-produs {
-    transition: none;
-  }
-  .card-produs:hover,
-  .card-produs:focus-within {
-    transform: none;
-  }
+    0 0 0 3px rgb(0 74 153 / 0.09),
+    0 1px 2px rgb(16 24 40 / 0.05);
 }
 
 
@@ -680,30 +679,51 @@ body {
 
 /* Eticheta filei deschise.
 
-   ─── ERA O LINIE SUB TEXT, ACUM E O PASTILĂ ──────────────────────────────
+   ─── TREI ÎNCERCĂRI, ASTA E A TREIA ──────────────────────────────────────
 
-   Filele stăteau într-un rând cu linie despărțitoare dedesubt, iar cea
-   deschisă primea o bordură colorată. Merge, dar cere un rând întreg din
-   lățimea paginii pentru șase cuvinte.
+   1. LINIE SUB TEXT, pe un rând propriu, cu linie despărțitoare dedesubt.
+      Mergea, dar cerea un rând întreg din lățimea paginii pentru șase cuvinte.
+   2. PASTILĂ ALBASTRĂ PLINĂ. Grupul a intrat lângă titlu și a câștigat rândul
+      înapoi, dar fila deschisă devenea o bulă grea: pe un cap de secțiune cu
+      un titlu de 42px, două blocuri albastre pline se băteau între ele.
+   3. ASTA: pilula rămâne, marcajul se subțiază. Fila deschisă are textul
+      albastru și o bară de 3px sub el, ca la filele clasice — dar bara stă
+      ÎNĂUNTRUL pilulei, nu pe o linie despărțitoare care ar mai cere un rând.
 
-   Ca pastile, grupul intră lângă titlu, în capul secțiunii, și se citește ca
-   un comutator, nu ca o navigație.
+   Grupul se citește tot ca un comutator, nu ca o navigație, fiindcă rama
+   rotundă ține cele șase etichete împreună. Se schimbă doar cât de tare
+   strigă fila deschisă.
 
-   PASTILA DESCHISĂ E ALBASTRĂ PLINĂ, nu albă cu umbră. Prototipul o face albă
-   pe un grup gri, și merge acolo: secțiunea lui e pe alb, deci grupul gri se
-   vede. La noi secțiunea a trecut pe `--canvas` (#f7f9fc) ca să iasă
-   cardurile în față, iar între grupul gri (#f0f3f7) și pastila albă rămâneau
-   patru puncte de luminozitate — nu se mai vedea care filă e deschisă.
+   DE CE O BARĂ ȘI NU UN FOND PAL. Un fond albastru la 6% pe o pilulă albă,
+   pusă pe `--canvas` (#f7f9fc), dă cam trei puncte de luminozitate diferență —
+   adică exact problema care a scos varianta albă de la punctul 2. O bară de
+   3px în albastru plin se vede la orice fond.
 
-   Albastrul e cel al butonului de coș din card: în secțiunea asta, albastru
-   plin înseamnă „aici ai apăsat" sau „aici poți apăsa", peste tot. */
+   BARA E TRASĂ ÎNTRE `left` ȘI `right` DE 1.25rem, adică fix cât `px-5` de pe
+   etichetă: se aliniază cu textul, nu cu marginea pastilei. De-aia eticheta are
+   `pb-4` și nu `py-3` — cei 4px în plus de jos sunt locul barei. */
 .file-produse:has(#fila-0:checked) label[for="fila-0"],
 .file-produse:has(#fila-1:checked) label[for="fila-1"],
 .file-produse:has(#fila-2:checked) label[for="fila-2"],
 .file-produse:has(#fila-3:checked) label[for="fila-3"],
 .file-produse:has(#fila-4:checked) label[for="fila-4"],
 .file-produse:has(#fila-5:checked) label[for="fila-5"] {
-  color: #fff;
+  color: var(--color-avo-600);
+}
+
+.file-produse:has(#fila-0:checked) label[for="fila-0"]::after,
+.file-produse:has(#fila-1:checked) label[for="fila-1"]::after,
+.file-produse:has(#fila-2:checked) label[for="fila-2"]::after,
+.file-produse:has(#fila-3:checked) label[for="fila-3"]::after,
+.file-produse:has(#fila-4:checked) label[for="fila-4"]::after,
+.file-produse:has(#fila-5:checked) label[for="fila-5"]::after {
+  content: "";
+  position: absolute;
+  right: 1.25rem;
+  bottom: 0.5rem;
+  left: 1.25rem;
+  height: 3px;
+  border-radius: 999px;
   background: var(--color-avo-600);
 }
 
