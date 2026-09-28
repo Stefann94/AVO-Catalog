@@ -470,7 +470,9 @@ export default async function PaginaCategorie({
                     <p className="h-3.5 sm:h-4 mt-1 font-mono text-[9px] sm:text-[10px] text-slate-400 truncate">
                       {p.sku ?? ""}
                     </p>
-                    <div className="mt-auto pt-2.5 sm:pt-4 border-t border-slate-900/[0.07]">
+                    {/* `group-hover:border-avo-600/25` duce rama de la hover și
+                        în interiorul cardului, ca pe prima pagină. */}
+                    <div className="mt-auto pt-2.5 sm:pt-4 border-t border-slate-900/[0.07] transition-colors duration-150 group-hover:border-avo-600/25">
                       <span className="text-[16px] sm:text-[20px] font-extrabold text-slate-900 tabular-nums">
                         {eur(p.price)}
                       </span>

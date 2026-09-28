@@ -533,8 +533,25 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CARDUL DE PRODUS — ce se întâmplă la trecerea cu mouse-ul
+   CARDUL — ce se întâmplă la trecerea cu mouse-ul
    ──────────────────────────────────────────────────────────────────────────
+   O SINGURĂ CLASĂ, PE TOT SITE-UL. `card-produs` ajunge pe carduri fie direct
+   (components/acasa/ProduseCuFile.tsx), fie prin `CARD` din
+   components/stiluri.ts, pe care îl folosesc cardul de ofertă
+   (components/oferte/CardOferta.tsx — banda de lichidare de pe prima pagină,
+   grila din /catalog, pagina /catalog/lichidare-stoc) și grila de produse din
+   /catalog/[categorie]. Plus rândurile de oferte din HeroCatalog.
+
+   Efectul s-a schimbat de patru ori. Ca listă de utilitare Tailwind, ar fi
+   trebuit ținut la fel în cinci fișiere; ca o clasă, se schimbă aici.
+
+   CINE NU-L PRIMEȘTE: suprafețele care nu duc nicăieri — dalele de mărci de pe
+   prima pagină, panourile de date din fișa de produs, stările goale. Pentru ele
+   există `SUPRAFATA`, aceeași cutie fără reacție. Un contur care se colorează la
+   hover pe ceva ce nu e apăsabil e o promisiune falsă.
+
+   ─── CE FACE ─────────────────────────────────────────────────────────────
+
    RAMĂ ȘI HALOU. Cardul nu se mișcă niciun pixel. Se schimbă două lucruri:
 
      1. RAMA        cei 1px de contur trec din #dfe5ee în #004a99. Treapta cea

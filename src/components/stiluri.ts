@@ -85,24 +85,28 @@ export const BUTON_CARD =
  * `border`, altele cu `ring`, iar hover-ul diferea la fiecare — umbră mică,
  * mare, sau contur mai închis.
  *
- * ─── HOVER-UL ─────────────────────────────────────────────────────────────
+ * ─── HOVER-UL NU MAI E AICI ───────────────────────────────────────────────
  *
- * Conturul se colorează în avo-600 și se îngroașă de la 1px la 2px. Atât.
- * Nicio umbră, nicio ridicare, nicio scalare — aceeași regulă ca la butoane:
- * la hover se schimbă doar culoarea, obiectul nu se mișcă.
+ * E în app/globals.css, sub clasa `card-produs`, lângă explicația lui. Aici a
+ * rămas doar numele clasei.
  *
- * Îngroșarea vine dintr-un `ring`, nu din `border-2`. Diferența contează:
- * `border-2` ar modifica lățimea chenarului, deci conținutul cardului s-ar
- * deplasa cu un pixel la fiecare trecere a mouse-ului. `ring` e desenat ca
- * umbră, în afara cutiei, deci nu intră în calculul așezării — cardul rămâne
- * nemișcat, iar ochiul vede tot 2px de albastru.
+ * Mutarea are un motiv practic: efectul are trei bucăți (rama, haloul, și linia
+ * dinăuntrul cardului) și s-a schimbat de patru ori. Scris ca listă de utilitare
+ * Tailwind, trebuia ținut la fel în patru fișiere; scris ca o clasă, se schimbă
+ * într-un loc și cardurile de pe toate paginile îl iau odată.
  *
- * Tranziția e declarată pe proprietăți anume, nu `transition-all`: dacă cineva
- * adaugă mai târziu o clasă care mișcă ceva, tranziția n-o va anima.
+ * Ce face, pe scurt: rama trece în avo-600, în jur apare un halou de 3px la 9%,
+ * iar cardul NU se mișcă. Cifrele și de ce anume sunt ele, în globals.css.
+ *
+ * ERA ALTFEL PÂNĂ ACUM: `hover:border-avo-600 hover:ring-1 hover:ring-avo-600`,
+ * adică rama se colora și se îngroșa de la 1px la 2px printr-un `ring`. Ideea
+ * era bună — `ring` e desenat ca umbră, deci nu intră în calculul așezării și
+ * cardul rămâne nemișcat, spre deosebire de `border-2`. Dar 2px de albastru plin
+ * în jurul fiecărui card dintr-o grilă de cinci se citea greu; haloul difuz dă
+ * aceeași informație cu mai puțină cerneală.
  *
  * Contrast: avo-600 #004A99 pe alb dă 8,61 — cu mult peste pragul de 3:1 cerut
- * pentru elemente negrafice. Conturul se vede și de către cine distinge greu
- * culorile, fiindcă se și îngroașă, nu doar își schimbă nuanța.
+ * pentru elemente negrafice.
  *
  * ─── CE NU CONȚINE ────────────────────────────────────────────────────────
  *
@@ -120,10 +124,7 @@ export const BUTON_CARD =
  */
 export const SUPRAFATA = "rounded-xl border border-gray-200 bg-white shadow-sm";
 
-export const CARD =
-  SUPRAFATA +
-  " transition-[border-color,box-shadow] duration-200" +
-  " hover:border-avo-600 hover:ring-1 hover:ring-avo-600";
+export const CARD = SUPRAFATA + " card-produs";
 
 /**
  * Cadrul fotografiei dintr-un card — proporția, cu un plafon de înălțime.

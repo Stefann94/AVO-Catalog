@@ -253,7 +253,10 @@ export default function CardOferta({
           Brandul identifică, SKU-ul e ce se dictează la telefon; de
           aceea SKU-ul e pe mono, singurul loc din secțiune unde
           cifrele de lățime egală chiar contează. */}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 border-t border-gray-200 bg-white/70 px-2 py-1.5 sm:px-3 sm:py-2">
+      {/* `group-hover:border-avo-600/25` duce rama de la hover și în interiorul
+          cardului, la fel ca pe cardul din prima pagină. Fără ea, tot efectul
+          stă pe contur și mijlocul cardului nu reacționează deloc. */}
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 border-t border-gray-200 bg-white/70 px-2 py-1.5 transition-colors duration-150 group-hover:border-avo-600/25 sm:px-3 sm:py-2">
         {/* CINE CEDEAZĂ LOCUL, când rândul nu ajunge: codul, nu brandul.
             Era invers — brandul `truncate`, codul `shrink-0` — iar la un cod
             construit din denumire („PYTES-V16-16KWH-CU-INCALZIRE-IP66") brandul
