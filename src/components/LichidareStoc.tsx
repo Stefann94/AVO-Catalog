@@ -120,42 +120,30 @@ export default async function LichidareStoc({
   const titlu = "Lichidare de stoc";
 
   /**
-   * RITMUL DINTRE SECȚIUNI, la `lg`: 128px deasupra, 160px dedesubt.
+   * RITMUL DINTRE SECȚIUNI: 40px pe telefon, 56px de la `sm`, 64px de la `lg`.
+   * Aceleași cifre ca la toate celelalte secțiuni ale site-ului.
    *
-   * A fost 224px de fiecare parte — 112px de padding de la secțiunea vecină
-   * plus 112px de aici — adică gol turnat peste o tăietură pe care culoarea o
-   * face deja singură (#F8F9FA → alb, alb → slate-900).
+   * ─── ERA ASIMETRIC, DINTR-UN MOTIV CARE NU MAI EXISTĂ ────────────────────
    *
-   * Referința pentru „prea mult" o dă secțiunea însăși: cel mai mare interval
-   * DINĂUNTRUL ei e 48px, de la linia de sub titlu la grilă, iar între carduri
-   * sunt 20px. Aerul dintre secțiuni era de 4,7 ori cel mai mare interval
-   * intern; acum e de 2,7. Sub 2 ar începe să se atingă.
+   * A fost 48px deasupra și 80px dedesubt. Asimetria nu era o preferință, era
+   * o constrângere: deasupra stătea „Gama de produse", iar padding-ul ei de
+   * jos era ce mărginea panoul barei de filtre din marja stângă. Scăzut prea
+   * mult, panoul ajungea lipit de ultimul rând de conținut.
    *
-   * DE CE 48px SUS ȘI 80px JOS, nu 64 și 64. Nu e preferință, e o constrângere:
+   * Bara de filtre a ieșit pe 28.09.2026, odată cu trecerea la o singură
+   * coloană (vezi arhiva/README.md), iar „Gama de produse" ieșise înaintea ei.
+   * Fără ele, nu mai există niciun motiv ca secțiunea asta să aibă alt ritm
+   * decât vecinele.
    *
-   *   DEASUPRA ... GamaProduse dă 80px, cât o lasă bara de filtre. Padding-ul
-   *                ei de jos e ce mărginește panoul din stânga (`bottom-10` în
-   *                BaraFiltre, măsurat de la marginea secțiunii); scăzut mai
-   *                mult, panoul ajunge lipit de ultimul rând de conținut, adică
-   *                exact eșecul descris în capul acelui fișier. Restul până la
-   *                128 se pune aici: 48px.
-   *   DEDESUBT ... 80 + 80. Tăietura de acolo nu mai e între două nuanțe
-   *                deschise, ci spre slate-900; un salt de contrast atât de
-   *                mare suportă, și cere, mai mult aer.
-   *
-   * PADDING-UL DE SUS AL LUI GAMAPRODUSE NU SE ATINGE, oricât ar tenta. Cei
-   * 112px sunt scriși ca literal în `--bara-sus` din app/globals.css
-   * (112 + 44 + 28 = 184px) și sunt ce ține bara ancorată pe linia de sub
-   * titlu. Schimbat acolo fără variabilă, bara pornește din gol.
-   *
-   * SUB `lg` joncțiunea de deasupra rămâne 128px, din padding-uri simetrice de
-   * 64; cea de dedesubt e 128px, respectiv 144px la `sm`. Nicăieri nu iese mai
-   * strâmt decât la `lg`, deci nu e nevoie de praguri suplimentare.
+   * Referința pentru „cât e destul" o dă secțiunea însăși: cel mai mare
+   * interval DINĂUNTRUL ei e 48px, de la linia de sub titlu la grilă, iar
+   * între carduri sunt 20px. 64px între secțiuni înseamnă de 1,3 ori cel mai
+   * mare interval intern — destul cât să se despartă, fiindcă tăietura o face
+   * oricum culoarea de fundal, nu golul.
    */
   return (
-    /* Pe telefon 40px sus și jos, în loc de 64; de la `sm`, exact ce era. */
-    <section className="bg-white py-10 sm:py-16 lg:pt-12 lg:pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+    <section className="bg-white py-10 sm:py-14 lg:py-16">
+      <div className="coloana">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-5 sm:mb-10 lg:mb-12">
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 sm:gap-4 xl:gap-6">
@@ -226,13 +214,18 @@ export default async function LichidareStoc({
             dimensiune de card; o poartă pe aceeași.
 
             PE TELEFON (sub `sm`) cardul e o fracțiune din ecran: lățimea
-            vizibilă a pistei (ecranul minus 16px de padding la stânga)
+            vizibilă a pistei (ecranul minus spațiul lateral al coloanei)
             împărțită la 2,4. Se văd două carduri întregi și o bucată din al
             treilea, semnul că banda continuă. Cu 280px fix, pe telefon intra
-            un card și o margine. */}
+            un card și o margine.
+
+            `var(--coloana-pad)`, nu 16px scris de mână: era exact cifra
+            padding-ului de atunci (`px-4`), copiată. Acum spațiul lateral e o
+            variabilă (vezi „COLOANA" în globals.css), iar cardul o citește —
+            dacă se schimbă vreodată, banda nu rămâne în urmă. */}
         <BandaOferte>
           {lista.map((o) => (
-            <div key={o.sku} className="w-[calc((100vw-16px)/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
+            <div key={o.sku} className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
               <CardOferta o={o} />
             </div>
           ))}

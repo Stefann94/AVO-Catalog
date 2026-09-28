@@ -108,7 +108,12 @@ export default function Navbar() {
           `h-8`, nu `py-2`: înălțimea ei intră în `--inaltime-navbar`, deci
           trebuie să fie o cifră, nu o consecință a textului dinăuntru. */}
       <div className="bg-slate-900 border-b border-slate-800 h-8 hidden lg:block">
-        <div className="h-full w-full px-6 2xl:px-12 flex items-center justify-between gap-6 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+        {/* `coloana`, nu `w-full px-6`: bara de sus se aliniază cu restul
+            site-ului. Înainte, telefonul și adresa începeau de la marginea
+            ferestrei, în timp ce conținutul de dedesubt începea de la coloană
+            — pe un ecran de 1920px, o diferență de 178px, adică bara arăta ca
+            și cum ar fi a altei pagini. */}
+        <div className="coloana flex h-full items-center justify-between gap-6 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
 
           {/* Contact. `min-w-0` ca zona să poată ceda lățime în loc să
               împingă anunțul din mijloc peste ce urmează. */}

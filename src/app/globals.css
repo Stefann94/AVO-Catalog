@@ -229,104 +229,108 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   GEOMETRIA BAREI DE FILTRE
+   COLOANA — singura lățime din site
    ──────────────────────────────────────────────────────────────────────────
-   Bara din stânga (components/BaraFiltre.tsx) trăiește lângă secțiunea „Gama de
-   produse". Cifrele stau aici, nu în componentă, fiindcă descriu o relație cu
-   AȘEZAREA PAGINII — lățimea containerului centrat al secțiunilor — nu ceva
-   intern componentei. Cine schimbă `max-w-7xl` trebuie să le găsească.
+   De la navbar în jos, tot conținutul stă într-o singură coloană centrată, cu
+   spații egale la stânga și la dreapta. Nimic nu mai iese din ea.
 
-   ─── DE UNDE IES ─────────────────────────────────────────────────────────
+   ─── CE ERA ÎNAINTE ──────────────────────────────────────────────────────
 
-   Conținutul paginii nu se îngustează. Bara încape în marja liberă lăsată de
-   containerul centrat al secțiunilor:
+   Fiecare secțiune își scria singură containerul:
 
-       secțiunile au max-w-7xl (1280px), centrate, cu lg:px-12 înăuntru
-       ⇒ conținutul vizibil începe la  (100vw - 1280px) / 2 + 48px
-       ⇒ banda liberă din stânga are exact atâta lățime
+       max-w-7xl mx-auto px-4 sm:px-6 lg:px-12
 
-   Toate se aplică numai de la 1760px în sus, unde banda are cel puțin 240px.
-   Pragul a fost 1620px (170px de bandă); de ce s-a mutat, cu măsurătorile
-   care au decis, e scris în capul lui components/BaraFiltre.tsx. Sub el bara
-   nu se afișează deloc, iar variabilele nu sunt folosite de nimeni.
+   Nouăsprezece locuri cu același șir copiat, plus trei care se abăteau:
+   MeniuCategorii avea doar `px-12` (deci zero spațiu sub 1024px, unde
+   oricum era ascuns), /catalog n-avea padding deloc, iar HeroCatalog avea
+   altă spațiere pe verticală. Cine schimba lățimea trebuia să le găsească pe
+   toate, iar cele trei abateri nu se vedeau decât pe ecran.
 
-   ─── DE CE NU DOAR CENTRATĂ ──────────────────────────────────────────────
+   ȘI, mai rău, DOUĂ COLOANE STĂTEAU ÎN AFARA EI: bara de filtre în marja din
+   stânga și coloana de reclame în cea din dreapta, amândouă poziționate cu
+   calcule din `100vw` (vezi arhiva/README.md). Apăreau de la 1760px în sus,
+   deci pagina arăta altfel pe monitorul de birou decât pe laptop, și niciuna
+   nu exista pe telefon. Scoase pe 28.09.2026: un site cu o coloană nu poate
+   avea conținut care trăiește pe lângă ea.
 
-   Aici bara era pur și simplu centrată în bandă, iar la 1920 iese bine: 34px
-   până la fereastră, 34px până la text. Problema apare mai sus. Banda crește cu
-   jumătate din lățimea ecranului, bara nu — e plafonată la 300px — deci
-   centrarea o împinge tot mai departe de conținut: la 2560 rămânea la 194px de
-   fereastră ȘI la 194px de text, iar la 3440 la 414px. Măsurat pe pagina
-   randată, la 2560 arăta ca un obiect uitat în gol, nu ca sumarul secțiunii de
-   lângă.
+   ─── CIFRELE ─────────────────────────────────────────────────────────────
 
-   Regula are de-aceea două jumătăți, iar `max()` alege între ele:
+   1500px de lățime maximă, cu 32px de spațiu pe laturi, exact ca prototipul
+   după care ne luăm. Conținutul ajunge deci la 1436px, față de 1184px înainte
+   — coloana e mai lată cu 252px, ceea ce înseamnă că un rând de cinci carduri
+   respiră în loc să se înghesuie.
 
-     centrată ..... cât timp banda e strâmtă și centrarea chiar dă margini egale
-     alipită ...... de îndată ce banda se lărgește; distanța până la text se
-                    oprește la 64px și rămâne acolo, oricât ar crește ecranul
+   Spațiul lateral scade pe ecrane mici, fiindcă 32px din 360 sunt 18% din
+   lățime, adică o pierdere care se simte:
 
-   `max()`, nu `min()`: valoarea mai mare e cea mai la dreapta, adică cea mai
-   aproape de conținut. Cele două se întâlnesc la 2040px lățime de fereastră —
-   sub prag câștigă centrarea, peste el alipirea, iar trecerea e continuă,
-   fiindcă în punctul acela dau exact aceeași valoare.
+       16px ... sub 640px   (telefon)
+       24px ... 640–1023px  (tabletă)
+       32px ... de la 1024px
 
-   Rezultat, măsurat: 24px la 1760 · 34px la 1920 · 324px la 2560 · 764px la
-   3440 — iar distanța până la text e 24 · 34 · 64 · 64.
+   `width: 100%` e necesar: fără el, un `.coloana` pus pe un element flex sau
+   grid nu se întinde, iar `max-width` singur nu forțează lățimea.
+
+   `padding-inline`, nu `padding-left/right`: dacă site-ul ajunge vreodată
+   într-o limbă scrisă de la dreapta la stânga, spațiile se întorc singure.
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── PE VERTICALĂ ───────────────────────────────────────────────────────
-     Unde începe bara, măsurat din vârful secțiunii „Gama de produse".
+  --coloana-max: 1500px;
+  --coloana-pad: 16px;
+}
 
-     Reperul e LINIA DE SUB TITLU, sublinierea de 1px de sub „Categoriile
-     principale…". Bara pornește exact de acolo, deci capătul ei de sus cade pe
-     o muchie care există deja în pagină, nu într-un gol.
+@media (min-width: 40rem) {
+  :root {
+    --coloana-pad: 24px;
+  }
+}
 
-     Suma e scrisă desfăcută fiindcă fiecare termen e o clasă din
-     components/GamaProduse.tsx, iar cine schimbă una trebuie să vadă care:
+@media (min-width: 64rem) {
+  :root {
+    --coloana-pad: 32px;
+  }
+}
 
-         112px ... `lg:py-28`, padding-ul de sus al secțiunii
-          44px ... rândul mastheadului: titlul lângă ștampila „Prețuri
-                   valabile", a cărei înălțime `h-11` îl domină
-          28px ... `sm:mt-7`, distanța de la masthead la linie
+/* `@utility`, nu `.coloana {}`: așa Tailwind 4 o tratează ca pe utilitarele
+   lui, deci se poate combina cu variante (`sm:coloana`) și intră în ordinea
+   corectă de precedență față de `px-*` sau `max-w-*` puse pe același element.
+   O clasă obișnuită ar fi ajuns în alt strat și ar fi pierdut în fața lor. */
+@utility coloana {
+  width: 100%;
+  max-width: var(--coloana-max);
+  margin-inline: auto;
+  padding-inline: var(--coloana-pad);
+}
 
-     E o constantă, nu o valoare potrivită din ochi, ȘI SE POATE SCRIE CA
-     ATARE fiindcă nu variază: containerul secțiunilor e plafonat la
-     `max-w-7xl`, deci lățimea lui rămâne 1184px la orice fereastră peste
-     1280px. Corpul titlului se calculează în `cqi` din containerul acela
-     (vezi `dimensiuneTitlu` din components/stiluri.ts), deci și el e constant,
-     și odată cu el înălțimea rândului. Verificat pe pagina randată: linia cade
-     la 184px de vârful secțiunii la 1760, 1920, 2560 și 3440 deopotrivă. */
-  --bara-sus: calc(var(--sectiune-sus) + 44px + 28px);
+/* ── Marginea fondului deschis din bannerul de oferte ──────────────────────
+   Unde se termină coloana de text a bannerului, măsurată pe grila lui de 12:
 
-  /* PADDING-UL DE SUS AL SECȚIUNII, scris o dată.
-     E `lg:pt-28` de pe GamaProduse. Era copiat ca literal în calculul de mai
-     jos, iar comentariul din componentă avertiza să fie schimbate împreună —
-     genul de înțelegere pe care cineva o rupe la prima modificare. Acum e o
-     variabilă din care ies amândouă ancorele. */
-  --sectiune-sus: 112px;
+     50% − min(50vw, 750px) ....... unde începe coloana paginii
+     + 32px ....................... spațiul ei lateral
+     + (min(100vw,1500px) − 504px) × 5/12 ... cinci coloane din douăsprezece
+                                    (504 = 64px spațiu lateral + 440px goluri)
+     + 160px ...................... cele patru goluri dintre cele cinci
+     + 20px ....................... jumătate din gap-ul până la fotografie
 
-  /* NIVELUL ȘTAMPILEI „PREȚURI VALABILE", adică vârful rândului de masthead.
-     Coloana de reclame pornește de aici, nu de la linie: o reclamă e conținut
-     de sine stătător, nu o notă a secțiunii, deci începe odată cu ea. */
-  --reclame-sus: var(--sectiune-sus);
+   Verificat aritmetic: 428px la 1024, 837px la 1920 și peste.
 
-  /* Banda liberă din stânga: de la marginea ferestrei până unde începe textul
-     secțiunilor. */
-  --bara-banda: calc((100vw - 1280px) / 2 + 48px);
+   ─── DE CE AICI, NU ÎN COMPONENTĂ ────────────────────────────────────────
 
-  /* Marja liberă, plafonată. */
-  --bara-latime: min(300px, calc((100vw - 1280px) / 2));
+   A stat o vreme ca valoare arbitrară Tailwind, direct pe element:
+   `lg:left-[calc(50%-min(50vw,750px)+…)]`. Construcția se oprea cu
+   STACK OVERFLOW (0xC00000FD), și `next build`, și `next dev`, în procesul
+   care evaluează postcss — mesajul arăta spre globals.css, deși fișierul era
+   nevinovat.
 
-  /* Cât de departe de coloana de text are voie bara să rămână. 64px e distanța
-     de la care bara încă citește ca aparținând secțiunii; peste ea începe să
-     pară un obiect separat. */
-  --bara-alipire: 64px;
+   Cauza: `min()` imbricat într-o valoare arbitrară. Parserul de clase
+   Tailwind intră în recursie pe parantezele dinăuntru și umple stiva. Nu se
+   vede ca eroare de CSS, fiindcă nu e una — procesul moare pur și simplu.
 
-  --bara-stanga: max(
-    calc((var(--bara-banda) - var(--bara-latime)) / 2),
-    calc(var(--bara-banda) - var(--bara-alipire) - var(--bara-latime))
+   Aici, în CSS obișnuit, aceeași expresie e doar o declarație. Componenta o
+   cere cu `lg:left-(--hero-diagonala)`, o clasă simplă. */
+:root {
+  --hero-diagonala: calc(
+    50% - min(50vw, 750px) + 32px + (min(100vw, 1500px) - 504px) * 5 / 12 + 180px
   );
 }
 

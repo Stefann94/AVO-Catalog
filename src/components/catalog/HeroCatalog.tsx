@@ -103,20 +103,27 @@ export default function HeroCatalog({
   return (
     <section className="relative overflow-hidden bg-avo-950">
       {/* ── Fondul deschis din dreapta, tăiat în diagonală ──
-          Marginea lui stângă e calculată pe grila containerului, nu în procente
-          din ecran: cade la 20px după coloana de text (jumătate din `gap-10`),
-          iar diagonala o împinge încă 64px spre dreapta sus. Așa titlul nu
-          atinge niciodată zona deschisă, la nicio lățime.
-            `xl` ... containerul are 1184px, centrat: coloana de text se termină
-                     la 50% − 592px + 470px.
-            `lg` ... containerul e fereastra minus 96px de padding: cinci coloane
-                     din douăsprezece, cu patru goluri de 40px între ele. */}
+          Marginea lui stângă cade la 20px după coloana de text (jumătate din
+          `gap-10`), iar diagonala o împinge încă 64px spre dreapta sus. Așa
+          titlul nu atinge niciodată zona deschisă, la nicio lățime.
+
+          O SINGURĂ VALOARE, nu două ca înainte (`lg:` și `xl:`). Erau două
+          fiindcă sub 1280px containerul era fereastra, iar peste el era fix;
+          între pragul lui `xl` (1280px) și lățimea containerului rămânea o
+          bandă în care formula „fixă" se aplica pe un container care încă
+          creștea. Coloana de acum — 1500px plafon, 32px spațiu lateral — se
+          descrie cu o singură expresie, care acoperă amândouă cazurile.
+
+          CALCULUL E ÎN globals.css (`--hero-diagonala`), nu aici. Scris ca
+          valoare arbitrară pe element, oprea construcția cu stack overflow:
+          `min()` imbricat într-un `[...]` duce parserul Tailwind în recursie.
+          Motivul complet e lângă declarație. */}
       <div
         aria-hidden
-        className="absolute inset-y-0 right-0 hidden bg-[#EEF3F9] [clip-path:polygon(64px_0,100%_0,100%_100%,0_100%)] lg:block lg:left-[calc(48px+(100vw-96px-440px)*5/12+180px)] xl:left-[calc(50%-592px+490px)]"
+        className="absolute inset-y-0 right-0 hidden bg-[#EEF3F9] [clip-path:polygon(64px_0,100%_0,100%_100%,0_100%)] lg:left-(--hero-diagonala) lg:block"
       />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:py-10">
+      <div className="coloana relative grid items-center gap-8 py-8 lg:grid-cols-12 lg:gap-10 lg:py-10">
         {/* ══ STÂNGA: mesajul ══ */}
         <div className="lg:col-span-5">
           {eticheta ? (

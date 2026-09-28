@@ -168,11 +168,15 @@ const PASI = [
 
 export default function ConditiiB2B() {
   return (
-    <section id="conditii-b2b" className="relative bg-slate-900 py-16 sm:py-20 lg:pt-20 lg:pb-28 overflow-hidden">
+    /* Ritmul e cu o treaptă peste al celorlalte secțiuni (48/64/80 față de
+       40/56/64), nu asimetric cum era (`lg:pt-20 lg:pb-28`). E ultima
+       secțiune înainte de subsol și singura pe fond închis: banda are nevoie
+       de puțin mai mult aer ca să nu pară o dungă, dar nu de altă regulă. */
+    <section id="conditii-b2b" className="relative overflow-hidden bg-slate-900 py-12 sm:py-16 lg:py-20">
       {/* Un gradient subtil pe fundal pentru a nu fi doar un albastru plat */}
       <div className="absolute inset-0 bg-gradient-to-br from-avo-900/50 via-slate-900 to-slate-900/90 pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="relative z-10 coloana">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-8 sm:mb-10 lg:mb-12">
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 xl:gap-6">
@@ -212,7 +216,7 @@ export default function ConditiiB2B() {
             {/* Imagini integrate prin gradient fade */}
             <div className="relative h-40 sm:h-48 w-full bg-slate-900">
               <Image 
-                src="/images/partener-b2b.jfif" 
+                src="/images/partener-b2b.jpg" 
                 alt="Parteneriat Solar" 
                 fill 
                 sizes="(max-width: 1024px) 100vw, 40vw"
@@ -266,7 +270,7 @@ export default function ConditiiB2B() {
           <div className={`${CARD_DARK} lg:col-span-7 flex flex-col`}>
             <div className="relative h-40 sm:h-48 w-full bg-slate-900">
               <Image 
-                src="/images/depozit-b2b.jfif" 
+                src="/images/depozit-b2b.jpg" 
                 alt="Volum Comenzi" 
                 fill 
                 sizes="(max-width: 1024px) 100vw, 60vw"

@@ -153,15 +153,34 @@ export default function MeniuCategorii({
   if (categorii.length === 0) return null;
 
   return (
-    <nav aria-label="Categorii principale" className="relative z-40 hidden bg-avo-900 lg:block">
-      <ul className="mx-auto grid max-w-7xl auto-cols-fr grid-flow-col gap-2 px-12 py-3">
+    /* ── ERA ASCUNS PE TELEFON ────────────────────────────────────────────
+       Avea `hidden lg:block`, deci sub 1024px prima pagină și catalogul
+       rămâneau fără nicio intrare în categorii: singura cale spre marfă era
+       meniul din bara de sus. Pe un magazin, asta înseamnă că vizitatorul de
+       pe telefon — majoritatea — nu vedea ce vindem decât dacă deschidea un
+       meniu.
+
+       Acum se vede peste tot. Diferența e cum:
+
+         sub lg .... rând care se trage cu degetul, plăci de 132px
+         de la lg .. grilă care împarte coloana în părți egale, ca înainte
+
+       Fereastra cu subcategorii rămâne doar de la lg în sus: se deschide la
+       hover, iar pe ecran tactil hover-ul nu există. Pe telefon, placa duce
+       direct la categorie, ceea ce e oricum ce vrea degetul. */
+    <nav aria-label="Categorii principale" className="relative z-40 bg-avo-900">
+      <ul className="coloana fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
         {categorii.map((c, i) => {
           const promovat = produsPromovat(c.slug, produse);
           const sigla = promovat?.p.brand ? gasesteBrand(promovat.p.brand) : undefined;
           const branduri = c.subcategorii.length === 0 ? branduriDin(c.slug, produse) : [];
 
           return (
-            <li key={c.slug} className="group relative">
+            /* `w-[132px] shrink-0` doar sub lg: într-un rând care se derulează,
+               plăcile trebuie să aibă o lățime a lor, altfel flex le strânge
+               până intră toate pe ecran și textul se rupe pe patru rânduri.
+               De la lg, grila le dă lățimi egale și cele două clase ies. */
+            <li key={c.slug} className="group relative w-[132px] shrink-0 lg:w-auto">
               <Link
                 href={`/catalog/${c.slug}`}
                 className="flex h-14 items-center justify-center rounded-lg bg-avo-800 px-2 text-center text-[12px] leading-tight font-semibold text-white transition-colors group-hover:bg-avo-600 group-focus-within:bg-avo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:text-[13px]"
@@ -170,7 +189,7 @@ export default function MeniuCategorii({
               </Link>
 
               <div
-                className={`invisible absolute top-full z-50 pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100 ${
+                className={`invisible absolute top-full z-50 hidden pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100 lg:block ${
                   i >= categorii.length / 2 ? "right-0" : "left-0"
                 }`}
               >

@@ -78,7 +78,7 @@ function Rand({
 export default function PaginaContact() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] font-extrabold text-gray-900 leading-tight">
           {TITLU}
         </h1>

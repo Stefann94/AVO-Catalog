@@ -55,7 +55,7 @@ export default async function PaginaLichidareStoc() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         <Link
           href="/catalog"
           className="mb-6 inline-flex items-center gap-2 text-[13px] font-semibold text-gray-600 transition-colors hover:text-avo-700"

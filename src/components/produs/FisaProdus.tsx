@@ -176,7 +176,7 @@ export default function FisaProdus({
        niciuna dintre cele trei înălțimi ale navbarului — vezi
        app/globals.css. */
     <div className="bg-white pt-[calc(var(--inaltime-navbar)+1rem)] sm:pt-[calc(var(--inaltime-navbar)+2rem)] lg:pt-[calc(var(--inaltime-navbar)+3rem)] pb-16 sm:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         {/* ── Firul Ariadnei ─────────────────────────────────── */}
         <nav aria-label="Navigare" className="text-[13px] text-gray-500">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">

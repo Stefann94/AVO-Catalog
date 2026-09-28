@@ -210,8 +210,39 @@ export default function CardOferta({
            * telefon și ce se caută în catalog.
            *
            * Gramatica rămâne una singură: lucrul care identifică
-           * produsul, scris mare. Se schimbă doar care e acela. */
-          <span className="text-center font-mono text-[15px] sm:text-[30px] font-semibold text-gray-900 leading-tight break-all">
+           * produsul, scris mare. Se schimbă doar care e acela.
+           *
+           * ─── CORPUL SCADE CU LUNGIMEA CODULUI ────────────────────
+           *
+           * Era 30px fix. La un cod scurt („SE-F16") arăta bine, dar
+           * codurile lungi nu vin din serii de fabricație, ci din
+           * denumire: „BAZA-SI-CABLURI-CONEXIUNE-PENTRU-GROWATT-AXE-5-0L",
+           * 51 de caractere. La 30px, cu `break-all`, ocupa șapte
+           * rânduri și ieșea din card, peste preț și peste cardul
+           * vecin — se vedea pe prima pagină, în banda de lichidare.
+           *
+           * Pragurile de mai jos sunt lățimea cardului împărțită la
+           * lățimea caracterului mono (≈0,6 × corp), pentru cele patru
+           * rânduri care încap în pătratul fotografiei:
+           *
+           *   ≤ 12 semne ... 30px   („SE-F16", „AXE-5.0L-C1")
+           *   ≤ 24 semne ... 20px
+           *   ≤ 40 semne ... 14px
+           *   peste ....... 11px
+           *
+           * `line-clamp-4` e plasa de siguranță: orice cod ar veni din
+           * import, nu poate trece de patru rânduri. */
+          <span
+            className={`text-center font-mono font-semibold break-all text-gray-900 line-clamp-4 leading-tight ${
+              o.sku.length <= 12
+                ? "text-[15px] sm:text-[30px]"
+                : o.sku.length <= 24
+                  ? "text-[13px] sm:text-[20px]"
+                  : o.sku.length <= 40
+                    ? "text-[11px] sm:text-[14px]"
+                    : "text-[10px] sm:text-[11px]"
+            }`}
+          >
             {o.sku}
           </span>
         )}

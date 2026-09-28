@@ -162,7 +162,7 @@ export default function ProduseCuFile({
 
   return (
     <section className="bg-white py-10 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         <h2 className={`${dimensiuneTitluSectiune} font-extrabold text-gray-900`}>Produse</h2>
 
         <div className="file-produse mt-6">

@@ -155,7 +155,7 @@ export default function Footer() {
      */
     <footer className="bg-gray-800 border-t border-gray-700">
       {/* ── Corpul footer-ului ─────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-16">
+      <div className="coloana py-12 lg:py-16">
         {/* PATRU COLOANE DE LA `xl`, NU DE LA `lg`.
 
             Împărțirea 4·4·2·2 din douăsprezece funcționează cât timp
@@ -309,7 +309,7 @@ export default function Footer() {
           Are linkuri reale, nu doar text: cine citește anunțul are pe loc
           cele trei căi prin care se poate comanda. */}
       <div className="border-t border-slate-800 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-4 flex flex-col sm:flex-row sm:items-center gap-x-3 gap-y-1.5">
+        <div className="coloana py-4 flex flex-col sm:flex-row sm:items-center gap-x-3 gap-y-1.5">
           <p className="text-sm font-semibold text-white shrink-0">
             Magazinul online nu este încă activ
           </p>
@@ -333,7 +333,7 @@ export default function Footer() {
 
       {/* ── Bara legală ────────────────────────────────────── */}
       <div className="border-t border-slate-800 bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div className="coloana py-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <p className="text-xs text-slate-400 leading-relaxed">
             © {anul} {FIRMA.nume}. Toate drepturile rezervate.
             {FIRMA.cui ? <> · CUI {FIRMA.cui}</> : null}

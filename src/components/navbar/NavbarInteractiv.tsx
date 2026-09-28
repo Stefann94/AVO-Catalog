@@ -160,7 +160,10 @@ export default function NavbarInteractiv({
         ref={randSigla}
         className={`${pesteZonaInchisa ? "bg-slate-100/80" : "bg-slate-300/60"} backdrop-blur-2xl backdrop-saturate-150 border-b border-slate-200/50 h-[68px] 2xl:h-[72px] transition-colors duration-300`}
       >
-        <div className="h-full w-full px-4 sm:px-6 2xl:px-12 flex items-center justify-between gap-3 xl:gap-4">
+        {/* `coloana` (globals.css), ca sigla și butoanele să înceapă exact de
+            unde începe conținutul paginii. Erau pe toată lățimea ferestrei,
+            cu `px-4 sm:px-6 2xl:px-12` propriu. */}
+        <div className="coloana flex h-full items-center justify-between gap-3 xl:gap-4">
           {children}
 
           {/* Butonul de meniu. Pragul a coborât de la `xl` la `lg`: între 1024

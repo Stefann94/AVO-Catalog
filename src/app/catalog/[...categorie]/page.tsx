@@ -329,7 +329,7 @@ export default async function PaginaCategorie({
         />
       }
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         <Link
           href="/catalog"
           className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-500 transition-colors hover:text-blue-600 mb-6"

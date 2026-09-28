@@ -1,0 +1,977 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ANTET + BARĂ + HERO — replică vizuală a prototipului Projects/Solarone.ro
+   ──────────────────────────────────────────────────────────────────────────
+   Scrisă de la zero, din valorile FINALE măsurate în stil-v2.css + mobil.css
+   la 1440px. Prototipul are ~30 de straturi de corecții suprapuse peste
+   aceleași selectoare (.hd-in e redefinit de 10 ori); aici stă doar ce
+   rezultă din ele, o singură dată.
+
+   Prefixul pb- („probă") ține clasele astea departe de restul site-ului.
+   Nimic de aici nu atinge Navbar-ul, catalogul sau fișele de produs.
+
+   ─── CELE DOUĂ CULORI ─────────────────────────────────────────────────────
+   --pb-actiune și --pb-accent sunt singurele locuri unde stau culorile
+   prototipului. Trecerea pe paleta AVO se face SCHIMBÂND DOAR BLOCUL DE MAI
+   JOS — vezi comentariul de acolo, fiindcă roșul AVO cere text alb, nu închis.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.pb {
+  /* ── Culorile prototipului ────────────────────────────────────────────
+     Pe paleta AVO devin:
+       --pb-actiune: #004a99;  --pb-actiune-d: #003b7d;  --pb-actiune-l: #2a75d1;
+       --pb-accent:  #e00008;  --pb-accent-d:  #b80007;
+       --pb-pe-accent: #ffffff   ← alb, NU #10151c
+     Motivul: pe #e00008, albul dă 5.02:1 (trece AA), textul închis 3.5:1 (cade).
+     Galbenul prototipului e un accent deschis, roșul AVO e unul închis. */
+  --pb-actiune: #0b44c4;
+  --pb-actiune-d: #062e8c;
+  --pb-actiune-l: #2c63ee;
+  --pb-accent: #ffce0a;
+  --pb-accent-d: #e3b500;
+  --pb-accent-l: #ffe87a;
+  --pb-pe-accent: #10151c;
+
+  --pb-cerneala: #10151c;
+  --pb-linie: #e2e8f0;
+  --pb-col: 1500px;
+  --pb-pad: 32px;
+
+  /* Înălțimea antetului: 104px conținut + 3px linia de energie.
+     De ea atârnă top-ul barei albastre, care e și ea lipicioasă. */
+  --pb-h-antet: 107px;
+}
+
+.pb-wrap {
+  max-width: var(--pb-col);
+  margin: 0 auto;
+  padding: 0 var(--pb-pad);
+}
+
+/* Cât timp pe pagină există `.pb`, bara obișnuită se ascunde: probăm un antet
+   nou, n-are rost să stea două unul peste altul, iar cea veche e `fixed` și
+   l-ar acoperi pe cel nou.
+
+   Regula se stinge singură pe orice altă pagină — nu atinge nimic din site.
+   Navbar-ul din layout rămâne neschimbat; când antetul ăsta trece în
+   producție, se schimbă layout-ul, nu regula de aici. */
+body:has(.pb) > nav {
+  display: none;
+}
+
+/* ══════════════════════════ ANTET ══════════════════════════ */
+
+.pb-antet {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: #fff;
+  border-bottom: 1px solid var(--pb-linie);
+}
+
+.pb-antet-in {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  height: 104px;
+}
+
+.pb-sigla {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin-left: -4px;
+}
+.pb-sigla img {
+  height: clamp(54px, 5.8vw, 92px);
+  width: auto;
+}
+
+/* ── Căutarea ── */
+.pb-caut {
+  flex: 1 1 auto;
+  max-width: 620px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pb-caut input {
+  width: 100%;
+  height: 48px;
+  padding: 0 120px 0 18px;
+  font-family: inherit;
+  font-size: clamp(12.4px, 0.92vw, 14.6px);
+  color: var(--pb-cerneala);
+  background: linear-gradient(180deg, #fff, #fafcff);
+  border: 1.5px solid #d4ddea;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 2px rgb(16 24 40 / 0.05);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pb-caut input::placeholder {
+  color: #93a1b2;
+  font-size: clamp(12px, 0.88vw, 14.2px);
+}
+.pb-caut input:focus {
+  border-color: var(--pb-actiune);
+  box-shadow: 0 0 0 4px rgb(11 68 196 / 0.1);
+}
+.pb-caut-btn {
+  position: absolute;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  font-size: 14.2px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, var(--pb-actiune-l), var(--pb-actiune-d));
+  border: 0;
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgb(11 62 188 / 0.3);
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.pb-caut-btn:hover {
+  filter: brightness(1.1);
+}
+.pb-caut-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Butoanele din dreapta ── */
+.pb-actiuni {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+}
+
+.pb-buton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 15px;
+  border-radius: 9px;
+  font-size: 13.6px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: filter 0.15s;
+}
+.pb-buton svg {
+  flex: none;
+  width: 19px;
+  height: 19px;
+}
+
+.pb-buton-sters {
+  height: 38px;
+  gap: 7px;
+  padding: 0 12px;
+  font-size: 12.8px;
+  font-weight: 600;
+  color: #123a78;
+  background: linear-gradient(180deg, #eef3fd 0%, #e2eaf9 100%);
+  border: 1.5px solid #cbd9ef;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 0.05);
+}
+.pb-buton-sters:hover {
+  filter: brightness(0.97);
+}
+
+.pb-cos {
+  gap: 14px;
+  padding: 0 20px 0 16px;
+  color: #fff;
+  background: var(--pb-actiune);
+  box-shadow: 0 2px 8px rgb(11 62 188 / 0.25);
+}
+.pb-cos-ic {
+  position: relative;
+  display: flex;
+  margin-right: 2px;
+}
+.pb-cos-nr {
+  position: absolute;
+  top: -6px;
+  right: -9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  font-size: 10.4px;
+  font-style: normal;
+  font-weight: 800;
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+  border: 2px solid var(--pb-actiune);
+  border-radius: 20px;
+}
+.pb-cos-t {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.pb-cos-t b {
+  font-size: 13.6px;
+  font-weight: 700;
+}
+.pb-cos-t i {
+  font-size: 11.2px;
+  font-style: normal;
+  opacity: 0.85;
+}
+
+.pb-b2b {
+  padding: 11px 16px;
+  font-size: 13.2px;
+  font-weight: 750;
+  white-space: nowrap;
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(224 178 0 / 0.35);
+  transition: filter 0.18s;
+}
+.pb-b2b:hover {
+  filter: brightness(1.06);
+}
+
+/* Linia de energie: semnătura vizuală dintre antet și bară. */
+.pb-energie {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--pb-accent) 0%,
+    var(--pb-accent-l) 28%,
+    var(--pb-actiune-l) 62%,
+    #0b3ebc 100%
+  );
+}
+
+/* ══════════════════════════ BARA DE CATEGORII ══════════════════════════ */
+
+.pb-bara {
+  position: sticky;
+  top: var(--pb-h-antet);
+  z-index: 150;
+  background-color: var(--pb-actiune);
+  /* Textura diagonală: linii de 1px la 15px distanță, abia vizibile.
+     E ce împiedică bara să arate ca un dreptunghi de vopsea. */
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgb(255 255 255 / 0.06) 0 1px,
+    transparent 1px 15px
+  );
+}
+
+.pb-bara-in {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-height: 62px;
+  position: relative;
+}
+
+.pb-catalog-btn {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  gap: 9px;
+  height: 42px;
+  margin: 10px 16px 10px 0;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+  border: 0;
+  border-radius: 9px;
+  box-shadow: 0 2px 10px rgb(2 12 40 / 0.25);
+  cursor: pointer;
+}
+.pb-catalog-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pb-bara-l {
+  display: flex;
+  align-items: stretch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pb-bara-l > li {
+  position: relative;
+  display: flex;
+}
+.pb-bara-l > li > a {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  color: #fff;
+}
+/* Sublinierea care crește de la mijloc, la trecerea cu mouse-ul. */
+.pb-bara-l > li > a::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--pb-accent);
+  transform: scaleX(0);
+  transition: transform 0.16s;
+}
+.pb-bara-l > li:hover > a::after {
+  transform: scaleX(1);
+}
+.pb-bara-l > li.pb-aprins > a {
+  color: var(--pb-accent);
+  text-shadow: 0 1px 3px rgb(2 12 40 / 0.55);
+}
+
+.pb-bara-ic {
+  flex: none;
+  display: block;
+  width: 18px;
+  height: 18px;
+  opacity: 0.95;
+  filter: drop-shadow(0 1px 2px rgb(2 12 40 / 0.45));
+}
+
+.pb-bara-r {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.pb-depozit {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  font-size: 13.6px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background: rgb(0 0 0 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: 20px;
+}
+.pb-depozit svg {
+  width: 15px;
+  height: 15px;
+  color: var(--pb-accent);
+}
+.pb-depozit b {
+  font-weight: 600;
+}
+
+.pb-tva {
+  display: flex;
+  padding: 4px;
+  background: rgb(0 0 0 / 0.18);
+  border-radius: 20px;
+}
+.pb-tva span {
+  padding: 6px 15px;
+  font-size: 12.6px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  border-radius: 20px;
+}
+.pb-tva span.pb-aprins {
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+}
+
+/* ══════════════════════════ HERO ══════════════════════════ */
+
+.pb-promo {
+  padding: 0 0 8px;
+}
+.pb-promo-sus {
+  display: grid;
+  grid-template-columns: 1fr 348px;
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+/* ── Caruselul ──
+   Fără JavaScript: cinci input[type=radio] ascunse țin starea, iar :has()
+   mută pista. Același tipar ca la filele de produse din prima pagină — o
+   secțiune de deasupra ecranului n-are voie să aducă JS care întârzie
+   imaginea principală. */
+.pb-carusel {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  background: #071b47;
+}
+.pb-carusel input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pb-pista {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0.05, 0.2, 1);
+}
+.pb-carusel:has(#pb-d1:checked) .pb-pista { transform: translateX(-100%); }
+.pb-carusel:has(#pb-d2:checked) .pb-pista { transform: translateX(-200%); }
+.pb-carusel:has(#pb-d3:checked) .pb-pista { transform: translateX(-300%); }
+.pb-carusel:has(#pb-d4:checked) .pb-pista { transform: translateX(-400%); }
+
+.pb-diapo {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.pb-diapo-txt {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 42px 40px 42px 80px;
+  color: #fff;
+  background: linear-gradient(140deg, #04102b 0%, #082a7f 62%, #0b3aae 100%);
+}
+/* Pana oblică din dreapta textului: aceeași umplutură, înclinată 9°.
+   Ea face ca despărțirea de fotografie să nu fie o linie dreaptă. */
+.pb-diapo-txt::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -70px;
+  width: 140px;
+  background: inherit;
+  transform: skewX(-9deg);
+}
+
+.pb-eticheta {
+  align-self: flex-start;
+  max-width: 400px;
+  margin-bottom: 14px;
+  padding: 5px 11px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+  background: rgb(255 206 10 / 0.14);
+  border: 1px solid rgb(255 206 10 / 0.35);
+  border-radius: 20px;
+}
+.pb-diapo-txt h2 {
+  margin: 0 0 10px;
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+}
+.pb-diapo-txt p {
+  margin: 0 0 18px;
+  max-width: 400px;
+  font-size: 14.5px;
+  color: #c6d6f2;
+}
+.pb-diapo-btn {
+  align-self: flex-start;
+  padding: 13px 26px;
+  font-size: 14.5px;
+  font-weight: 750;
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+  border-radius: 9px;
+}
+.pb-nota {
+  max-width: 400px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #93aad4;
+}
+
+/* Diapozitivul chihlimbariu: aceeași formă, fundal deschis, text închis.
+   Fotografia de lângă el primește un fundal întunecat-neutru, nu albastru,
+   ca tranziția să nu bată în două albastre diferite. */
+.pb-diapo-txt.pb-chihlimbar {
+  color: var(--pb-cerneala);
+  background: linear-gradient(140deg, #ffd429 0%, #ffb800 90%);
+}
+.pb-diapo-txt.pb-chihlimbar .pb-eticheta {
+  color: #3b2d00;
+  background: rgb(0 0 0 / 0.1);
+  border-color: rgb(0 0 0 / 0.2);
+}
+.pb-diapo-txt.pb-chihlimbar p {
+  color: #4a3a00;
+}
+.pb-diapo-txt.pb-chihlimbar .pb-diapo-btn {
+  color: #fff;
+  background: var(--pb-cerneala);
+}
+.pb-diapo-txt.pb-chihlimbar .pb-nota {
+  color: #6b5400;
+}
+.pb-diapo-txt.pb-chihlimbar + .pb-diapo-img {
+  background: radial-gradient(circle at 60% 45%, #2a3140, #10151c 72%);
+}
+
+.pb-diapo-img {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: radial-gradient(circle at 60% 45%, #0a2e86, #04102b 72%);
+}
+.pb-diapo-img img {
+  max-height: 300px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 34px rgb(0 0 0 / 0.45));
+}
+
+/* ── Săgeți și buline ──
+   Fiecare diapozitiv are perechea lui de săgeți; se arată doar cea a
+   diapozitivului bifat. Așa htmlFor poate trimite la vecinul corect. */
+.pb-sageti {
+  display: none;
+}
+.pb-carusel:has(#pb-d0:checked) .pb-sageti[data-i="0"],
+.pb-carusel:has(#pb-d1:checked) .pb-sageti[data-i="1"],
+.pb-carusel:has(#pb-d2:checked) .pb-sageti[data-i="2"],
+.pb-carusel:has(#pb-d3:checked) .pb-sageti[data-i="3"],
+.pb-carusel:has(#pb-d4:checked) .pb-sageti[data-i="4"] {
+  display: block;
+}
+.pb-sageata {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+  color: #fff;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: background 0.16s;
+}
+.pb-sageata:hover {
+  background: rgb(255 255 255 / 0.3);
+}
+.pb-sageata.pb-inapoi { left: 18px; }
+.pb-sageata.pb-inainte { right: 18px; }
+
+.pb-buline {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  gap: 7px;
+}
+.pb-buline label {
+  width: 8px;
+  height: 8px;
+  background: rgb(255 255 255 / 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: width 0.2s, background 0.2s, border-radius 0.2s;
+}
+.pb-carusel:has(#pb-d0:checked) .pb-buline label:nth-child(1),
+.pb-carusel:has(#pb-d1:checked) .pb-buline label:nth-child(2),
+.pb-carusel:has(#pb-d2:checked) .pb-buline label:nth-child(3),
+.pb-carusel:has(#pb-d3:checked) .pb-buline label:nth-child(4),
+.pb-carusel:has(#pb-d4:checked) .pb-buline label:nth-child(5) {
+  width: 22px;
+  border-radius: 5px;
+  background: var(--pb-accent);
+}
+
+/* ── Cele trei casete din dreapta ── */
+.pb-casete {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  height: 400px;
+}
+.pb-caseta {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.pb-caseta:hover {
+  box-shadow: 0 14px 30px -14px rgb(3 16 43 / 0.5);
+}
+.pb-caseta-l {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 10px 14px 18px;
+}
+.pb-caseta-k {
+  font-size: 9.6px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.pb-caseta b {
+  font-size: 14.6px;
+  font-weight: 750;
+  line-height: 1.26;
+  letter-spacing: -0.015em;
+}
+.pb-caseta-c {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.pb-caseta-r {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.pb-caseta-una {
+  max-height: 88px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / 0.28));
+}
+
+/* 1. Configurator — bleumarin, două produse pe un podium */
+.pb-cfg {
+  background: linear-gradient(130deg, #071b44 0%, #0b3aae 100%);
+}
+.pb-cfg .pb-caseta-k,
+.pb-cfg .pb-caseta-c { color: var(--pb-accent); }
+.pb-cfg b { color: #fff; }
+.pb-cfg .pb-caseta-r {
+  background: linear-gradient(180deg, #fff 0%, #eaf0fa 100%);
+}
+.pb-duo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 10px;
+}
+.pb-duo img {
+  max-height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+.pb-plus {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pb-actiune);
+  opacity: 0.65;
+}
+
+/* 2. Stoc — deschisă, cu dungă verde și pastile de marcă */
+.pb-stoc {
+  background: linear-gradient(120deg, #eef3fb 0%, #dce7f7 100%);
+  border-left: 3px solid #0e8a43;
+}
+.pb-stoc .pb-caseta-k { color: #0e8a43; }
+.pb-stoc b { color: var(--pb-cerneala); font-size: 14px; }
+.pb-stoc .pb-caseta-una {
+  filter: drop-shadow(0 6px 14px rgb(16 24 40 / 0.18));
+}
+.pb-marci {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.pb-marci span {
+  padding: 2px 7px;
+  font-size: 9.6px;
+  font-weight: 700;
+  color: #3a4c61;
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid #cbd8ea;
+  border-radius: 20px;
+}
+.pb-insigna {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 8px;
+  font-size: 9.4px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #0e8a43;
+  border-radius: 20px;
+}
+
+/* 3. B2B — galbenă, cu comparația de preț */
+.pb-b2b-caseta {
+  background: linear-gradient(120deg, #ffc800 0%, #ffe06b 100%);
+}
+.pb-b2b-caseta .pb-caseta-k { color: #6b5100; }
+.pb-b2b-caseta b { color: #2a2100; }
+.pb-b2b-caseta .pb-caseta-r {
+  background: rgb(255 255 255 / 0.5);
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+}
+.pb-b2b-caseta .pb-caseta-una {
+  filter: drop-shadow(0 8px 16px rgb(90 70 0 / 0.28));
+}
+.pb-pret {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 3px;
+}
+.pb-pret s {
+  font-size: 11.5px;
+  color: #7a6200;
+}
+.pb-pret strong {
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: #1b1500;
+}
+
+/* ══════════════════════════ CELE CINCI RECLAME ══════════════════════════ */
+
+.pb-dale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.pb-dala {
+  position: relative;
+  display: block;
+  height: 230px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pb-dala-t {
+  position: relative;
+  z-index: 3;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 16px 0;
+}
+.pb-dala-k {
+  font-size: 9.6px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--pb-accent);
+}
+.pb-dala-k.pb-deschis { color: #0a3577; }
+.pb-dala b {
+  font-size: 16.4px;
+  font-weight: 800;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.pb-dala-sub {
+  font-size: 11.2px;
+  line-height: 1.3;
+  color: #afc2e0;
+}
+.pb-dala-sub.pb-inchis { color: #3f4e5f; }
+
+.pb-dala-img {
+  position: absolute;
+  z-index: 1;
+  object-fit: contain;
+}
+.pb-dala-marca {
+  position: absolute;
+  z-index: 5;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pb-dala-marca.pb-sus-dreapta { top: 14px; right: 14px; }
+.pb-dala-marca.pb-jos-stanga { left: 16px; bottom: 14px; }
+
+.pb-dala-pret {
+  position: absolute;
+  z-index: 4;
+  left: 16px;
+  bottom: 14px;
+  padding: 6px 11px;
+  font-size: 11.4px;
+  font-weight: 600;
+  color: #cbd9f2;
+  background: rgb(3 14 40 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 8px;
+  backdrop-filter: blur(3px);
+}
+.pb-dala-pret b {
+  font-size: 14.4px;
+  letter-spacing: -0.02em;
+  color: var(--pb-accent);
+}
+
+/* Fanionul diagonal din colțul de sus-dreapta. */
+.pb-fanion {
+  position: absolute;
+  z-index: 4;
+  top: 20px;
+  right: -36px;
+  display: block;
+  padding: 7px 38px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--pb-pe-accent);
+  background: var(--pb-accent);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.18);
+  transform: rotate(38deg);
+}
+.pb-fanion.pb-alt {
+  color: #fff;
+  background: var(--pb-actiune);
+}
+
+/* Fiecare dală are compoziția ei: fundal, poziția produsului, a siglei. */
+.pb-d-invertoare { background: linear-gradient(150deg, #08265f 0%, #0b3aae 62%, #0a2e86 100%); }
+.pb-d-invertoare .pb-dala-img { right: 6%; bottom: -2%; width: auto; height: 74%; }
+.pb-d-invertoare .pb-dala-marca { max-height: 24px; max-width: 78px; }
+
+.pb-d-panouri {
+  background:
+    radial-gradient(90% 70% at 88% 6%, rgb(255 255 255 / 0.42) 0%, rgb(255 255 255 / 0) 60%),
+    linear-gradient(42deg, #f0fafc 0%, #c6e9f2 32%, #8bd2e6 64%, #369cc4 100%);
+}
+.pb-d-panouri b { color: #0f172a; }
+.pb-d-panouri .pb-dala-img {
+  right: 4%; bottom: 6%; width: auto; height: 58%;
+  filter: drop-shadow(0 8px 14px rgb(16 24 40 / 0.16));
+}
+.pb-d-panouri .pb-dala-marca { left: 16px; bottom: 16px; max-height: 32px; max-width: 120px; }
+.pb-d-panouri .pb-fanion { color: #fff; background: #0b2a5b; }
+
+.pb-d-stocare { background: linear-gradient(160deg, #06213f 0%, #0c3f73 58%, #04152c 100%); }
+.pb-d-stocare .pb-dala-img { right: 4%; bottom: 12%; width: 62%; height: auto; }
+.pb-d-stocare .pb-dala-marca { max-height: 38px; max-width: 38px; }
+
+.pb-d-montaj {
+  background:
+    radial-gradient(90% 70% at 86% 8%, rgb(255 255 255 / 0.4) 0%, rgb(255 255 255 / 0) 58%),
+    linear-gradient(42deg, #eaf7f1 0%, #b4e3d0 30%, #74c7a8 62%, #2e9b78 100%);
+}
+.pb-d-montaj b { color: #0f172a; }
+.pb-d-montaj .pb-dala-k.pb-deschis { color: #0b4a6b; }
+.pb-d-montaj .pb-dala-img {
+  right: -2%; bottom: 10%; width: 82%; height: auto;
+  filter: drop-shadow(0 8px 14px rgb(16 24 40 / 0.16));
+}
+.pb-d-montaj .pb-dala-marca { left: 18px; bottom: 20px; max-height: 30px; max-width: 36px; }
+
+.pb-d-incarcare { background: linear-gradient(155deg, #141b2b 0%, #25334f 60%, #0c1220 100%); }
+.pb-d-incarcare .pb-dala-img { right: 6%; bottom: 8%; width: auto; height: 66%; }
+.pb-d-incarcare .pb-dala-marca { top: 16px; right: 16px; max-height: 18px; max-width: 88px; }
+
+/* Pe fundal închis, siglele închise la culoare devin albe. */
+.pb-d-invertoare .pb-dala-marca,
+.pb-d-stocare .pb-dala-marca,
+.pb-d-incarcare .pb-dala-marca {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* ══════════════════════════ SUB 1180px ══════════════════════════ */
+
+@media (max-width: 1180px) {
+  .pb-promo-sus { grid-template-columns: 1fr; }
+  .pb-casete { grid-template-rows: none; grid-template-columns: repeat(3, 1fr); height: auto; }
+  .pb-caseta { min-height: 118px; }
+  .pb-dale { grid-template-columns: repeat(3, 1fr); }
+  .pb-dala { height: 205px; }
+}
+
+@media (max-width: 980px) {
+  .pb-caut { display: none; }
+  .pb-bara-l { display: none; }
+}
+
+@media (max-width: 820px) {
+  .pb-antet-in { height: 72px; gap: 14px; }
+  .pb-sigla img { height: 42px; }
+  .pb-cos-t { display: none; }
+  .pb-buton-sters span { display: none; }
+  .pb-bara { position: static; }
+  .pb-bara-in { min-height: 56px; }
+  .pb-catalog-btn { height: 38px; margin-right: 8px; padding: 0 16px; font-size: 14px; }
+  .pb-carusel { height: auto; }
+  .pb-diapo { grid-template-columns: 1fr; }
+  .pb-diapo-txt { padding: 26px 22px; }
+  .pb-diapo-txt::after { display: none; }
+  .pb-diapo-txt h2 { font-size: 23px; }
+  .pb-diapo-img { display: none; }
+  .pb-casete { grid-template-columns: 1fr; }
+  .pb-dale { grid-template-columns: repeat(2, 1fr); }
+  .pb-dala { height: 190px; }
+  .pb-dala b { font-size: 15px; }
+}
+
+@media (max-width: 520px) {
+  .pb { --pb-pad: 16px; }
+  .pb-depozit { display: none; }
+  .pb-tva span { padding: 6px 11px; font-size: 11.6px; }
+}

@@ -43,7 +43,7 @@ export default function Marci() {
 
   return (
     <section className="bg-canvas py-10 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <div className="coloana">
         <h2 className={`${dimensiuneTitluSectiune} font-extrabold text-fg`}>
           Mărcile din catalog
         </h2>

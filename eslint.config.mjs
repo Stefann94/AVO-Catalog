@@ -17,6 +17,12 @@ const eslintConfig = defineConfig([
     // codul TypeScript din `src` le raportau ca șase erori de lint care nu
     // aveau ce să repare acolo.
     "tools/**",
+    // Componente scoase din site, păstrate ca să poată fi recuperate. Nu
+    // intră în nicio pagină și nu se compilează (sunt excluse și din
+    // tsconfig). Verificate ca și cum ar fi în folosință, ar raporta erori
+    // pentru importuri și variabile CSS care nu mai există — zgomot despre
+    // cod pe care nimeni nu-l rulează. Vezi arhiva/README.md.
+    "arhiva/**",
   ]),
 ]);
 

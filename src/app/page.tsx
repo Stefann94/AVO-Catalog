@@ -8,10 +8,7 @@ import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import ProduseCuFile from "@/components/acasa/ProduseCuFile";
 import Marci from "@/components/acasa/Marci";
 import LichidareStoc from "@/components/LichidareStoc";
-import ReclamaPytes from "@/components/ReclamaPytes";
 import ConditiiB2B from "@/components/ConditiiB2B";
-import BaraFiltre from "@/components/BaraFiltre";
-import BaraReclame from "@/components/BaraReclame";
 import { urlAbsolut } from "@/lib/site";
 
 /**
@@ -62,10 +59,24 @@ export default async function Home() {
   ]);
 
   return (
-    /* `pt-(--inaltime-navbar)` e nou: hero-ul de dinainte era `fixed`-friendly,
-       începea sub bară prin construcție. Bannerul nu, deci pagina își coboără
-       singură conținutul, exact ca /catalog. */
-    <div className="flex flex-col min-h-screen bg-slate-50 pt-(--inaltime-navbar)">
+    /* ══════════════════════════════════════════════════════════════════════
+       O SINGURĂ COLOANĂ, DE SUS PÂNĂ JOS
+       ──────────────────────────────────────────────────────────────────────
+       Fiecare secțiune de dedesubt își pune conținutul într-un `.coloana`
+       (globals.css): 1500px lățime maximă, centrat, cu 16/24/32px de spațiu
+       pe laturi. Fundalurile rămân pe toată lățimea ferestrei, conținutul nu.
+
+       AICI AU STAT TREI COMPONENTE CARE TRĂIAU ÎN AFARA COLOANEI:
+
+         BaraFiltre ..... cuprinsul catalogului, în marja din stânga
+         BaraReclame .... coloana de reclame, în marja din dreapta
+         ReclamaPytes ... reclama înaltă de lângă lichidare
+
+       Se afișau doar de la 1760px în sus, așezate cu calcule din `100vw`.
+       Ieșite pe 28.09.2026, odată cu trecerea la o singură coloană. Fișierele
+       sunt în arhiva/componente/, cu tot cu motivul — vezi arhiva/README.md.
+       ══════════════════════════════════════════════════════════════════════ */
+    <div className="flex min-h-screen flex-col bg-slate-50 pt-(--inaltime-navbar)">
       {/* ── Bannerul: ofertele lunii ──
           Același component ca în capul paginii /catalog.
 
@@ -77,59 +88,18 @@ export default async function Home() {
           Amândouă rămân în istoricul git dacă vor fi vreodată nevoie. */}
       <HeroCatalog eticheta={perioada.eticheta} oferte={oferte} />
 
-      {/* ── Rândul de categorii, cu subcategoriile la hover ──
+      {/* ── Rândul de categorii ──
           Același component ca pe /catalog, cu aceleași date. Prima pagină și
-          catalogul au acum aceeași intrare în marfă: cine ajunge pe oricare
-          dintre ele vede imediat cele nouă categorii, nu trebuie să caute. */}
+          catalogul au aceeași intrare în marfă. */}
       <MeniuCategorii categorii={bara.categorii} produse={toateProdusele} />
 
-      {/*
-        ÎNVELIȘUL CARE MĂRGINEȘTE BARA DE FILTRE.
+      {/* Produsele, pe file: „Oferte" plus cele mai mari categorii. */}
+      <ProduseCuFile oferte={oferte} produse={toateProdusele} />
 
-        Cuprinde EXACT o secțiune, și de aici își ia bara ambele capete:
-        pornește din dreptul titlului ei și se oprește unde se termină.
+      {/* Lichidare de stoc — banda derulantă cu săgeți. */}
+      <LichidareStoc />
 
-        E doar `relative` — fără lățime, fără padding, fără fundal. Secțiunea
-        dinăuntru rămâne pe toată lățimea, cu marginile ei. Nimic nu se
-        îngustează.
-
-        AICI A FOST „Gama de produse", rândul de carduri de categorii. A ieșit
-        pe 28.09.2026: bara de categorii de deasupra spune același lucru, mai
-        compact, iar două navigări pe categorii una sub alta e exact ce făcea
-        pagina să pară că se învârte în loc. Bara de filtre a rămas, acum
-        mărginind secțiunea de produse.
-      */}
-      <div className="relative">
-        {/* Cuprinsul catalogului, în marja liberă din stânga. Apare de la 1760px
-            în sus, unde marja lăsată de `max-w-7xl` e destul de lată cât s-o
-            țină fără să atingă conținutul. Calculul e în globals.css. */}
-        <BaraFiltre />
-
-        {/* Coloana de reclame, în marja liberă din dreapta — oglinda barei de
-            filtre, cu aceleași variabile și același prag de 1760px. */}
-        <BaraReclame />
-
-        {/* Produsele, pe file: „Oferte" plus cele mai mari categorii.
-            Ține locul a două secțiuni de dinainte — grila de oferte și
-            cardurile de categorii — fără să trimită JavaScript în browser. */}
-        <ProduseCuFile oferte={oferte} produse={toateProdusele} />
-      </div>
-
-      {/* Lichidare de stoc — banda derulantă cu săgeți. A fost „Ofertele
-          lunii", cu o selecție calculată; acum arată secțiunile „LICHIDARE
-          STOC" din catalog, cu același design. */}
-      {/* `relative` e reperul reclamei înalte din marja dreaptă: se așază
-          față de secțiunea de lichidare, nu față de toată pagina. Același
-          tipar ca învelișul de mai sus, al barei de filtre. */}
-      <div className="relative">
-        <ReclamaPytes />
-        <LichidareStoc />
-      </div>
-
-      {/* Mărcile din catalog — perete de sigle cu numărul de produse.
-          A ÎNLOCUIT „Ofertele lunii", secțiune care arăta exact aceleași patru
-          produse ca bannerul din capul paginii și ca prima filă de mai sus.
-          Ofertele apar acum o singură dată, acolo. */}
+      {/* Mărcile din catalog — perete de sigle cu numărul de produse. */}
       <Marci />
 
       {/* Condițiile B2B — ultima secțiune înainte de footer, și ultima din

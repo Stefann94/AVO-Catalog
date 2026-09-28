@@ -65,11 +65,17 @@ export default async function CatalogPage() {
       <MeniuCategorii categorii={categorii} produse={toateProdusele} />
 
       {/* ── Catalogul: meniul din stânga și grila, neschimbate ── */}
-      <div className="pt-8 lg:pt-12 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-12">
+      <div className="pt-8 pb-16 sm:pb-24 lg:pt-12">
       {/* Coloana de categorii trece lângă grilă abia de la `lg`. La `md`, cum
           era, îi lua grilei 256px din 720 și rămâneau două carduri de ~200px,
-          adică mai înghesuite decât pe un singur rând. */}
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12">
+          adică mai înghesuite decât pe un singur rând.
+
+          Spațiul lateral vine acum din `coloana` (globals.css), nu din
+          `px-*` pus pe învelișul de deasupra: altfel s-ar aduna două
+          padding-uri, iar catalogul ar începe mai la dreapta decât restul
+          site-ului. Meniul și grila rămân cum erau — sunt ÎNĂUNTRUL coloanei,
+          nu pe lângă ea, spre deosebire de barele scoase de pe prima pagină. */}
+      <div className="coloana flex flex-col gap-8 lg:flex-row lg:gap-10 xl:gap-12">
 
         {/* ── Meniul de categorii ──────────────────────────────────────────
 
