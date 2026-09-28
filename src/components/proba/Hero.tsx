@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Produs } from "@/lib/produs";
-import { BRANDURI } from "@/lib/branduri";
+import { BRANDURI, gasesteBrand } from "@/lib/branduri";
 
 /* ══════════════════════════════════════════════════════════════════════════
    HERO — carusel + trei casete + cinci reclame de categorie
@@ -45,7 +45,7 @@ const euro = (n: number) =>
   n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 /** Numele mărcii → slug-ul siglei din public/branduri/color/. */
-const SLUG_MARCA = new Map(BRANDURI.map((b) => [b.nume.toLowerCase(), b.slug]));
+
 
 type Strans = {
   slug: string;
@@ -72,7 +72,7 @@ function strange(produse: Produs[], slug: string): Strans | null {
   }
   let marca: Strans["marca"];
   for (const [nume] of [...dupaMarca].sort((a, b) => b[1] - a[1])) {
-    const s = SLUG_MARCA.get(nume.toLowerCase());
+    const s = gasesteBrand(nume)?.slug;
     if (s) {
       marca = { nume, slug: s };
       break;

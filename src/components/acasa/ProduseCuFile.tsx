@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
-import { BRANDURI } from "@/lib/branduri";
+import { gasesteBrand } from "@/lib/branduri";
 import { dimensiuneTitluSectiune } from "../stiluri";
 import SagetiFile from "./SagetiFile";
 
@@ -77,8 +77,21 @@ const FILE_CATEGORII = 5;
 const euro = (n: number) =>
   n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-/** Numele mărcii → slug-ul siglei colorate din public/branduri/color/. */
-const SIGLA = new Map(BRANDURI.map((b) => [b.nume.toLowerCase(), b.slug]));
+/* Sigla mărcii se caută cu `gasesteBrand`, nu cu o hartă proprie.
+
+   AICI A FOST O HARTĂ `nume → slug`, cheiată după numele din lista noastră de
+   branduri, iar pe FELICITY se vedea defectul: în listă marca e „Felicity
+   Solar", pe produs scrie „FELICITY", deci cheia nu se potrivea și cardul cădea
+   pe varianta de rezervă — numele scris cu majuscule, lângă patru siglei.
+
+   Sigla exista în proiect tot timpul (`public/branduri/color/felicity.webp`);
+   nu se ajungea la ea.
+
+   `gasesteBrand` din lib/branduri.ts face exact potrivirea asta, pe trei
+   încercări în ordinea încrederii: nume identic, slug identic, apoi unul prefix
+   al celuilalt. Rezolvă și „Staubli" pe produs vs „Stäubli" în listă. E deja
+   folosită pe fișa de produs, în meniul de categorii și în hero-ul de catalog —
+   cardul de pe prima pagină era singurul cu rețeta lui. */
 
 /* ══════════════════════════════════════════════════════════════════════════
    RÂNDUL DE OFERTE, COMPLETAT PÂNĂ LA CINCI
@@ -189,7 +202,7 @@ function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
 
 function Card({ a }: { a: Articol }) {
   const adresa = a.slug ? `/catalog/produs/${a.slug}` : "/catalog";
-  const sigla = a.brand ? SIGLA.get(a.brand.toLowerCase()) : undefined;
+  const sigla = gasesteBrand(a.brand)?.slug;
 
   return (
     /* `<article>`, nu `<Link>`, de când cardul are DOUĂ acțiuni: deschide
