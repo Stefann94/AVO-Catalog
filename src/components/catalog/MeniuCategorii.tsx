@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import IconCategorie from "./IconCategorie";
 import type { CategorieFiltru } from "@/lib/panou";
 import type { Produs } from "@/lib/produs";
 import { gasesteBrand } from "@/lib/branduri";
@@ -352,20 +353,39 @@ export default function MeniuCategorii({
 
                   {/* ── Stânga: categoria și subcategoriile ── */}
                   <div className="w-[248px] shrink-0 p-2">
-                    {/* RÂNDUL PRINCIPAL, ȘI SE VEDE CĂ E. Se deosebea de
-                        subcategorii doar prin bold, adică aproape deloc la 13px.
-                        Acum poartă fondul avo-50 în repaus, nu doar sub mouse:
-                        e destinația implicită a dalei, iar rândurile de sub el
-                        sunt îngustări ale ei.
+                    {/* CAPUL FERESTREI: NUMELE CATEGORIEI, NU „TOATE PRODUSELE".
+
+                        Scria „Toate produsele", ceea ce era adevărat, dar se
+                        repeta identic în toate cele opt ferestre — deschideai
+                        oricare și primul rând spunea același lucru. Numele
+                        categoriei spune și unde ești, și unde duce linkul.
+
+                        Iconul e desenul obiectului din categorie, nu o metaforă:
+                        panoul cu celulele lui, cutia invertorului, rastelul de
+                        acumulatori. Vezi IconCategorie.tsx pentru de ce sunt
+                        desenate acolo și nu luate din setul lucide al site-ului.
+
+                        Numele poate fi lung („Echipamente Conversie & Comutare"),
+                        iar coloana are 248px: `leading-tight` îl lasă să cadă pe
+                        două rânduri fără să umfle rândul, `items-start` ține
+                        iconul lipit de primul rând de text, nu centrat pe două.
 
                         Săgeata alunecă 2px la hover — același gest ca la
                         legăturile din josul secțiunilor, ca să nu apară un al
                         doilea fel de a spune mergi mai departe. */}
                     <Link
                       href={`/catalog/${c.slug}`}
-                      className="group/tot flex items-center justify-between gap-2 rounded-md bg-avo-50 px-2.5 py-2 transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600"
+                      className="group/tot flex items-start justify-between gap-2 rounded-md bg-avo-50 px-2.5 py-2.5 transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600"
                     >
-                      <span className="text-[13px] font-bold text-avo-800">Toate produsele</span>
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <IconCategorie
+                          slug={c.slug}
+                          className="shrink-0 text-avo-600 [&>svg]:h-[26px] [&>svg]:w-[26px]"
+                        />
+                        <span className="text-[13px] leading-tight font-bold text-avo-800">
+                          {c.nume}
+                        </span>
+                      </span>
                       <span className="flex shrink-0 items-center gap-1.5">
                         <span className="text-[12px] font-bold text-avo-700 tabular-nums">
                           {c.produse}
