@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import type { CategorieFiltru } from "@/lib/panou";
 import type { Produs } from "@/lib/produs";
 import { gasesteBrand } from "@/lib/branduri";
@@ -335,17 +336,45 @@ export default function MeniuCategorii({
                     `overflow-hidden` taie fondul coloanei din dreapta pe raza
                     interioară (12 − 5 = 7px), deci rama rămâne întreagă în
                     colțurile de jos. `w-[560px]` include rama (border-box). */}
-                <div className="flex w-[560px] max-w-[calc(100vw-2*var(--coloana-pad))] overflow-hidden rounded-b-xl border-x-[5px] border-b-[5px] border-avo-500 bg-white">
+                                {/* UMBRA E EXCEPȚIA DE LA REGULA SITE-ULUI, și are motiv.
+                    Peste tot altundeva delimitarea o face conturul, fiindcă
+                    suprafețele stau ÎN pagină, una lângă alta. Fereastra asta
+                    stă PESTE ea — acoperă hero-ul de dedesubt. Fără umbră,
+                    ce e sub ea se citește la același nivel, iar fereastra pare
+                    o bucată de pagină care s-a lățit peste restul.
+
+                    E coborâtă mult și estompată tare (18px în jos, 40 de
+                    întindere, 12 de strângere), în albastrul închis al paletei,
+                    nu în negru: negrul peste un fond albăstrui dă o pată gri
+                    care se citește ca murdărie. La 28% nu se vede ca umbră,
+                    doar ridică fereastra deasupra paginii. */}
+                <div className="flex w-[560px] max-w-[calc(100vw-2*var(--coloana-pad))] overflow-hidden rounded-b-xl border-x-[5px] border-b-[5px] border-avo-500 bg-white shadow-[0_18px_40px_-12px_rgb(0_33_79/0.28)]">
 
                   {/* ── Stânga: categoria și subcategoriile ── */}
                   <div className="w-[248px] shrink-0 p-2">
+                    {/* RÂNDUL PRINCIPAL, ȘI SE VEDE CĂ E. Se deosebea de
+                        subcategorii doar prin bold, adică aproape deloc la 13px.
+                        Acum poartă fondul avo-50 în repaus, nu doar sub mouse:
+                        e destinația implicită a dalei, iar rândurile de sub el
+                        sunt îngustări ale ei.
+
+                        Săgeata alunecă 2px la hover — același gest ca la
+                        legăturile din josul secțiunilor, ca să nu apară un al
+                        doilea fel de a spune mergi mai departe. */}
                     <Link
                       href={`/catalog/${c.slug}`}
-                      className="flex items-baseline justify-between gap-3 rounded-md px-2.5 py-2 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600"
+                      className="group/tot flex items-center justify-between gap-2 rounded-md bg-avo-50 px-2.5 py-2 transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600"
                     >
-                      <span className="text-[13px] font-bold text-gray-900">Toate produsele</span>
-                      <span className="shrink-0 rounded-md bg-gray-100 px-1.5 text-[12px] font-bold text-gray-600">
-                        {c.produse}
+                      <span className="text-[13px] font-bold text-avo-800">Toate produsele</span>
+                      <span className="flex shrink-0 items-center gap-1.5">
+                        <span className="text-[12px] font-bold text-avo-700 tabular-nums">
+                          {c.produse}
+                        </span>
+                        <ChevronRight
+                          size={14}
+                          aria-hidden
+                          className="text-avo-600 transition-transform duration-150 group-hover/tot:translate-x-0.5"
+                        />
                       </span>
                     </Link>
 
@@ -357,13 +386,26 @@ export default function MeniuCategorii({
                             <li key={s.slug}>
                               <Link
                                 href={`/catalog/${c.slug}/${s.slug}`}
-                                className="group/rand flex items-baseline justify-between gap-3 rounded-md px-2.5 py-1.5 transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600"
+                                className="group/rand flex items-center justify-between gap-2 rounded-md px-2.5 py-[7px] transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600"
                               >
-                                <span className="text-[13px] text-gray-700 transition-colors group-hover/rand:text-avo-700">
+                                <span className="truncate text-[13px] text-gray-700 transition-colors group-hover/rand:text-avo-700">
                                   {s.nume}
                                 </span>
-                                <span className="shrink-0 text-[12px] text-gray-500 transition-colors group-hover/rand:text-avo-700">
-                                  {s.produse}
+                                <span className="flex shrink-0 items-center gap-1.5">
+                                  <span className="text-[12px] text-gray-500 tabular-nums transition-colors group-hover/rand:text-avo-700">
+                                    {s.produse}
+                                  </span>
+                                  {/* Săgeata apare doar sub mouse. În repaus ar fi
+                                      pus o coloană de opt vârfuri identice, care nu
+                                      spun nimic; apărând, arată exact rândul pe care
+                                      ești. Locul îi rămâne rezervat prin opacitate,
+                                      nu prin `hidden`, ca cifra să nu sară lateral
+                                      la fiecare trecere cu mouse-ul. */}
+                                  <ChevronRight
+                                    size={13}
+                                    aria-hidden
+                                    className="text-avo-600 opacity-0 transition-all duration-150 group-hover/rand:translate-x-0.5 group-hover/rand:opacity-100"
+                                  />
                                 </span>
                               </Link>
                             </li>
@@ -444,7 +486,19 @@ export default function MeniuCategorii({
                           „Vezi detalii" ieșea sub marginea de jos — măsurat la
                           Invertoare și Panouri. `object-contain` micșorează poza
                           fără s-o taie. */}
-                      <div className="relative mt-2 h-36 w-full">
+                      {/* FOTOGRAFIA PRIMEȘTE O CASĂ, nu mai plutește pe fond.
+                          Stătea direct pe tenta albăstruie a coloanei, iar
+                          produsul — alb sau gri deschis, cum sunt invertoarele
+                          și acumulatorii — se topea în ea. Caseta albă cu contur
+                          de 1px e aceeași rețetă ca zona foto a cardului de
+                          produs (CardProdus.tsx): două locuri din site care arată
+                          un produs pe fond colorat, aceeași soluție.
+
+                          `mix-blend-multiply` rămâne: fotografiile din catalog au
+                          fundal alb copt, iar pe alb multiply nu schimbă nimic —
+                          dar dacă vreodată caseta capătă altă culoare, albul se
+                          topește singur în ea. */}
+                      <div className="relative mt-2 h-36 w-full overflow-hidden rounded-card border border-line bg-white p-2">
                         {promovat.p.imagine ? (
                           <Image
                             src={promovat.p.imagine.url}
@@ -454,7 +508,7 @@ export default function MeniuCategorii({
                             className="object-contain mix-blend-multiply"
                           />
                         ) : null}
-                        <div className="absolute top-0 left-0 flex gap-1.5">
+                        <div className="absolute top-2 left-2 flex gap-1.5">
                           {promovat.p.oferta ? (
                             <span className={`${BADGE} ${BADGE_CARD} ${BADGE_OFERTA}`}>Ofertă</span>
                           ) : null}
