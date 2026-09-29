@@ -27,7 +27,7 @@ import {
    Culoarea e `faint`, treapta de text cea mai deschisă din site: eticheta
    spune ce urmează, nu concurează cu lista. */
 const ETICHETA_LISTA =
-  "px-2.5 pt-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-faint uppercase";
+  "px-2.5 pt-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-muted uppercase";
 
 /* ── Un rând din listele ferestrei ────────────────────────────────────────
    Subcategorii și mărci. AMÂNDOUĂ TREC PE ACELEAȘI CLASE, și asta e tot
@@ -59,16 +59,35 @@ const ETICHETA_LISTA =
    ochiul citește coloana aia ca strâmbă înainte să înțeleagă de ce.
    `tabular-nums` face restul: cifrele au lățimi egale între ele.
    ────────────────────────────────────────────────────────────────────── */
+/* GREUTATEA ȘI HOVER-UL, DUPĂ O PRIVIRE PE ECRAN.
+
+   Erau text obișnuit gray-700 pe fundal avo-50 la hover: corect pe hârtie —
+   contrastul trecea pragul — dar într-o fereastră de meniu, unde te uiți o
+   secundă și treci mai departe, se citea ca o listă stinsă, iar rândul de sub
+   mouse abia se deosebea de vecini.
+
+   În repaus: `font-medium` și culoarea de text plină a site-ului, nu o
+   treaptă de gri. La 13px, greutatea 500 e diferența dintre un rând care se
+   citește dintr-o privire și unul care cere să fie căutat.
+
+   La hover: fundalul urcă de la avo-50 la avo-100 — o treaptă întreagă, nu o
+   nuanță — iar textul trece pe avo-800. Două semne în loc de unul slab.
+
+   CE NU SE SCHIMBĂ LA HOVER E GREUTATEA. Ar fi fost cel mai simplu mod de a
+   întări efectul și e exact cel care s-a scos acum o iterație: textul îngroșat
+   e mai lat, deci rândul se lățește sub mouse. Aici nu s-ar mai vedea la
+   cifră, fiindcă ea are coloana ei fixă, dar numele s-ar reteza altfel la
+   fiecare trecere. Culoarea și fundalul nu mișcă niciun pixel. */
 const RAND_LISTA =
   "group/rand flex items-center justify-between gap-2 rounded-md px-2.5 py-2 " +
-  "transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600";
+  "transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600";
 
 const NUME_RAND =
-  "truncate text-[13px] text-gray-700 transition-colors group-hover/rand:text-avo-700";
+  "truncate text-[13px] font-medium text-fg transition-colors group-hover/rand:text-avo-800";
 
 const NUMAR_RAND =
-  "min-w-6 text-right text-[12px] text-gray-500 tabular-nums transition-colors " +
-  "group-hover/rand:text-avo-700";
+  "min-w-6 text-right text-[12.5px] font-semibold text-muted tabular-nums transition-colors " +
+  "group-hover/rand:text-avo-800";
 
 const SAGEATA_RAND =
   "text-avo-600 opacity-0 transition-all duration-150 " +
@@ -435,7 +454,7 @@ export default function MeniuCategorii({
                         doilea fel de a spune mergi mai departe. */}
                     <Link
                       href={`/catalog/${c.slug}`}
-                      className="group/tot flex items-start justify-between gap-2 rounded-md bg-avo-50 px-2.5 py-2.5 transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600"
+                      className="group/tot flex items-center justify-between gap-2 rounded-md bg-avo-50 px-2.5 py-2.5 transition-colors hover:bg-avo-100 focus-visible:outline-2 focus-visible:outline-avo-600"
                     >
                       <span className="flex min-w-0 items-center gap-2.5">
                         <IconCategorie
@@ -447,7 +466,7 @@ export default function MeniuCategorii({
                         </span>
                       </span>
                       <span className="flex shrink-0 items-center gap-1.5">
-                        <span className="text-[12px] font-bold text-avo-700 tabular-nums">
+                        <span className="text-[13px] font-bold text-avo-700 tabular-nums">
                           {c.produse}
                         </span>
                         <ChevronRight
@@ -540,9 +559,9 @@ export default function MeniuCategorii({
                                    de cifre, plus locul gol al săgeții — ca lista să nu
                                    se clatine acolo unde un rând nu duce nicăieri. */
                                 <span className="flex items-center justify-between gap-2 px-2.5 py-2">
-                                  <span className="truncate text-[13px] text-gray-700">{b.nume}</span>
+                                  <span className="truncate text-[13px] font-medium text-fg">{b.nume}</span>
                                   <span className="flex shrink-0 items-center gap-1.5">
-                                    <span className="min-w-6 text-right text-[12px] text-gray-500 tabular-nums">
+                                    <span className="min-w-6 text-right text-[12.5px] font-semibold text-muted tabular-nums">
                                       {b.produse}
                                     </span>
                                     <span aria-hidden className="w-[13px]" />
