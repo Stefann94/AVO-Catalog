@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Produs } from "@/lib/produs";
+import { pozaHero } from "./poze-fara-fundal";
 import { BRANDURI, gasesteBrand } from "@/lib/branduri";
 import "./hero-reclame.css";
 
@@ -246,7 +247,10 @@ function strange(produse: Produs[], slug: string): Strans | null {
     cate: ale.length,
     minPret: fataMarfa.length ? fataMarfa[0] : undefined,
     marca,
-    poza: ales?.imagine ? { url: ales.imagine.url, alt: ales.imagine.alt ?? ales.nume } : undefined,
+    /* Decupajul fără fundal când există, altfel fotografia din WordPress —
+       vezi poze-fara-fundal.ts. Pe albastrul hero-ului, un WebP opac pe alb
+       se vedea ca o cutie albă în jurul produsului. */
+    poza: pozaHero(ales),
   };
 }
 
@@ -279,6 +283,9 @@ export default function HeroReclame({
   /* Cele două produse din caseta de ofertă: un invertor și un acumulator,
      alese dintre cele cu fotografie. */
   const duo = [inv?.poza, sto?.poza].filter((x): x is NonNullable<typeof x> => Boolean(x));
+
+  // Aceeași regulă ca la diapozitive: decupajul local, dacă s-a făcut.
+  const pozaVolum = pozaHero(laVolum);
 
   const diapozitive = construieste({ inv, pan, sto, mon });
 
@@ -434,10 +441,10 @@ export default function HeroReclame({
                   </span>
                 </span>
                 <span className="rc-caseta-r">
-                  {laVolum.imagine ? (
+                  {pozaVolum ? (
                     <Image
                       className="rc-caseta-una"
-                      src={laVolum.imagine.url}
+                      src={pozaVolum.url}
                       alt=""
                       width={132}
                       height={88}
