@@ -133,12 +133,10 @@ export default function CumComanzi() {
               } ${n === 1 ? "-scale-y-100" : ""}`}
             >
               <svg width="56" height="34" viewBox="0 0 56 34" fill="none" aria-hidden>
-                {/* Un singur traseu, cu vârful inclus: așa se desenează și el la
-                    final, nu apare dintr-odată peste o linie pe jumătate trasă.
-                    `pathLength="1"` normalizează lungimea, deci animația din
-                    globals.css n-are nevoie să știe cât e de lungă curba. */}
+                {/* Un singur traseu, cu vârful inclus: curba și vârful sunt
+                    aceeași linie, deci au automat aceeași grosime și aceleași
+                    capete rotunjite, fără să le potrivim de două ori. */}
                 <path
-                  pathLength="1"
                   d="M4 8 C 18 8, 24 26, 40 26 M34 20 L41 26 L34 31"
                   stroke="currentColor"
                   strokeWidth="1.75"

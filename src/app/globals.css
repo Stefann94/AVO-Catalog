@@ -872,64 +872,20 @@ body {
 /* ══════════════════════════════════════════════════════════════════════════
    SĂGEȚILE DINTRE PAȘII DE LA „CUM COMANZI"
    ──────────────────────────────────────────────────────────────────────────
-   Trei curbe care leagă cele patru carduri, desenate ca un traseu care se
-   trage de la stânga la dreapta. Componenta e acasa/CumComanzi.tsx.
+   Trei curbe cu vârf, care leagă cele patru carduri. Componenta e
+   acasa/CumComanzi.tsx.
 
-   ─── CUM SE DESENEAZĂ ────────────────────────────────────────────────────
+   NU SE ANIMĂ. A fost o tură în care se trăgeau ca desenate cu creionul, legate
+   de derulare; a ieșit la cerere. Sunt desenate, atât — iar asta le face și mai
+   ieftine: fără animație nu mai e nimic de calculat la derulare, și nu mai e
+   nevoie nici de regula pentru cine a cerut mai puțină mișcare, fiindcă nu se
+   mișcă nimic.
 
-   `pathLength="1"` pe traseu normalizează lungimea lui la 1, indiferent cât e
-   în pixeli. Atunci `stroke-dasharray: 1` face din toată curba o singură
-   liniuță, iar `stroke-dashoffset: 1` o împinge complet în afară — curba
-   dispare. Animația duce offsetul la 0, deci liniuța intră înapoi în cadru de
-   la un capăt: se vede ca și cum ar fi trasă cu creionul.
-
-   Fără normalizare ar fi trebuit să știm lungimea curbei în pixeli și s-o
-   rescriem la fiecare ajustare a lui `d`.
-
-   ─── CÂND SE DESENEAZĂ, ȘI DE CE NU LA ÎNCĂRCARE ─────────────────────────
-
-   `animation-timeline: view()` leagă animația de derulare, nu de ceas: săgeata
-   se trage pe măsură ce secțiunea intră în ecran și rămâne trasă. Dacă ar fi
-   pornit la încărcarea paginii, cine ajunge la secțiune după zece secunde ar fi
-   găsit-o gata desenată — adică animația s-ar fi consumat degeaba, exact pentru
-   cei care n-au văzut-o.
-
-   `@supports` fiindcă animațiile legate de derulare nu sunt încă peste tot
-   (Chrome le are, Firefox nu). Unde lipsesc, curbele sunt pur și simplu
-   desenate, complet, de la bun început — `stroke-dashoffset: 0` e starea din
-   afara blocului. Nimeni nu vede un gol.
-
-   Nu se mișcă nimic de la sine, în niciun caz: fără derulare, fără animație.
+   Culoarea e `avo-500`, o treaptă mai deschisă decât albastrul de acțiune:
+   săgețile leagă, nu cheamă. La fel de tare ca butoanele, ar fi concurat cu
+   linkurile din carduri.
    ══════════════════════════════════════════════════════════════════════════ */
 
 .sageata-pas {
   color: var(--color-avo-500);
-}
-
-.sageata-pas path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-
-@supports (animation-timeline: view()) {
-  .sageata-pas path {
-    stroke-dashoffset: 1;
-    animation: deseneazaSageata linear forwards;
-    animation-timeline: view();
-    animation-range: entry 30% cover 45%;
-  }
-}
-
-@keyframes deseneazaSageata {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Cine a cerut mai puțină mișcare primește curbele gata desenate. */
-@media (prefers-reduced-motion: reduce) {
-  .sageata-pas path {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
 }
