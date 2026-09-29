@@ -176,33 +176,38 @@ export default async function LichidareStoc({
                 acolo răspunde la „de când sunt prețurile", aici la „cât mai țin
                 ofertele". E aceeași valoare, citită o singură dată —
                 incarcaPerioadaCatalog e memoizat cu cache din React. */}
-            {perioada.interval ? (
-              <div className="inline-flex items-center gap-2 sm:gap-3 shrink-0 self-start xl:self-auto h-8 sm:h-11 px-3 sm:px-4 rounded-lg bg-white border border-gray-200">
-                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                  Valabile
-                </span>
-                <span aria-hidden className="h-3.5 sm:h-4 w-px bg-gray-200" />
-                <span className="text-[11px] sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
-                  {perioada.interval}
-                </span>
-              </div>
-            ) : null}
+            {/* Ștampila și săgețile benzii, grupate în dreapta titlului.
+
+                SĂGEȚILE AU FOST O TURĂ PE RÂNDUL DESCRIERII, și se vedea: ele
+                au 44px, descrierea 23, iar `items-end` o împingea la fundul
+                rândului. Golul dintre titlu și descriere ieșea 42px, față de 8
+                la „Produse din catalog" — măsurat pe pagina randată. Capul
+                secțiunii arăta rupt în două.
+
+                Aici nu împing nimic: ștampila are oricum 44px, deci rândul nu
+                crește, iar descrierea își recapătă spațiul normal de dedesubt. */}
+            <div className="flex shrink-0 items-center gap-3 self-start xl:self-auto">
+              {perioada.interval ? (
+                <div className="inline-flex items-center gap-2 sm:gap-3 h-8 sm:h-11 px-3 sm:px-4 rounded-lg bg-white border border-gray-200">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    Valabile
+                  </span>
+                  <span aria-hidden className="h-3.5 sm:h-4 w-px bg-gray-200" />
+                  <span className="text-[11px] sm:text-[13px] font-semibold text-gray-900 whitespace-nowrap">
+                    {perioada.interval}
+                  </span>
+                </div>
+              ) : null}
+              <SagetiBanda eticheta="Ofertele" />
+            </div>
           </div>
 
-          {/* Rândul de jos al capului: textul la stânga, săgețile benzii la
-              dreapta. Săgețile stăteau sub bandă, în stânga jos; le-am urcat
-              aici, ca la „Produse din catalog" — în tot site-ul, comanda unei
-              benzi stă în colțul din dreapta sus al secțiunii ei, deasupra a ce
-              mișcă. `items-end` le aliniază cu ultimul rând de text. */}
-          <div className="mt-3 flex items-end justify-between gap-4 sm:mt-4">
-            <p className="max-w-2xl text-[13px] text-gray-500 sm:text-[14px] leading-relaxed">
-              {/* Era „Produsele cu cea mai mare economie la pragul de volum…",
-                  adică regula selecției vechi. Cu alte produse ar fi mințit. */}
-              Produse scoase la lichidare din ediția curentă a catalogului.
-              Cantitățile sunt limitate.
-            </p>
-            <SagetiBanda eticheta="Ofertele" />
-          </div>
+          <p className="mt-2 max-w-2xl text-[13px] sm:text-[14px] text-gray-500 leading-relaxed">
+            {/* Era „Produsele cu cea mai mare economie la pragul de volum…",
+                adică regula selecției vechi. Cu alte produse ar fi mințit. */}
+            Produse scoase la lichidare din ediția curentă a catalogului.
+            Cantitățile sunt limitate.
+          </p>
 
           <div aria-hidden className="mt-4 sm:mt-7 h-px w-full bg-gray-200" />
         </div>
