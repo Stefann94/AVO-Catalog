@@ -6,6 +6,7 @@ import { incarcaToateProdusele } from "@/lib/produs";
 import { incarcaOferte } from "@/lib/oferte";
 import ProduseCuFile from "@/components/acasa/ProduseCuFile";
 import Marci from "@/components/acasa/Marci";
+import CumComanzi from "@/components/acasa/CumComanzi";
 import LichidareStoc from "@/components/LichidareStoc";
 import ConditiiB2B from "@/components/ConditiiB2B";
 import { urlAbsolut } from "@/lib/site";
@@ -107,18 +108,32 @@ export default async function Home() {
       {/* Lichidare de stoc — banda derulantă cu săgeți. */}
       <LichidareStoc />
 
-      {/* Mărcile din catalog — perete de sigle cu numărul de produse. */}
-      <Marci />
+      {/* Cum comanzi — cei patru pași.
 
-      {/* Condițiile B2B — ultima secțiune înainte de footer, și ultima din
-          ordinea firească a paginii: întâi „ce acoperim", apoi „ce e bun luna
-          asta", abia apoi „în ce condiții cumperi".
+          STĂ ÎNTRE PREȚURI ȘI CONDIȚII, și locul nu e întâmplător. Vine după ce
+          omul a văzut marfa și cifrele, fiindcă abia atunci apare întrebarea
+          „bine, și cum iau astea?"; și vine înaintea condițiilor B2B, fiindcă
+          acelea explică DE CE prețul se mișcă, adică sunt un detaliu al
+          pasului trei, nu al drumului întreg.
 
-          Vine după prețuri, nu înaintea lor, fiindcă răspunde la o întrebare
-          pe care cineva și-o pune DUPĂ ce a văzut o cifră: „ăsta e prețul meu
-          sau se mai mișcă?". Pusă deasupra, ar explica reduceri la prețuri pe
-          care vizitatorul nu le-a văzut încă. */}
+          Pagina spunea până acum ce se vinde și la ce preț, dar niciodată cum se
+          cumpără — iar coșul e blocat cât timp magazinul e amânat, deci drumul
+          spre comandă e un proces, nu un buton. */}
+      <CumComanzi />
+
+      {/* Condițiile B2B — vin după prețuri, nu înaintea lor, fiindcă răspund la
+          o întrebare pe care cineva și-o pune DUPĂ ce a văzut o cifră: „ăsta e
+          prețul meu sau se mai mișcă?". Puse deasupra, ar explica reduceri la
+          prețuri pe care vizitatorul nu le-a văzut încă. */}
       <ConditiiB2B />
+
+      {/* Mărcile din catalog — perete de sigle cu numărul de produse.
+
+          A COBORÂT SUB CONDIȚIILE B2B. E o secțiune de încredere, nu de
+          conversie: stând între lichidare și condiții, întrerupea drumul de la
+          „ce cumpăr" la „cum cumpăr". Aici închide pagina cu argumentul de
+          fond — cu cine lucrăm — fără să taie nimic. */}
+      <Marci />
     </div>
   );
 }
