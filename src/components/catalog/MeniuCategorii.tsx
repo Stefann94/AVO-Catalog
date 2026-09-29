@@ -29,6 +29,51 @@ import {
 const ETICHETA_LISTA =
   "px-2.5 pt-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-faint uppercase";
 
+/* ── Un rând din listele ferestrei ────────────────────────────────────────
+   Subcategorii și mărci. AMÂNDOUĂ TREC PE ACELEAȘI CLASE, și asta e tot
+   rostul constantelor de aici.
+
+   ─── CE ERA ÎNAINTE ────────────────────────────────────────────────────
+
+   Două rețete pentru același lucru, scrise la câteva luni distanță:
+
+     subcategoriile ... fundal `avo-50` sub mouse, textul spre avo-700
+     mărcile .......... o bară verticală de 2px pe marginea din stânga,
+                        numele și cifra trecute pe bold
+
+   Deschideai „Stocare Energie” și primeai un fel de evidențiere; deschideai
+   „Panouri Fotovoltaice” și primeai altul. Nu se vedea ca două intenții, se
+   vedea ca o scăpare. Bara verticală a ieșit la cerere, îngroșarea la fel.
+
+   Cu bold-ul dispare și un truc: numele mărcii avea lățimea variantei
+   îngroșate rezervată dinainte, printr-un `after:` invizibil cu
+   `content: attr(data-nume)`, ca rândul să nu se lățească și să împingă
+   cifra la fiecare trecere cu mouse-ul. Fără îngroșare, n-are ce împinge.
+
+   ─── CIFRA ARE COLOANA EI ──────────────────────────────────────────────
+
+   `min-w-6` plus `text-right`: cifrele stau pe o coloană de lățime fixă,
+   deci săgeata de după ele cade în același loc pe toate rândurile. Fără
+   asta, un „4” și un „22” mutau săgeata cu o literă între rânduri — se
+   vedea la „Accesorii Stocare 4” lângă „Acumulatori Low-Voltage 22”, iar
+   ochiul citește coloana aia ca strâmbă înainte să înțeleagă de ce.
+   `tabular-nums` face restul: cifrele au lățimi egale între ele.
+   ────────────────────────────────────────────────────────────────────── */
+const RAND_LISTA =
+  "group/rand flex items-center justify-between gap-2 rounded-md px-2.5 py-2 " +
+  "transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600";
+
+const NUME_RAND =
+  "truncate text-[13px] text-gray-700 transition-colors group-hover/rand:text-avo-700";
+
+const NUMAR_RAND =
+  "min-w-6 text-right text-[12px] text-gray-500 tabular-nums transition-colors " +
+  "group-hover/rand:text-avo-700";
+
+const SAGEATA_RAND =
+  "text-avo-600 opacity-0 transition-all duration-150 " +
+  "group-hover/rand:translate-x-0.5 group-hover/rand:opacity-100";
+
 /**
  * Rândul de categorii de sub banner, pe pagina /catalog.
  *
@@ -429,26 +474,18 @@ export default function MeniuCategorii({
                             <li key={s.slug}>
                               <Link
                                 href={`/catalog/${c.slug}/${s.slug}`}
-                                className="group/rand flex items-center justify-between gap-2 rounded-md px-2.5 py-[7px] transition-colors hover:bg-avo-50 focus-visible:outline-2 focus-visible:outline-avo-600"
+                                className={RAND_LISTA}
                               >
-                                <span className="truncate text-[13px] text-gray-700 transition-colors group-hover/rand:text-avo-700">
-                                  {s.nume}
-                                </span>
+                                <span className={NUME_RAND}>{s.nume}</span>
                                 <span className="flex shrink-0 items-center gap-1.5">
-                                  <span className="text-[12px] text-gray-500 tabular-nums transition-colors group-hover/rand:text-avo-700">
-                                    {s.produse}
-                                  </span>
+                                  <span className={NUMAR_RAND}>{s.produse}</span>
                                   {/* Săgeata apare doar sub mouse. În repaus ar fi
                                       pus o coloană de opt vârfuri identice, care nu
                                       spun nimic; apărând, arată exact rândul pe care
                                       ești. Locul îi rămâne rezervat prin opacitate,
                                       nu prin `hidden`, ca cifra să nu sară lateral
                                       la fiecare trecere cu mouse-ul. */}
-                                  <ChevronRight
-                                    size={13}
-                                    aria-hidden
-                                    className="text-avo-600 opacity-0 transition-all duration-150 group-hover/rand:translate-x-0.5 group-hover/rand:opacity-100"
-                                  />
+                                  <ChevronRight size={13} aria-hidden className={SAGEATA_RAND} />
                                 </span>
                               </Link>
                             </li>
@@ -488,22 +525,28 @@ export default function MeniuCategorii({
                               {b.slug ? (
                                 <Link
                                   href={`/catalog/${c.slug}/brand-${b.slug}`}
-                                  className="group/brand relative flex items-baseline justify-between gap-3 rounded-md px-2.5 py-1.5 transition-colors before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:rounded-full before:bg-transparent before:transition-colors hover:before:bg-avo-600 focus-visible:outline-2 focus-visible:outline-avo-600"
+                                  className={RAND_LISTA}
                                 >
-                                  <span
-                                    data-nume={b.nume}
-                                    className="grid text-[13px] text-gray-700 transition-colors after:invisible after:h-0 after:overflow-hidden after:font-bold after:content-[attr(data-nume)] group-hover/brand:font-bold group-hover/brand:text-avo-600"
-                                  >
-                                    {b.nume}
-                                  </span>
-                                  <span className="shrink-0 text-[12px] text-gray-500 transition-colors group-hover/brand:font-bold group-hover/brand:text-avo-600">
-                                    {b.produse}
+                                  <span className={NUME_RAND}>{b.nume}</span>
+                                  <span className="flex shrink-0 items-center gap-1.5">
+                                    <span className={NUMAR_RAND}>{b.produse}</span>
+                                    <ChevronRight size={13} aria-hidden className={SAGEATA_RAND} />
                                   </span>
                                 </Link>
                               ) : (
-                                <span className="flex items-baseline justify-between gap-3 px-2.5 py-1.5">
-                                  <span className="text-[13px] text-gray-700">{b.nume}</span>
-                                  <span className="shrink-0 text-[12px] text-gray-500">{b.produse}</span>
+                                /* Marcă necunoscută în lib/branduri.ts: n-are pagină,
+                                   deci nu e link. Păstrează aceeași geometrie ca
+                                   rândurile vecine — aceleași spații, aceeași coloană
+                                   de cifre, plus locul gol al săgeții — ca lista să nu
+                                   se clatine acolo unde un rând nu duce nicăieri. */
+                                <span className="flex items-center justify-between gap-2 px-2.5 py-2">
+                                  <span className="truncate text-[13px] text-gray-700">{b.nume}</span>
+                                  <span className="flex shrink-0 items-center gap-1.5">
+                                    <span className="min-w-6 text-right text-[12px] text-gray-500 tabular-nums">
+                                      {b.produse}
+                                    </span>
+                                    <span aria-hidden className="w-[13px]" />
+                                  </span>
                                 </span>
                               )}
                             </li>
