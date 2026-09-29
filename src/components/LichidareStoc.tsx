@@ -2,7 +2,7 @@ import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import { incarcaLichidareStoc, type Oferta } from "@/lib/oferte";
 import type { CSSProperties } from "react";
 import { dimensiuneTitluSectiune } from "./stiluri";
-import BandaDerulare from "./BandaDerulare";
+import SagetiBanda from "./SagetiBanda";
 import CardProdus from "./CardProdus";
 
 /**
@@ -142,7 +142,7 @@ export default async function LichidareStoc({
    * oricum culoarea de fundal, nu golul.
    */
   return (
-    <section className="bg-white py-10 sm:py-12 lg:py-14">
+    <section data-banda className="bg-white py-10 sm:py-12 lg:py-14">
       <div className="coloana">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-5 sm:mb-10 lg:mb-12">
@@ -189,12 +189,20 @@ export default async function LichidareStoc({
             ) : null}
           </div>
 
-          <p className="mt-3 sm:mt-4 max-w-2xl text-[13px] sm:text-[14px] text-gray-500 leading-relaxed">
-            {/* Era „Produsele cu cea mai mare economie la pragul de volum…",
-                adică regula selecției vechi. Cu alte produse ar fi mințit. */}
-            Produse scoase la lichidare din ediția curentă a catalogului.
-            Cantitățile sunt limitate.
-          </p>
+          {/* Rândul de jos al capului: textul la stânga, săgețile benzii la
+              dreapta. Săgețile stăteau sub bandă, în stânga jos; le-am urcat
+              aici, ca la „Produse din catalog" — în tot site-ul, comanda unei
+              benzi stă în colțul din dreapta sus al secțiunii ei, deasupra a ce
+              mișcă. `items-end` le aliniază cu ultimul rând de text. */}
+          <div className="mt-3 flex items-end justify-between gap-4 sm:mt-4">
+            <p className="max-w-2xl text-[13px] text-gray-500 sm:text-[14px] leading-relaxed">
+              {/* Era „Produsele cu cea mai mare economie la pragul de volum…",
+                  adică regula selecției vechi. Cu alte produse ar fi mințit. */}
+              Produse scoase la lichidare din ediția curentă a catalogului.
+              Cantitățile sunt limitate.
+            </p>
+            <SagetiBanda eticheta="Ofertele" />
+          </div>
 
           <div aria-hidden className="mt-4 sm:mt-7 h-px w-full bg-gray-200" />
         </div>
@@ -223,13 +231,28 @@ export default async function LichidareStoc({
             padding-ului de atunci (`px-4`), copiată. Acum spațiul lateral e o
             variabilă (vezi „COLOANA" în globals.css), iar cardul o citește —
             dacă se schimbă vreodată, banda nu rămâne în urmă. */}
-        <BandaDerulare>
-          {lista.map((o) => (
-            <div key={o.sku} className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
-              <CardProdus a={o} />
+        {/* PISTA E MARCAJ DE SERVER CURAT, fără nicio componentă de client.
+            Derularea nativă merge cu degetul, cu trackpad-ul și cu Tab-ul fără
+            o linie de JavaScript; `data-pista` e doar cârligul prin care
+            săgețile din capul secțiunii o găsesc. Înainte, pista era înfășurată
+            într-o componentă de client care îi ținea și săgețile — acum banda
+            nu mai încarcă nimic, doar controlul din antet.
+
+            `-my-1 py-1` face loc inelului de hover al cardului, pe care
+            `overflow-x-auto` l-ar fi retezat pe verticală. */}
+        <div
+          data-pista
+          className="fara-bara-derulare -my-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 py-1 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0"
+        >
+          {lista.map((o, i) => (
+            <div
+              key={o.sku}
+              className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5 sm:last:w-[260px] sm:last:pr-0"
+            >
+              <CardProdus a={o} prioritate={i < 4} />
             </div>
           ))}
-        </BandaDerulare>
+        </div>
 
         {/* ── Subsol ─────────────────────────────────────────── */}
         <p className="mt-5 sm:mt-10 max-w-2xl text-[11px] sm:text-xs text-gray-500 leading-relaxed">

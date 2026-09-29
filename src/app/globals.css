@@ -775,7 +775,7 @@ body {
    (regula de mai jos, sub `:not([data-pilula])`). Aspectul e neschimbat, doar
    nu alunecă.
 
-   CU JAVASCRIPT, componenta din capul secțiunii (acasa/ComenziFile.tsx) măsoară
+   CU JAVASCRIPT, componenta din capul secțiunii (components/SagetiBanda.tsx) măsoară
    eticheta bifată, scrie poziția și lățimea ei în două variabile pe bară și
    pune `data-pilula="on"`. Atunci fundalul de pe etichetă se stinge și apare
    plăcuța care se mută.

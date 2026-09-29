@@ -10,35 +10,41 @@ import {
   SAGEATA_ALBA,
   SAGEATA_ALBASTRA,
   SAGEATA_STINSA,
-} from "../derulare";
+} from "./derulare";
 
 /**
- * Comenzile secțiunii de produse: săgețile benzilor și plăcuța care alunecă
- * sub fila deschisă.
+ * Săgețile unei benzi derulabile, așezate în capul secțiunii ei — plus, unde
+ * există, plăcuța care alunecă sub fila deschisă.
  *
- * ─── DE CE AMÂNDOUĂ ÎN ACEEAȘI COMPONENTĂ ─────────────────────────────────
+ * O folosesc toate benzile din site: filele de produse de pe prima pagină și
+ * lichidarea de stoc. Se pune ORIUNDE înăuntrul unei secțiuni marcate cu
+ * `data-banda`, iar pistele din ea se marchează cu `data-pista`.
  *
- * Fiindcă au nevoie de exact același semnal — „s-a schimbat fila" — iar el se
+ * ─── DE CE NU STAU SĂGEȚILE LÂNGĂ PISTĂ ───────────────────────────────────
+ *
+ * A existat o componentă care ținea și pista, și săgețile sub ea, și ajungea la
+ * pistă printr-un `ref`. Simplu, dar nu acoperea filele de produse: acolo
+ * fiecare filă are pista ei, se schimbă din CSS (`:has()`, vezi „FILE DE
+ * PRODUSE" în globals.css), iar capul secțiunii e unul singur deasupra tuturor
+ * panourilor — o componentă care să cuprindă și antetul comun, și panoul care
+ * se schimbă sub el, n-are unde să înceapă.
+ *
+ * Soluția merge și pentru benzile simple, deci a rămas una singură: săgețile nu
+ * țin o pistă anume, ci o CAUTĂ pe cea vizibilă la fiecare apăsare. Așa,
+ * pistele redevin marcaj de server curat — o bandă nu mai încarcă nicio
+ * componentă de client, doar secțiunea ei.
+ *
+ * ─── ȘI PLĂCUȚA, ÎN ACEEAȘI COMPONENTĂ ────────────────────────────────────
+ *
+ * Fiindcă are nevoie de exact același semnal — „s-a schimbat fila" — iar el se
  * prinde o singură dată. Două componente ar fi însemnat două ascultătoare de
  * `change` pe aceeași rădăcină, două `ResizeObserver` și încă o intrare în
- * pachetul de JavaScript, pentru douăzeci de rânduri de cod.
+ * pachetul de JavaScript, pentru douăzeci de rânduri de cod. Unde nu există
+ * `[data-file-bara]` — la lichidare, de pildă — partea aia nu face nimic.
  *
- * Plăcuța: fără JavaScript, CSS-ul n-are cum să afle cât e de lată eticheta
- * bifată, deci nici n-o poate muta. Aici se măsoară și se scriu două variabile
- * pe bară; restul face CSS-ul (vezi „PLĂCUȚA CARE ALUNECĂ" în globals.css).
- * Până atunci, fundalul se desenează pe etichetă ca înainte — aspectul e
- * neschimbat, doar nu alunecă.
- *
- * ─── DE CE NU E `BandaDerulare` ───────────────────────────────────────────
- *
- * Acolo săgețile stau în aceeași componentă cu pista, deci pot ajunge la ea
- * printr-un `ref`. Aici nu se poate: filele se schimbă din CSS (`:has()`, vezi
- * „FILE DE PRODUSE" în globals.css), fiecare filă are pista ei, iar capul
- * secțiunii e unul singur, deasupra tuturor panourilor. O componentă care să
- * cuprindă și antetul comun, și panoul care se schimbă sub el, n-are unde să
- * înceapă.
- *
- * Aici săgețile nu țin o pistă anume: la fiecare apăsare o CAUTĂ pe cea vizibilă.
+ * Fără JavaScript, CSS-ul n-are cum să afle cât e de lată eticheta bifată, deci
+ * nici n-o poate muta; atunci fundalul se desenează pe etichetă ca înainte
+ * (vezi „PLĂCUȚA CARE ALUNECĂ" în globals.css).
  *
  * ─── CUM SE GĂSEȘTE PISTA DESCHISĂ ────────────────────────────────────────
  *
@@ -68,13 +74,13 @@ import {
  * nimic oricum, iar o săgeată albastră, aprinsă, care nu răspunde la apăsare e
  * mai rea decât una stinsă. După prima măsurătoare ajunge la starea adevărată.
  */
-export default function ComenziFile() {
+export default function SagetiBanda({ eticheta = "Produsele" }: { eticheta?: string }) {
   const gazda = useRef<HTMLDivElement>(null);
   const [laInceput, setLaInceput] = useState(true);
   const [laSfarsit, setLaSfarsit] = useState(true);
 
   const pistaDeschisa = useCallback((): HTMLElement | null => {
-    const radacina = gazda.current?.closest(".file-produse");
+    const radacina = gazda.current?.closest("[data-banda]");
     if (!radacina) return null;
     const piste = radacina.querySelectorAll<HTMLElement>("[data-pista]");
     for (const p of piste) if (p.offsetParent !== null) return p;
@@ -102,7 +108,7 @@ export default function ComenziFile() {
    * stânga, de la lățime zero, la fiecare încărcare a paginii.
    */
   const asazaPilula = useCallback(() => {
-    const radacina = gazda.current?.closest(".file-produse");
+    const radacina = gazda.current?.closest("[data-banda]");
     const bara = radacina?.querySelector<HTMLElement>("[data-file-bara]");
     const bifat = radacina?.querySelector<HTMLInputElement>('input[type="radio"]:checked');
     if (!bara || !bifat) return;
@@ -121,7 +127,7 @@ export default function ComenziFile() {
   }, []);
 
   useEffect(() => {
-    const radacina = gazda.current?.closest(".file-produse");
+    const radacina = gazda.current?.closest("[data-banda]");
     if (!radacina) return;
 
     const reasaza = () => {
@@ -163,7 +169,7 @@ export default function ComenziFile() {
         type="button"
         onClick={() => gliseaza(pistaDeschisa(), -1)}
         disabled={laInceput}
-        aria-label="Produsele anterioare"
+        aria-label={`${eticheta} anterioare`}
         className={`${SAGEATA} ${laInceput ? SAGEATA_STINSA : SAGEATA_ALBA}`}
       >
         <ChevronLeft size={18} strokeWidth={2.5} />
@@ -172,7 +178,7 @@ export default function ComenziFile() {
         type="button"
         onClick={() => gliseaza(pistaDeschisa(), 1)}
         disabled={laSfarsit}
-        aria-label="Produsele următoare"
+        aria-label={`${eticheta} următoare`}
         className={`${SAGEATA} ${laSfarsit ? SAGEATA_STINSA : SAGEATA_ALBASTRA}`}
       >
         <ChevronRight size={18} strokeWidth={2.5} />

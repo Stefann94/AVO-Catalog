@@ -3,17 +3,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 /* ══════════════════════════════════════════════════════════════════════════
    BENZI DERULABILE — partea comună
    ──────────────────────────────────────────────────────────────────────────
-   În site sunt două feluri de bandă, și diferă doar prin UNDE stau săgețile:
+   O bandă are două jumătăți, și stau în locuri diferite din pagină:
 
-     BandaDerulare ............ săgețile sub pistă, în aceeași componentă cu ea
-                                (lichidarea de stoc)
-     acasa/SagetiFile ......... săgețile în capul secțiunii, despărțite de pistă
-                                de tot restul antetului (filele de produse)
+     PISTA ...... marcaj de server curat: un container cu `overflow-x-auto`,
+                  marcat `data-pista`. Nu încarcă nicio linie de JavaScript
+     SĂGEȚILE ... `components/SagetiBanda.tsx`, o componentă de client pusă în
+                  capul secțiunii, oriunde înăuntrul unui `data-banda`
 
-   A doua n-a putut refolosi prima fiindcă filele se schimbă din CSS: fiecare
-   filă are pista ei, iar capul secțiunii e unul singur, deasupra tuturor. O
-   componentă care ține și pista, și săgețile, n-ar fi avut cum să cuprindă și
-   antetul comun, și panoul care se schimbă sub el.
+   AU FOST DOUĂ FELURI DE BANDĂ. Una ținea pista și săgețile împreună și ajungea
+   la pistă printr-un `ref`; cealaltă, pentru filele de produse, căuta pista
+   vizibilă. A doua le acoperă pe amândouă, iar prima a ieșit — cu ea, benzile
+   nu mai încarcă nimic în browser în afara controlului din antet.
 
    Ce e identic — matematica pasului, citirea capetelor și rețeta butoanelor —
    stă aici, ca să nu se despartă la prima ajustare.

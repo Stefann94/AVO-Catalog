@@ -5,7 +5,7 @@ import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
 import CardProdus, { type ArticolCard } from "../CardProdus";
 import { dimensiuneTitluSectiune } from "../stiluri";
-import ComenziFile from "./ComenziFile";
+import SagetiBanda from "../SagetiBanda";
 
 /* ══════════════════════════════════════════════════════════════════════════
    PRODUSE, PE FILE
@@ -183,7 +183,7 @@ export default function ProduseCuFile({
       {/* `file-produse` cuprinde ACUM ȘI CAPUL SECȚIUNII, nu doar panourile:
           etichetele filelor au urcat lângă titlu, iar `:has()` din globals.css
           le caută înăuntrul aceluiași înveliș ca radio-urile. */}
-      <div className="coloana file-produse">
+      <div className="coloana file-produse" data-banda>
         {/* Radio-urile, ascunse. Ele țin starea; CSS-ul citește care e bifat. */}
         {file.map((f, i) => (
           <input
@@ -275,7 +275,7 @@ export default function ProduseCuFile({
               className="relative inline-flex gap-0.5 rounded-full border border-line-strong p-1.5"
             >
               {/* Plăcuța care alunecă sub eticheta deschisă. Stă goală în
-                  marcaj: poziția și lățimea i le dă ComenziFile.tsx, care
+                  marcaj: poziția și lățimea i le dă SagetiBanda.tsx, care
                   măsoară eticheta bifată. Fără JavaScript rămâne ascunsă, iar
                   fundalul se desenează pe etichetă ca înainte — vezi „PLĂCUȚA
                   CARE ALUNECĂ" în globals.css. */}
@@ -293,7 +293,7 @@ export default function ProduseCuFile({
             </div>
           </div>
 
-            <ComenziFile />
+            <SagetiBanda eticheta="Produsele" />
           </div>
         </div>
 
@@ -323,7 +323,7 @@ export default function ProduseCuFile({
                 Derularea nativă merge cu degetul, cu trackpad-ul și cu Tab-ul,
                 fără o linie de JavaScript; `data-pista` e cârligul prin care
                 săgețile din capul secțiunii o găsesc pe cea deschisă (vezi
-                ComenziFile.tsx). Așa, cele șase file încarcă un singur control,
+                SagetiBanda.tsx). Așa, cele șase file încarcă un singur control,
                 nu șase componente de client. */}
             <div
               data-pista
