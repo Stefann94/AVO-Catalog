@@ -128,14 +128,25 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full z-50 flex flex-col shadow-sm">
       {/* ── Bara de contact ──────────────────────────────────────────────
           `h-8`, nu `py-2`: înălțimea ei intră în `--inaltime-navbar`, deci
-          trebuie să fie o cifră, nu o consecință a textului dinăuntru. */}
-      <div className="bg-slate-900 border-b border-slate-800 h-8 hidden lg:block">
+          trebuie să fie o cifră, nu o consecință a textului dinăuntru.
+
+          FONDUL E `avo-950`, NU `slate-900`. Era un negru neutru (#0f172a) care
+          nu exista în paleta AVO, așezat direct peste banda de categorii, care e
+          albastră — două negruri din familii diferite, unul peste altul, și de
+          acolo venea o parte din senzația de cap de pagină greu. `avo-950`
+          (#00153b) e aproape la fel de închis, dar e albastru: contrastul
+          textului chiar crește puțin, de la 6,96 la 7,00.
+
+          TEXTUL E `slate-300`, NU `slate-400`: de la 6,96 la 10,63. Aici nu era
+          o problemă de prag — și 6,96 trece lejer — ci de lizibilitate: 11px cu
+          majuscule și litere răsfirate se citesc greu chiar la contrast bun. */}
+      <div className="bg-avo-950 border-b border-avo-900 h-8 hidden lg:block">
         {/* `coloana`, nu `w-full px-6`: bara de sus se aliniază cu restul
             site-ului. Înainte, telefonul și adresa începeau de la marginea
             ferestrei, în timp ce conținutul de dedesubt începea de la coloană
             — pe un ecran de 1920px, o diferență de 178px, adică bara arăta ca
             și cum ar fi a altei pagini. */}
-        <div className="coloana flex h-full items-center justify-between gap-6 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+        <div className="coloana flex h-full items-center justify-between gap-6 text-[11px] font-semibold tracking-wider text-slate-300 uppercase">
 
           {/* Contact. `min-w-0` ca zona să poată ceda lățime în loc să
               împingă anunțul din mijloc peste ce urmează. */}

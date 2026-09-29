@@ -204,9 +204,32 @@ export default function MeniuCategorii({
        `z-40`, sub cei `z-50` ai barei: dacă s-ar egala, banda ar trece peste
        ea la derulare.
        ══════════════════════════════════════════════════════════════════════ */
+    /* ─── CULORILE BENZII ─────────────────────────────────────────────────
+       Banda `avo-800`, dalele `avo-600`. A fost invers ca idee: banda `avo-900`
+       și dalele `avo-800`, adică două albastre lipite ca luminozitate — raportul
+       dintre ele era 1,17, practic zero. Opt dreptunghiuri închise pe un fond
+       închis nu se citeau ca opt butoane, ci ca o bară solidă cu text pe ea, iar
+       ochiul trebuia să despartă singur cuvintele în grupuri.
+
+       Măsurat pe cele patru variante puse una lângă alta: a deschide TOATĂ banda
+       nu rezolvă nimic (la o treaptă mai sus raportul urcă doar la 1,23, la două
+       trepte la 1,27) fiindcă fondul și dalele urcă împreună. Ce rezolvă e să
+       rămână distanță între ele: banda urcă o treaptă, dalele sar trei. Raportul
+       ajunge la 1,56.
+
+       DALELE SUNT PE ALBASTRUL BUTOANELOR (`avo-600`), nu pe o nuanță aleasă
+       pentru bandă. În site, avo-600 plin înseamnă „aici poți apăsa" — pe buton,
+       pe săgeata benzii, pe coșul din card. Categoriile chiar sunt apăsabile.
+
+       Hover-ul a trebuit mutat pe `avo-500`: era tot `avo-600`, care acum e
+       culoarea de repaus, deci trecerea cu mouse-ul n-ar mai fi schimbat nimic.
+
+       Contrastul textului alb rămâne peste prag: 8,61 pe avo-600, față de 13,47
+       cât era pe avo-800. Pragul cerut pentru text de 13px e 4,5.
+       ────────────────────────────────────────────────────────────────────── */
     <nav
       aria-label="Categorii principale"
-      className="sticky top-(--inaltime-navbar) z-40 bg-avo-900"
+      className="sticky top-(--inaltime-navbar) z-40 bg-avo-800"
     >
       <div className="coloana">
       <ul className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
@@ -223,7 +246,7 @@ export default function MeniuCategorii({
             <li key={c.slug} className="group relative w-[132px] shrink-0 lg:w-auto">
               <Link
                 href={`/catalog/${c.slug}`}
-                className="flex h-14 items-center justify-center rounded-lg bg-avo-800 px-2 text-center text-[12px] leading-tight font-semibold text-white transition-colors group-hover:bg-avo-600 group-focus-within:bg-avo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:text-[13px]"
+                className="flex h-14 items-center justify-center rounded-lg bg-avo-600 px-2 text-center text-[12px] leading-tight font-semibold text-white transition-colors group-hover:bg-avo-500 group-focus-within:bg-avo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:text-[13px]"
               >
                 {c.nume}
               </Link>
@@ -240,18 +263,21 @@ export default function MeniuCategorii({
                     pagina tot albă se citea ca o bucată de pagină desprinsă, nu
                     ca un meniu deschis.
 
-                    Culoarea e aceeași cu a butonului aprins de deasupra
-                    (`group-hover:bg-avo-600`), deci butonul și fereastra se
-                    citesc ca un singur obiect: ce ai atins și ce s-a deschis.
-                    Contrast 8,61 pe alb, peste pragul de 3:1 pentru elemente
-                    negrafice; față de banda avo-900 se desparte prin luminozitate.
+                    Culoarea e aceeași cu a butonului APRINS de deasupra, adică
+                    `avo-500`, deci butonul și fereastra se citesc ca un singur
+                    obiect: ce ai atins și ce s-a deschis. A fost `avo-600` cât
+                    timp acela era hover-ul dalei; de când dalele stau în repaus
+                    pe avo-600 și se aprind pe avo-500, rama a urmat hover-ul —
+                    altfel fereastra s-ar fi potrivit cu dalele pe care NU le-ai
+                    atins. Contrast 4,60 pe alb, peste pragul de 3:1 pentru
+                    elemente negrafice.
 
                     Fără umbră mare: conturul face delimitarea, regula site-ului.
                     `overflow-hidden` taie fondul coloanei din dreapta pe raza
                     interioară (12 − 5 = 7px), deci rama rămâne întreagă în
                     colțuri. `w-[560px]` include rama (border-box), deci
                     fereastra nu s-a lățit; conținutul a cedat 4px. */}
-                <div className="flex w-[560px] overflow-hidden rounded-xl border-[5px] border-avo-600 bg-white">
+                <div className="flex w-[560px] overflow-hidden rounded-xl border-[5px] border-avo-500 bg-white">
 
                   {/* ── Stânga: categoria și subcategoriile ── */}
                   <div className="w-[248px] shrink-0 p-2">
