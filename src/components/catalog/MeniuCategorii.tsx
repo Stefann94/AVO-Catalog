@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import IconCategorie from "./IconCategorie";
 import type { CategorieFiltru } from "@/lib/panou";
 import type { Produs } from "@/lib/produs";
@@ -13,6 +13,21 @@ import {
   BADGE_OFERTA,
   BUTON_PLIN,
 } from "@/components/stiluri";
+
+/* ── Eticheta unei liste din fereastra de categorie ───────────────────────
+   „SUBCATEGORII", „BRANDURI". Aceeași rețetă pentru amândouă, ca lista să nu
+   pară că începe altfel după ce se schimbă ce e în ea.
+
+   10,5px cu spațiere de 0,08em, nu 11px cu `tracking-wider` (0,05em): la
+   corpuri mici scrise cu majuscule, literele se lipesc și cuvântul devine o
+   bară. Cu cât textul e mai mic, cu atât are nevoie de mai mult aer între
+   litere — de-aia eticheta e mai MICĂ decât rândurile de sub ea și totuși se
+   citește la fel de ușor.
+
+   Culoarea e `faint`, treapta de text cea mai deschisă din site: eticheta
+   spune ce urmează, nu concurează cu lista. */
+const ETICHETA_LISTA =
+  "px-2.5 pt-3 pb-1.5 text-[10.5px] font-bold tracking-[0.08em] text-faint uppercase";
 
 /**
  * Rândul de categorii de sub banner, pe pagina /catalog.
@@ -400,7 +415,15 @@ export default function MeniuCategorii({
 
                     {c.subcategorii.length > 0 ? (
                       <>
-                        <div aria-hidden className="mx-2.5 my-1 h-px bg-gray-200" />
+                        {/* LISTA ARE UN NUME, nu doar o linie deasupra. Era o
+                            dungă de 1px și atât: se vedea că urmează altceva,
+                            dar nu ce anume. Sub „Stocare Energie 39", cinci
+                            rânduri fără cap puteau fi la fel de bine mărci,
+                            filtre sau produse.
+
+                            Eticheta ține și locul liniei — două semne pentru
+                            aceeași despărțire ar fi fost unul în plus. */}
+                        <p className={ETICHETA_LISTA}>Subcategorii</p>
                         <ul>
                           {c.subcategorii.map((s) => (
                             <li key={s.slug}>
@@ -458,10 +481,7 @@ export default function MeniuCategorii({
                          Un brand pe care lib/branduri.ts nu-l cunoaște n-are slug,
                          deci n-are filtru: rămâne rând simplu, fără link. */
                       <>
-                        <div aria-hidden className="mx-2.5 my-1 h-px bg-gray-200" />
-                        <p className="px-2.5 pt-1.5 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                          Branduri
-                        </p>
+                        <p className={ETICHETA_LISTA}>Branduri</p>
                         <ul>
                           {branduri.map((b) => (
                             <li key={b.nume}>
@@ -493,12 +513,24 @@ export default function MeniuCategorii({
                     ) : null}
                   </div>
 
-                  {/* ── Dreapta: un produs real din categorie ── */}
+                  {/* ── Dreapta: un produs real din categorie ──
+
+                      FONDUL E `canvas`, TOKENUL SITE-ULUI, nu #EEF3F9 scris de
+                      mână. Erau două griuri albăstrui aproape identice în
+                      aceeași fereastră — fondul coloanei și caseta albă a pozei
+                      — iar diferența dintre ele se citea ca o scăpare de
+                      randare, nu ca două suprafețe. Pe `canvas` caseta albă se
+                      desprinde clar, și coloana asta nu mai e singurul loc din
+                      site cu o culoare numai a ei.
+
+                      Capul are linie dedesubt, ca titlurile de secțiune din
+                      pagină: același fel de a spune „aici începe ceva". */}
                   {promovat ? (
-                    <div className="flex min-w-0 flex-1 flex-col border-l border-gray-200 bg-[#EEF3F9] p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-600">
+                    <div className="flex min-w-0 flex-1 flex-col border-l border-line bg-canvas p-4">
+                      <p className="text-[10.5px] font-bold tracking-[0.08em] text-muted uppercase">
                         {promovat.motiv}
                       </p>
+                      <div aria-hidden className="mt-2 h-px w-full bg-line" />
 
                       {/* ÎNĂLȚIME FIXĂ, 144px, nu `aspect-[4/3]`. Cu proporția,
                           poza avea ~204px în jumătatea de 272px, iar fereastra
@@ -562,16 +594,30 @@ export default function MeniuCategorii({
                         <span className="text-[12px] font-medium text-gray-600">/ {promovat.p.unitate}</span>
                       </p>
                       {promovat.p.pretVolum && promovat.p.prag ? (
-                        <p className="mt-1 text-[12px] text-gray-600">
+                        <p className="mt-1 text-[12px] text-faint">
                           {eur(promovat.p.pretVolum)} € de la {promovat.p.prag}
                         </p>
                       ) : null}
 
+                      {/* SĂGEATA ALUNECĂ 2px LA HOVER, ca la toate legăturile
+                          care duc mai departe din site. Butonul era un
+                          dreptunghi plin fără niciun semn de direcție — corect,
+                          dar mut.
+
+                          `mt-auto` în loc de `mt-3`: îl lipește de fundul
+                          coloanei, deci butonul cade pe aceeași linie oricât de
+                          lung ar fi numele produsului de deasupra. Cu `mt-3`
+                          urca și cobora de la o categorie la alta. */}
                       <Link
                         href={`/catalog/produs/${promovat.p.slug}`}
-                        className={`${BUTON_PLIN} mt-3 w-full`}
+                        className={`${BUTON_PLIN} group/btn mt-auto w-full`}
                       >
                         Vezi detalii
+                        <ArrowRight
+                          size={16}
+                          aria-hidden
+                          className="transition-transform duration-200 group-hover/btn:translate-x-0.5"
+                        />
                       </Link>
                     </div>
                   ) : null}
