@@ -232,18 +232,36 @@ export default function MeniuCategorii({
       className="sticky top-(--inaltime-navbar) z-40 bg-avo-800"
     >
       <div className="coloana">
-      <ul className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-x-visible">
+      {/* BANDA SE MICȘOREAZĂ ODATĂ CU FEREASTRA, nu se taie.
+
+          Cele opt categorii cer toată lățimea coloanei de la 1440. Pe o
+          fereastră strânsă banda trecea pe rând derulabil, iar ultima dală
+          rămânea tăiată la marginea din dreapta — se putea trage cu degetul,
+          dar arăta ca o scăpare.
+
+          `--scara-compacta` e același raport cu care se micșorează hero-ul
+          și rândul de file, definit o singură dată în globals.css. Grila
+          începe de la 850px (`min-[53.125rem]`), nu de la `lg`, fiindcă aia e
+          lățimea până la care scara ține compozițiile întregi în tot site-ul.
+
+          SCARA STĂ PE LISTĂ, NU PE `<nav>`. Bara e lipicioasă sub antet, iar
+          `zoom` ar fi scălat și `top`-ul ei: s-ar fi oprit cu câțiva pixeli
+          mai sus decât trebuie, peste bara fixă de deasupra. */}
+      <ul
+        className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 min-[53.125rem]:grid min-[53.125rem]:auto-cols-fr min-[53.125rem]:grid-flow-col min-[53.125rem]:overflow-x-visible"
+        style={{ zoom: "var(--scara-compacta)" }}
+      >
         {categorii.map((c, i) => {
           const promovat = produsPromovat(c.slug, produse);
           const sigla = promovat?.p.brand ? gasesteBrand(promovat.p.brand) : undefined;
           const branduri = c.subcategorii.length === 0 ? branduriDin(c.slug, produse) : [];
 
           return (
-            /* `w-[132px] shrink-0` doar sub lg: într-un rând care se derulează,
+            /* `w-[132px] shrink-0` doar sub 850px: într-un rând care se derulează,
                plăcile trebuie să aibă o lățime a lor, altfel flex le strânge
                până intră toate pe ecran și textul se rupe pe patru rânduri.
                De la lg, grila le dă lățimi egale și cele două clase ies. */
-            <li key={c.slug} className="group relative w-[132px] shrink-0 lg:w-auto">
+            <li key={c.slug} className="group relative w-[132px] shrink-0 min-[53.125rem]:w-auto">
               <Link
                 href={`/catalog/${c.slug}`}
                 className="flex h-14 items-center justify-center rounded-lg bg-avo-600 px-2 text-center text-[12px] leading-tight font-semibold text-white transition-colors group-hover:bg-avo-500 group-focus-within:bg-avo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:text-[13px]"

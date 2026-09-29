@@ -307,9 +307,107 @@
        1920px       272px        392px
 
      S-a ales 1500 ca site-ul să stea 1:1 lângă prototip, pentru comparație.
-     Se schimbă de aici, singurul loc. */
-  --coloana-max: 1500px;
+     Se schimbă de aici, singurul loc.
+
+     ─── DE CE NU MAI E O CIFRĂ FIXĂ ────────────────────────────────────
+
+     1500px fix înseamnă că, de la un punct încolo, tot ce câștigă ecranul se
+     duce în marginile goale. Pe un monitor de 31–32" — 3840px la 150% de
+     mărire, adică 2560px de CSS — rămâneau 530px de alb pe fiecare parte,
+     21% din fereastră de fiecare latură. Nu e aer, e pagină nefolosită.
+
+     Acum coloana crește cu fereastra, dar puțin și cu oprire:
+
+       până la 1830px .... 1500px, exact ca înainte (laptop, 1440, 1600)
+       1830–2244px ....... 82% din fereastră
+       peste 2244px ...... 1840px, și se oprește acolo
+
+     Marginea rămasă, pe lățimile care contează:
+
+                      înainte      acum
+       1920px          272px       272px    (neschimbat)
+       2560px          530px       360px
+       3440px          970px       800px
+
+     PLAFONUL E 1840, NU MAI MULT, și nu din zgârcenie: la 1840 un rând de
+     cinci carduri dă carduri de 342px, față de 262 la 1440. Peste atât,
+     cardurile ar ajunge mai mari decât obiectul pe care îl arată, iar
+     rândurile de text ale secțiunilor ar trece de 90 de caractere, adică
+     dincolo de ce se citește comod. Cerința era „să se lungească puțin".
+
+     82vw nu e ales la întâmplare: la 1830px dă fix 1500, deci cele două
+     capete se leagă continuu și nu există salt la trecerea peste prag. */
+  --coloana-max: clamp(1500px, 82vw, 1840px);
+
+  /* ── SCARA COMPOZIȚIILOR STRÂNSE ────────────────────────────
+
+     Unele bucăți din pagină nu sunt liste care se rearanjează, sunt
+     compoziții: hero-ul (carusel + trei casete + cinci reclame) și rândul
+     de comandă al secțiunii cu file (șase file + două săgeți). Ele n-au
+     unde să se rupă frumos: ori încap, ori se taie.
+
+     Când fereastra se strânge, lucrul cerut e să se MICȘOREZE, nu să se
+     rupă în bucăți puse una sub alta.
+
+     `--scara-compacta` e raportul dintre lățimea coloanei de acum și cei
+     1376px pe care e desenată pagina — cât are coloana la 1440. Peste
+     1440 e 1, deci nu se schimbă nimic din ce era.
+
+     ─── DE UNDE VINE UN NUMĂR FĂRĂ UNITATE, DIN DOUĂ LUNGIMI ──────
+
+     `calc(100vw / 1376px)` nu există: CSS nu împarte o lungime la o
+     lungime. Dar trigonometria o face. `atan2(a, b)` e unghiul a cărui
+     tangentă E chiar raportul căutat, iar `tan()` îl întoarce ca număr
+     curat. E singura cale de a scoate un raport din lățimea ferestrei
+     fără JavaScript, și merge în tot ce s-a lansat din 2023 încoace.
+
+     `100vw` minus spațiul lateral, nu `100vw` gol: altfel raportul ar fi
+     ieșit prea mare, compoziția s-ar fi așezat pe o lățime mai mică decât
+     cea pentru care e desenată, iar textul din carusel intra sub pana
+     oblică. Cu scăderea, lățimea nescalată e mereu 1376, adică exact
+     așezarea de la 1440, doar mai mică.
+
+     `100vw` include bara de derulare, deci pe Windows raportul iese cu
+     un procent mai mic decât ar trebui. Greșeala e în direcția bună:
+     compoziția iese cu câțiva pixeli mai strâmtă, niciodată mai lată
+     decât încape.
+
+     ─── DE CE PODEAUA E 0,72 ─────────────────────────────
+
+     Sub ea, etichetele mărunte de pe reclame (11px) ar coborî sub 8px,
+     adică sub pragul la care un text cu majuscule mai poate fi citit.
+     Podeaua se atinge pe la 1040px; între ea și 850px compoziția se mai
+     strânge puțin, iar sub 850 se predă și trece pe așezarea verticală.
+
+     ─── DE CE `zoom`, ȘI NU `transform: scale()` ──────────────
+
+     `transform` desenează altfel, dar nu mișcă așezarea: elementul ar fi
+     continuat să ocupe locul dinainte, deci ar fi rămas un gol cât
+     diferența, iar textul ar fi fost rasterizat și apoi micșorat, adică
+     neclar. `zoom` schimbă chiar așezarea — textul se compune direct la
+     corpul mic și rămâne tăios, iar înălțimea secțiunii scade cu el.
+
+     NU SE APLICĂ PE GRILELE DE CARDURI. Acolo răspunsul corect e altul:
+     cardurile trec de la cinci pe rând la patru, trei, două. Micșorate
+     sub 226px, denumirile cad toate pe treapta cea mai mică de corp —
+     vezi pragurile măsurate din CardProdus.tsx. */
+  --scara-compacta: 1;
   --coloana-pad: 16px;
+}
+
+/* Scara se calculează doar unde se poate. Un browser fără `zoom` sau fără
+   trigonometrie în CSS rămâne pe 1, iar compozițiile își păstrează ruperile de
+   dinainte — vezi `@supports not` din hero-reclame.css. */
+@supports (zoom: 1) and (width: calc(1px * tan(atan2(1px, 1px)))) {
+  @media (min-width: 53.125rem) {
+    :root {
+      --scara-compacta: clamp(
+        0.72,
+        tan(atan2(100vw - 2 * var(--coloana-pad), 1376px)),
+        1
+      );
+    }
+  }
 }
 
 @media (min-width: 40rem) {

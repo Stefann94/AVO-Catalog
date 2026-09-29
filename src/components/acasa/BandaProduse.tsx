@@ -31,22 +31,28 @@ import CardProdus, { type ArticolCard } from "../CardProdus";
    prezența lor ar fi pus săgețile din capul altei secțiuni să caute o pistă
    aici (vezi SagetiBanda.tsx, care urcă până la cel mai apropiat `data-banda`).
 
-   ─── CINCI PE RÂND DOAR DE LA `xl` ─────────────────────────────────────
+   ─── CINCI PE RÂND DOAR DE LA `xl`, ȘI O TREAPTĂ LA FIECARE PAS ────
 
-   La 1440, coloana are 1376px: cinci carduri de 262 plus patru spații de 16 fac
-   1374. Exact lățimea cardului din toate celelalte grile ale site-ului, deci
-   pragurile de corp ale denumirii (vezi CardProdus.tsx) rămân valabile.
+   La 1440, coloana are 1376px: cinci carduri de 262 plus patru spații de 16
+   fac 1374. Exact lățimea cardului din toate celelalte grile ale site-ului,
+   deci pragurile de corp ale denumirii (vezi CardProdus.tsx) rămân valabile.
 
-   PRAGUL E `xl`, NU `lg`, ȘI ASTA S-A MĂSURAT. Cu `lg` (de la 1024px), cinci
-   coloane dădeau carduri de 179px — sub cei 226px pe care sunt calculate
-   pragurile de corp ale denumirii, adică sub cea mai îngustă cutie pentru care
-   se știe că textul încape. La `xl` (1280px) cardul iese 230px, deci peste
-   prag; între 1024 și 1280 grila stă pe trei coloane, cu carduri de 309px.
+   REPERUL E 226px, cea mai îngustă cutie pentru care s-a măsurat că textul
+   încape. Sub el, denumirile cad pe treapta cea mai mică pe toată grila.
+   Scara e aleasă ca fiecare treaptă să stea peste reper:
 
-   Mai jos: trei la `sm`, două pe telefon — aceeași scară ca pe pagina de
-   categorie. Cele zece produse ocupă atunci patru, respectiv cinci rânduri;
-   „două rânduri" e forma de la `xl` în sus, acolo unde încape.
-   ══════════════════════════════════════════════════════════════════════════ */
+     de la 1280 (`xl`) ... 5 coloane ... 230px la 1280, 262 la 1440, 342 la 1840
+     1024–1279  (`lg`) ... 4 coloane ... 228px la 1024, 268 la 1180
+      768–1023  (`md`) ... 3 coloane ... 229px la 768,  309 la 1024
+      sub 768 ............. 2 coloane ... ca pe pagina de categorie
+
+   TREAPTA DE PATRU A FOST ADĂUGATĂ DUPĂ O MĂSURĂTOARE. Fără ea, grila sărea
+   de la cinci carduri de 262px la 1280 direct la trei de 361px la 1180 —
+   adică, strângând fereastra cu o sută de pixeli, cardurile se făceau mai
+   MARI cu o sută. Saltul se vedea ca o schimbare de pagină, nu de lățime.
+
+   Două rânduri e forma de la `xl` în sus; mai jos, cele zece produse ocupă
+   trei, patru sau cinci rânduri, după câte coloane încap.   ══════════════════════════════════════════════════════════════════════════ */
 
 /** Câte produse arată o secțiune: cinci pe rând, două rânduri. */
 export const PE_SECTIUNE = 10;
@@ -111,7 +117,7 @@ export default function BandaProduse({
             `items-stretch` implicit al grilei plus `h-full` de pe card fac ca
             toate cardurile unui rând să aibă aceeași înălțime, chiar dacă unul
             are denumirea pe un rând și altul pe două. */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {lista.map((a) => (
             <CardProdus key={a.sku ?? a.slug} a={a} />
           ))}

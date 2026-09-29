@@ -40,6 +40,11 @@
 
   --rc-cerneala: #10151c;
   --rc-linie: #e2e8f0;
+
+  /* Scara compoziției vine din globals.css, unde e explicată pe larg și de
+     unde o iau și alte bucăți strânse ale paginii (rândul de file din
+     „Produse din catalog”). Aici e doar un nume scurt pentru ea. */
+  --rc-scara: var(--scara-compacta);
 }
 
 /* `.rc-wrap` NU EXISTĂ AICI. În prototip, secțiunea își ducea propriul
@@ -60,12 +65,18 @@
     padding-bottom: 24px;
   }
 }
+/* SCARA SE APLICĂ AICI, NU PE SECȚIUNE. Pe `.rc-promo` s-ar fi micșorat și
+   `.coloana` dinăuntru, cu tot cu spațiul ei lateral: la 0,8 cei 32px de
+   margine ar fi ajuns 26, iar secțiunea de dedesubt ar fi rămas la 32. Două
+   gutiere diferite una sub alta se văd. Așa, coloana rămâne a site-ului și
+   doar ce e în ea se scalează. */
 .rc-promo-sus {
   display: grid;
   grid-template-columns: 1fr 348px;
   gap: 14px;
   align-items: start;
   margin-bottom: 14px;
+  zoom: var(--rc-scara);
 }
 
 /* ── Caruselul ──
@@ -126,6 +137,16 @@
   width: 140px;
   background: inherit;
   transform: skewX(-9deg);
+  /* SUB TEXT, NU PESTE EL. Pana intră 70px în cutia textului, iar
+     `padding-right` o ține la distanță doar 40 — deci ultimii 30px de rând
+     cădeau sub ea și se vedeau tăiați. La 1440 textul nu ajunge acolo, deci
+     nu s-a văzut niciodată; pe o fereastră strânsă ajunge.
+
+     `z-index: -1` o coboară sub conținut, dar o lasă peste fundalul
+     părintelui — asta face un copil cu z negativ într-un context de
+     stivuire. Cum pana poartă chiar fundalul părintelui (`background:
+     inherit`), textul care trece peste ea arătă exact ca pe fundal. */
+  z-index: -1;
 }
 
 .rc-eticheta {
@@ -461,6 +482,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
+  zoom: var(--rc-scara);
 }
 .rc-dala {
   position: relative;
@@ -646,22 +668,57 @@
 }
 
 
-@media (max-width: 1180px) {
-  .rc-promo-sus { grid-template-columns: 1fr; }
-  .rc-casete { grid-template-rows: none; grid-template-columns: repeat(3, 1fr); height: auto; }
-  .rc-caseta { min-height: 118px; }
-  .rc-dale { grid-template-columns: repeat(3, 1fr); }
-  .rc-dala { height: 205px; }
+/* ══ SCARA, ÎNTRE 850 ȘI 1180 ══
+
+   Peste 1440 raportul e 1 și nu se schimbă nimic din ce era. Sub, se
+   micșorează tot ce e în coloană, păstrând aranjamentul: cinci reclame rămân
+   cinci, cele trei casete rămân în dreapta caruselului. Sub 850 compoziția se
+   predă și trece pe aranjamentul vertical de mai jos. Cifrele și motivele,
+   în globals.css la `--scara-compacta`.
+
+   REGULA CARE RUPEA LA 1180 A DEVENIT REZERVĂ. Stă într-un `@supports not`,
+   deci se aplică doar unui browser care n-are `zoom` sau n-are trigonometrie
+   în CSS — acolo scara nu se poate calcula, iar compoziția de desktop
+   nemicșorată la 900px ar fi însemnat un carusel cu 162 pixeli de text și
+   cinci reclame de 165. În rest, nimeni nu o vede.
+
+   Scrisă așa, și nu invers, ca să nu fie nevoie să repun valorile implicite
+   în ramura bună: prima încercare le repunea de mână (`height: 100%` în loc
+   de 400px, `1fr` în loc de `none`) și le greșea. O regulă care nu se aplică
+   nu trebuie anulată. */
+@supports not ((zoom: 1) and (width: calc(1px * tan(atan2(1px, 1px))))) {
+  @media (max-width: 1180px) {
+    .rc-promo-sus { grid-template-columns: 1fr; }
+    .rc-casete { grid-template-rows: none; grid-template-columns: repeat(3, 1fr); height: auto; }
+    .rc-caseta { min-height: 118px; }
+    .rc-dale { grid-template-columns: repeat(3, 1fr); }
+    .rc-dala { height: 205px; }
+  }
 }
 
-@media (max-width: 820px) {
+
+/* ══ SUB 850px: ARANJAMENTUL VERTICAL ══
+
+   Era la 820px și moștenea de la pragul de 1180 trei lucruri: o coloană la
+   `.rc-promo-sus`, rândurile desfăcute la `.rc-casete` și înălțimea minimă a
+   unei casete. Pragul acela a devenit rezervă pentru browserele fără scară,
+   deci moștenirea s-a rupt, iar cele trei trebuie scrise aici. Fără prima,
+   caruselul ar rămâne cu coloana de 348px lipită de el pe telefon — ceea ce
+   chiar s-a întâmplat o tură, iar măsurătoarea a prins-o: la 390px, cinci
+   reclame de 62px una lângă alta.
+
+   Scara se întoarce la 1 aici, din globals.css: o compoziție verticală
+   micșorată n-ar avea niciun rost. */
+@media (max-width: 53.0625rem) {
+  .rc-promo-sus { grid-template-columns: 1fr; }
   .rc-carusel { height: auto; }
   .rc-diapo { grid-template-columns: 1fr; }
   .rc-diapo-txt { padding: 26px 22px; }
   .rc-diapo-txt::after { display: none; }
   .rc-diapo-txt h2 { font-size: 23px; }
   .rc-diapo-img { display: none; }
-  .rc-casete { grid-template-columns: 1fr; }
+  .rc-casete { grid-template-rows: none; grid-template-columns: 1fr; height: auto; }
+  .rc-caseta { min-height: 118px; }
   .rc-dale { grid-template-columns: repeat(2, 1fr); }
   .rc-dala { height: 190px; }
   .rc-dala b { font-size: 15px; }

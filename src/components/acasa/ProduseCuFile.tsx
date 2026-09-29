@@ -246,7 +246,21 @@ export default function ProduseCuFile({
               ea cedează lățime prima, iar săgețile rămân lipite de marginea
               dreaptă a coloanei — aceeași muchie pe care se termină ultimul card
               de sub ele. */}
-          <div className="mt-6 flex items-center gap-4">
+          {/* RÂNDUL SE MICȘOREAZĂ ODATĂ CU FEREASTRA, nu se taie.
+
+              Șase file plus două săgeți cer ~1070px. Sub atât, pista filelor
+              ceda lățime prima și ultima filă rămânea tăiată sub săgeți — se
+              putea trage cu degetul, dar arăta ca o scăpare, nu ca o alegere.
+
+              `--scara-compacta` e același raport cu care se micșorează și
+              hero-ul, definit o singură dată în globals.css. Așa cele șase
+              file încap întregi până la 850px, iar săgețile rămân lipite de
+              muchia dreaptă a coloanei. `overflow-x-auto` de dedesubt rămâne:
+              sub 850, unde scara se întoarce la 1, filele se trag cu degetul.
+
+              Grila de carduri de dedesubt NU se scalează — acolo răspunsul
+              corect e să se schimbe numărul de coloane, nu mărimea. */}
+          <div className="mt-6 flex items-center gap-4" style={{ zoom: "var(--scara-compacta)" }}>
           <div className="fara-bara-derulare -mx-4 min-w-0 flex-1 overflow-x-auto px-4 py-1 lg:mx-0 lg:px-0">
             {/* ── Comutator segmentat, fără fond propriu ──
 
