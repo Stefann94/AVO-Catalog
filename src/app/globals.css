@@ -309,35 +309,30 @@
      S-a ales 1500 ca site-ul să stea 1:1 lângă prototip, pentru comparație.
      Se schimbă de aici, singurul loc.
 
-     ─── DE CE NU MAI E O CIFRĂ FIXĂ ────────────────────────────────────
+     ─── 1400, DUPĂ DOUĂ SCHIMBĂRI ÎNTR-O ZI ──────────────────
 
-     1500px fix înseamnă că, de la un punct încolo, tot ce câștigă ecranul se
-     duce în marginile goale. Pe un monitor de 31–32" — 3840px la 150% de
-     mărire, adică 2560px de CSS — rămâneau 530px de alb pe fiecare parte,
-     21% din fereastră de fiecare latură. Nu e aer, e pagină nefolosită.
+     Pe 29.09.2026 a fost o tură `clamp(1500px, 82vw, 1840px)`, ca pe un
+     monitor de 31–32" să nu mai rămână 530px de alb pe fiecare parte.
+     Socoteala era corectă — la 2560px marginea scădea la 360 — dar pe
+     ecran coloana lățită nu arăta ca mai mult conținut, arăta doar
+     întinsă. Scoasă în aceeași zi, și coborâtă sub 1500, la cerere.
 
-     Acum coloana crește cu fereastra, dar puțin și cu oprire:
+     Ce se schimbă de fapt, și ce nu:
 
-       până la 1830px .... 1500px, exact ca înainte (laptop, 1440, 1600)
-       1830–2244px ....... 82% din fereastră
-       peste 2244px ...... 1840px, și se oprește acolo
+       sub 1464px de fereastră .... NIMIC. Coloana ia oricum toată lățimea
+                                    minus spațiul lateral, deci un laptop de
+                                    1440 sau mai mic nu vede nicio diferență
+       1920px ..................... marginea urcă de la 210 la 260px
+       2560px ..................... de la 530 la 580px
 
-     Marginea rămasă, pe lățimile care contează:
+     La 1400, un rând de cinci carduri dă carduri de 267px, adică tot peste
+     reperul de 226 pe care sunt măsurate pragurile de corp ale denumirii
+     (vezi CardProdus.tsx). De-aia se putea coborî fără nicio altă
+     ajustare. Sub ~1200 n-ar mai fi așa: acolo cardul scade la 227 și
+     atinge reperul.
 
-                      înainte      acum
-       1920px          272px       272px    (neschimbat)
-       2560px          530px       360px
-       3440px          970px       800px
-
-     PLAFONUL E 1840, NU MAI MULT, și nu din zgârcenie: la 1840 un rând de
-     cinci carduri dă carduri de 342px, față de 262 la 1440. Peste atât,
-     cardurile ar ajunge mai mari decât obiectul pe care îl arată, iar
-     rândurile de text ale secțiunilor ar trece de 90 de caractere, adică
-     dincolo de ce se citește comod. Cerința era „să se lungească puțin".
-
-     82vw nu e ales la întâmplare: la 1830px dă fix 1500, deci cele două
-     capete se leagă continuu și nu există salt la trecerea peste prag. */
-  --coloana-max: clamp(1500px, 82vw, 1840px);
+     Se schimbă DOAR linia de mai jos. */
+  --coloana-max: 1400px;
 
   /* ── SCARA COMPOZIȚIILOR STRÂNSE ────────────────────────────
 
