@@ -4,7 +4,7 @@ import { urlAbsolut } from '@/lib/site';
 import { incarcaOferte, incarcaProduseCatalog } from '@/lib/oferte';
 import { incarcaBaraFiltre } from '@/lib/panou';
 import { incarcaToateProdusele } from '@/lib/produs';
-import CardOferta from '@/components/oferte/CardOferta';
+import CardProdus from '@/components/CardProdus';
 import { incarcaPerioadaCatalog } from '@/lib/perioada';
 import HeroCatalog from '@/components/catalog/HeroCatalog';
 import MeniuCategorii from '@/components/catalog/MeniuCategorii';
@@ -327,7 +327,7 @@ export default async function CatalogPage() {
                 <p className="text-sm text-slate-400">Așteptăm finalizarea importului CSV...</p>
               </div>
             ) : (
-              products.map((o) => <CardOferta key={o.slug ?? o.sku} o={o} oferta={o.laOferta} />)
+              products.map((o, i) => <CardProdus key={o.slug ?? o.sku} a={o} prioritate={i < 4} />)
             )}
           </div>
         </main>

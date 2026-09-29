@@ -3,7 +3,7 @@ import { incarcaLichidareStoc, type Oferta } from "@/lib/oferte";
 import type { CSSProperties } from "react";
 import { dimensiuneTitluSectiune } from "./stiluri";
 import BandaDerulare from "./BandaDerulare";
-import CardOferta from "./oferte/CardOferta";
+import CardProdus from "./CardProdus";
 
 /**
  * Lichidare de stoc — banda derulantă de pe prima pagină.
@@ -226,7 +226,7 @@ export default async function LichidareStoc({
         <BandaDerulare>
           {lista.map((o) => (
             <div key={o.sku} className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-2.5 sm:w-[280px] sm:pr-5">
-              <CardOferta o={o} />
+              <CardProdus a={o} />
             </div>
           ))}
         </BandaDerulare>

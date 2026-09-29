@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, PackageSearch, X } from "lucide-react";
-import { CARD } from "@/components/stiluri";
+import CardProdus from "@/components/CardProdus";
 import { fetchGraphQL } from "@/lib/graphql-client";
 import { GET_CATEGORY_PAGE_QUERY } from "@/lib/queries";
 import { CATEGORII_CUNOSCUTE, SUBCATEGORII_CUNOSCUTE, gasesteCategorie } from "@/lib/categorii";
@@ -34,10 +33,6 @@ type Produs = {
 };
 
 /** „1.475 €", din numărul brut întors de WooCommerce. */
-const eur = (p?: string | null) => {
-  const n = Number(p);
-  return Number.isFinite(n) && n > 0 ? `${n.toLocaleString("ro-RO")} €` : "La cerere";
-};
 
 /** Textul curat dintr-o descriere care poate conține HTML de la WooCommerce. */
 const textCurat = (html: string) =>
@@ -424,61 +419,30 @@ export default async function PaginaCategorie({
                 cardul are acolo ~170px, deci poza devine pătrată, titlul 12px,
                 prețul 16px. De la `sm` fiecare clasă e cea de dinainte. */}
             <div className="mt-4 sm:mt-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
+              {/* Cardul e cel comun — components/CardProdus.tsx. Era scris
+                  direct aici, cu poză pe gri, nume, SKU și preț: fără marcă,
+                  fără preț de volum, fără insigne. Produsele de pe pagina de
+                  categorie arătau mai sărac decât aceleași produse de pe prima
+                  pagină, deși datele existau.
+
+                  Nodurile de GraphQL se aduc la forma cardului aici, unde se
+                  știe ce înseamnă câmpurile lor: `price` vine ca text, iar un
+                  preț lipsă sau zero înseamnă „la cerere". */}
               {lista.map((p, i) => (
-                <Link
+                <CardProdus
                   key={p.id}
-                  href={`/catalog/produs/${p.slug}`}
-                  className={`${CARD} group flex flex-col p-2 sm:p-3`}
-                >
-                  {/* Plafon de înălțime peste proporție, aceeași idee ca la
-                      cardurile de pe prima pagină (vezi CADRU_FOTO_CARD din
-                      components/stiluri.ts), cu cifrele acestei grile: la `xl`
-                      fotografia are 176px, iar în banda de două coloane, între
-                      768 și 1024, cardul ajunge la 416px lățime și fotografia
-                      la 260 — cu produsul tot atât de mic, doar cu mai mult gri
-                      în jur. `max-h` o oprește la 200px. */}
-                  <div className="relative aspect-square sm:aspect-[16/10] max-h-[200px] rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
-                    {p.image?.sourceUrl ? (
-                      /* `next/image`, nu `<img>`: fotografia originală din
-                         WordPress venea întreagă, la rezoluția de upload, pe un
-                         card de 170–280px. Prin optimizator vine AVIF, la
-                         lățimea cardului. `sizes` urmează grila: 2 coloane
-                         până la lg, 3 până la xl, apoi 4 carduri de ~280px.
-
-                         Primul rând e în primul ecran și conține elementul LCP
-                         al paginii (măsurat): primele patru se încarcă imediat,
-                         primele două cu prioritate — pe telefon sunt singurele
-                         vizibile. Restul, lazy. */
-                      <Image
-                        src={p.image.sourceUrl}
-                        alt={p.image.altText ?? p.name}
-                        fill
-                        sizes="(max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 280px"
-                        className="object-contain"
-                        loading={i < 4 ? "eager" : "lazy"}
-                        fetchPriority={i < 2 ? "high" : "auto"}
-                      />
-                    ) : (
-                      <span className="text-[11px] text-slate-300">Fără imagine</span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col flex-1 px-1 pt-2.5 pb-1 sm:px-3 sm:pt-4 sm:pb-2">
-                    <h2 className="h-8 text-[12px] leading-4 sm:h-11 sm:text-[14px] sm:leading-snug font-bold text-slate-900 line-clamp-2">
-                      {p.name}
-                    </h2>
-                    <p className="h-3.5 sm:h-4 mt-1 font-mono text-[9px] sm:text-[10px] text-slate-400 truncate">
-                      {p.sku ?? ""}
-                    </p>
-                    {/* `group-hover:border-avo-600/25` duce rama de la hover și
-                        în interiorul cardului, ca pe prima pagină. */}
-                    <div className="mt-auto pt-2.5 sm:pt-4 border-t border-slate-900/[0.07] transition-colors duration-150 group-hover:border-avo-600/25">
-                      <span className="text-[16px] sm:text-[20px] font-extrabold text-slate-900 tabular-nums">
-                        {eur(p.price)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                  prioritate={i < 4}
+                  a={{
+                    slug: p.slug,
+                    sku: p.sku ?? undefined,
+                    nume: p.name,
+                    imagine: p.image
+                      ? { url: p.image.sourceUrl, alt: p.image.altText ?? undefined }
+                      : undefined,
+                    pret: Number(p.price) || undefined,
+                    pretLaCerere: !(Number(p.price) > 0),
+                  }}
+                />
               ))}
             </div>
           </>

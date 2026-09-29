@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, PackageSearch } from "lucide-react";
 import { BUTON_PLIN, dimensiuneTitluSectiune } from "@/components/stiluri";
-import CardOferta from "@/components/oferte/CardOferta";
+import CardProdus from "@/components/CardProdus";
 import { incarcaLichidareStoc } from "@/lib/oferte";
 import { incarcaPerioadaCatalog } from "@/lib/perioada";
 import type { CSSProperties } from "react";
@@ -126,8 +126,8 @@ export default async function PaginaLichidareStoc() {
                 coloane de la `xl` în loc de bandă derulantă: aici lista e
                 destinația, nu un rezumat, deci se vede toată deodată. */}
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5">
-              {lista.map((o) => (
-                <CardOferta key={o.sku} o={o} />
+              {lista.map((o, i) => (
+                <CardProdus key={o.sku} a={o} prioritate={i < 4} />
               ))}
             </div>
           </>

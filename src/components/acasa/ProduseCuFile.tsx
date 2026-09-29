@@ -1,12 +1,11 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Produs } from "@/lib/produs";
 import type { Oferta } from "@/lib/oferte";
-import { gasesteBrand } from "@/lib/branduri";
+import CardProdus, { type ArticolCard } from "../CardProdus";
 import { dimensiuneTitluSectiune } from "../stiluri";
-import SagetiFile from "./SagetiFile";
+import ComenziFile from "./ComenziFile";
 
 /* ══════════════════════════════════════════════════════════════════════════
    PRODUSE, PE FILE
@@ -40,17 +39,6 @@ import SagetiFile from "./SagetiFile";
    ══════════════════════════════════════════════════════════════════════════ */
 
 /** Forma minimă pe care o afișează cardul. O satisfac și `Produs`, și `Oferta`. */
-type Articol = {
-  slug?: string;
-  sku: string;
-  nume: string;
-  brand?: string;
-  imagine?: { url: string; alt?: string };
-  pret?: number;
-  pretVolum?: number;
-  prag?: string;
-  unitate: string;
-};
 
 /**
  * Câte produse intră în banda unei file.
@@ -74,8 +62,6 @@ const PE_RAND = 5;
 /** Câte categorii devin file, pe lângă „Oferte". */
 const FILE_CATEGORII = 5;
 
-const euro = (n: number) =>
-  n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 /* Sigla mărcii se caută cu `gasesteBrand`, nu cu o hartă proprie.
 
@@ -118,7 +104,7 @@ const euro = (n: number) =>
    soluție și pornește doar când lista scurtă chiar e scurtă — dacă furnizorul
    pune cinci sau mai multe pe copertă, funcția nu face nimic.
    ══════════════════════════════════════════════════════════════════════════ */
-function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
+function completeazaRandul(alese: ArticolCard[], produse: Produs[]): ArticolCard[] {
   if (alese.length >= PE_RAND) return alese;
 
   const rand = [...alese];
@@ -140,226 +126,6 @@ function completeazaRandul(alese: Articol[], produse: Produs[]): Articol[] {
   return rand;
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   CARDUL
-   ──────────────────────────────────────────────────────────────────────────
-   TREI ETAJE, DESPĂRȚITE DE DOUĂ LINII care merg de la o margine la cealaltă:
-
-     fotografia ... pe alb, cu aer în jur, ca produsul să nu atingă rama.
-                    144px sub `sm`, 176 peste
-     ─────────────
-     identitatea .. sigla mărcii, denumirea, codul. Etajul care se întinde:
-                    `flex-1` îi dă toată înălțimea rămasă
-     ─────────────
-     talpa ........ prețul la stânga, coșul la dreapta
-
-   Cele două linii sunt frați, nu copii ai zonei din mijloc: dacă ar sta
-   înăuntrul unei zone cu padding, s-ar opri la 16px de margine și s-ar citi ca
-   o subliniere, nu ca o despărțire.
-
-   ─── UNDE SE ADUNĂ SPAȚIUL CARE PRISOSEȘTE ───────────────────────────────
-
-   Cardurile dintr-o bandă au toate înălțimea celui mai înalt, deci unele au
-   spațiu în plus de pus undeva. Se pune la capătul de jos al etajului din
-   mijloc, chiar deasupra liniei tălpii — singurul loc din card unde un gol nu
-   desparte două informații care țin împreună.
-
-   A FOST ALTFEL, ȘI SE VEDEA. Denumirea avea `min-h-14`, adică loc rezervat
-   pentru trei rânduri chiar când avea unul: pe „Deye SE-F16 C" rămâneau 37px de
-   nimic ÎNTRE denumire și cod. Două informații despre același produs, despărțite
-   de un gol cât un rând de text.
-
-   ─── RAMA ────────────────────────────────────────────────────────────────
-
-   1px `--line-strong` (#cbd6e4), nu umbră. Pe fundal alb, o umbră difuză nu
-   spune unde se termină cardul; o linie spune.
-
-   A FOST #dfe5ee, ȘI ERA PREA PUȚIN. Pe fondul secțiunii (#f7f9fc) rămâneau vreo
-   șase puncte de luminozitate: cardul se ghicea, nu se vedea, iar rândul de cinci
-   arăta ca text așezat pe pagină, nu ca cinci obiecte. #cbd6e4 dă vreo
-   paisprezece — o linie care se citește de la distanță, fără să devină chenar.
-
-   E ACEEAȘI RAMĂ CA A COMENZILOR din secțiune: bara de file, butonul „Vezi toate
-   produsele", săgețile. În site, 1px de #cbd6e4 înseamnă „obiect", indiferent
-   dacă obiectul e un card sau un buton.
-
-   La hover rama devine albastră și primește un halou de 3px: se întărește fără
-   să se miște nimic, cum s-ar întâmpla dacă am schimba grosimea bordurii.
-
-   ─── CE A RĂMAS REZERVAT, ȘI DE CE ───────────────────────────────────────
-
-   Două înălțimi, amândouă în interiorul unui etaj, nu între etaje:
-
-     sigla ......... `h-4` chiar când produsul n-are siglă în set. Fără ea,
-                     cardurile fără siglă își ridică denumirea cu 16px
-     prețul volum .. `h-[18px]` chiar și gol. Talpa trebuie să aibă aceeași
-                     înălțime la toate cardurile, ca linia de deasupra ei să
-                     cadă pe aceeași poziție pe tot rândul
-
-   Rezervarea de pe denumire a fost scoasă: acolo golul cădea între două
-   informații, nu la capătul unui etaj.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-function Card({ a }: { a: Articol }) {
-  const adresa = a.slug ? `/catalog/produs/${a.slug}` : "/catalog";
-  const sigla = gasesteBrand(a.brand)?.slug;
-
-  return (
-    /* `<article>`, nu `<Link>`, de când cardul are DOUĂ acțiuni: deschide
-       produsul și pune în coș. Un `<a>` înăuntrul altui `<a>` nu e marcaj
-       valid, iar browserele îl repară imprevizibil.
-
-       Cardul rămâne apăsabil pe toată suprafața prin linkul de pe denumire,
-       care își întinde zona de clic cu `after:absolute after:inset-0`. Butonul
-       de coș stă peste el, cu `relative z-10`. Pentru un cititor de ecran sunt
-       două linkuri cu nume diferite, exact cât trebuie — nu unul singur, spus
-       de două ori. */
-    /* `card-produs` aduce rama de la hover — contur albastru și halou, fără să
-       miște cardul din loc. E în globals.css, lângă explicație.
-
-       `h-full` E OBLIGATORIU, nu decor. Cardurile stau într-o bandă `flex`, deci
-       învelișurile lor se întind toate la înălțimea celui mai înalt. Fără
-       `h-full`, articolul dinăuntru rămâne cât îi cere conținutul și talpa lui
-       nu mai cade pe aceeași linie cu a vecinilor. Cu el, articolul umple
-       învelișul, iar zona din mijloc (`flex-1`) înghite diferența. */
-    <article className="card-produs group relative flex h-full flex-col overflow-hidden rounded-card border border-line-strong bg-surface shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
-      {/* ── 1. Fotografia ──
-          Închisă cu o linie proprie, ca să se vadă unde se termină. Fondul e
-          alb, nu gri: pozele din catalog vin decupate pe alb, iar un gri în
-          spate le-ar desena un pătrat în jur.
-
-          ÎNĂLȚIMEA E RESPONSIVĂ. Era 176px fix la orice lățime, iar pe telefon,
-          unde cardul are vreo 145px, poza ieșea mai înaltă decât lată — o
-          fotografie mică pierdută într-o casetă lungă. Acum 144 sub `sm`, 176
-          peste. */}
-      <div className="flex h-36 items-center justify-center border-b border-line bg-surface p-4 transition-colors duration-150 group-hover:border-avo-600/25 sm:h-44 sm:p-5">
-        {a.imagine ? (
-          <Image
-            src={a.imagine.url}
-            alt={a.imagine.alt ?? a.nume}
-            width={200}
-            height={140}
-            sizes="(max-width: 640px) 45vw, 220px"
-            loading="lazy"
-            className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <span className="text-xs text-faint">Fără imagine</span>
-        )}
-      </div>
-
-      {/* ── 2. Identitatea: marca, denumirea, codul ──
-
-          AICI A FOST GOLUL. Denumirea avea `min-h-14`, adică loc rezervat pentru
-          trei rânduri chiar când avea unul singur. Pe „Deye SE-F16 C" rămâneau
-          37px de nimic între denumire și cod, iar cele două se citeau ca două
-          informații fără legătură.
-
-          Rezervarea a plecat cu totul. Codul stă acum imediat sub denumire,
-          indiferent de câte rânduri are ea, iar spațiul care prisosește se adună
-          într-un singur loc — jos, deasupra liniei tălpii, unde nu desparte
-          nimic. Asta face `flex-1`. */}
-      <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
-        {/* Sigla mărcii, nu numele scris. La aceeași înălțime de 16px, siglele
-            se recunosc dintr-o privire; un nume scris cere citit. Cine n-are
-            siglă în set primește numele, la același corp. Înălțimea rămâne
-            rezervată: fără ea, cardurile fără siglă își ridică denumirea cu
-            16px față de vecini. */}
-        <div className="mb-2 flex h-4 items-center">
-          {sigla ? (
-            <Image
-              src={`/branduri/color/${sigla}.webp`}
-              alt={a.brand ?? ""}
-              width={96}
-              height={16}
-              sizes="96px"
-              loading="lazy"
-              className="h-4 w-auto max-w-24 object-contain object-left"
-            />
-          ) : a.brand ? (
-            <span className="text-[10.5px] font-bold tracking-wider text-faint uppercase">
-              {a.brand}
-            </span>
-          ) : null}
-        </div>
-
-        {/* Linkul care face tot cardul apăsabil. `after:inset-0` îi întinde
-            zona de clic peste `<article>`, care e `relative`. */}
-        <Link
-          href={adresa}
-          className="line-clamp-3 text-[13.6px] leading-[1.38] font-semibold text-fg after:absolute after:inset-0 focus-visible:outline-none"
-        >
-          {a.nume}
-        </Link>
-
-        <span className="mt-1.5 truncate font-mono text-[11.5px] text-faint">{a.sku}</span>
-      </div>
-
-      {/* ── 3. Talpa: prețul la stânga, coșul la dreapta ──
-
-          E FRATE CU CELELALTE DOUĂ ZONE, nu copil al celei din mijloc. Așa linia
-          ei merge de la o margine a cardului la cealaltă, ca aceea de sub poză.
-          Înainte stătea înăuntrul zonei cu padding, deci linia se oprea la 16px
-          de fiecare margine și arăta a subliniere, nu a despărțire.
-
-          Cardul are acum trei etaje și două linii între ele — fiecare lucru în
-          caseta lui.
-
-          `items-end` aliniază butonul cu ultimul rând de preț, nu cu primul:
-          altfel, pe cardurile fără preț la volum, butonul s-ar ridica cu 18px
-          față de vecinii lui.
-
-          `group-hover:border-avo-600/25` duce rama de la hover și în interiorul
-          cardului. Fără ea, tot efectul stă pe contur și mijlocul nu reacționează
-          deloc. */}
-      <div className="flex items-end justify-between gap-2 border-t border-line px-4 py-3 transition-colors duration-150 group-hover:border-avo-600/25">
-        <div className="min-w-0">
-          {typeof a.pret === "number" && a.pret > 0 ? (
-            <>
-              <div className="truncate">
-                <span className="text-[21px] font-extrabold tracking-[-0.03em] text-fg">
-                  {euro(a.pret)} €
-                </span>
-                <span className="ml-1 text-[12px] text-muted">/ {a.unitate}</span>
-              </div>
-              {/* Înălțime rezervată și când e gol: fără ea, cardurile cu preț
-                  la volum sunt cu 18px mai înalte decât celelalte. Aici
-                  rezervarea are sens — talpa trebuie să fie de aceeași înălțime
-                  la toate cardurile, ca linia ei să cadă pe aceeași poziție. */}
-              <div className="h-[18px] truncate text-[11.8px] text-faint">
-                {a.pretVolum && a.prag ? `${euro(a.pretVolum)} € de la ${a.prag}` : null}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-[16px] font-bold text-muted">Preț la cerere</div>
-              <div className="h-[18px]" />
-            </>
-          )}
-        </div>
-
-        {/* ── Butonul de coș ──
-            `relative z-10` îl scoate de sub zona de clic a denumirii; fără el,
-            apăsarea ar deschide produsul, nu ar adăuga în coș.
-
-            NU EXISTĂ COȘ ÎNCĂ — magazinul e amânat. Până se deschide, duce la
-            cererea de ofertă, singura acțiune care chiar se poate duce la capăt.
-            Când apare coșul, se schimbă `href`-ul și atât.
-
-            `aria-label` cu numele produsului: într-o bandă de cinci carduri,
-            cinci butoane numite toate „Adaugă în coș" sunt de nefolosit la
-            cititorul de ecran. */}
-        <Link
-          href="/cerere-oferta"
-          aria-label={`Cere ofertă pentru ${a.nume}`}
-          className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-avo-600 text-white transition-colors hover:bg-avo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600"
-        >
-          <ShoppingCart size={18} aria-hidden />
-        </Link>
-      </div>
-    </article>
-  );
-}
 
 export default function ProduseCuFile({
   oferte = [],
@@ -382,7 +148,7 @@ export default function ProduseCuFile({
     dupaCategorie.set(p.categorie.slug, intrare);
   }
 
-  const file: { eticheta: string; adresa: string; articole: Articol[] }[] = [];
+  const file: { eticheta: string; adresa: string; articole: ArticolCard[] }[] = [];
 
   if (oferte.length) {
     file.push({
@@ -504,7 +270,17 @@ export default function ProduseCuFile({
                 FILELE ÎNCHISE NU PRIMESC FUNDAL SUB MOUSE, doar textul li se
                 închide. Un fond pe hover ar fi pus în bară un al doilea
                 dreptunghi, iar cel de sub mouse s-ar fi bătut cu cel deschis. */}
-            <div className="inline-flex gap-0.5 rounded-full border border-line-strong p-1.5">
+            <div
+              data-file-bara
+              className="relative inline-flex gap-0.5 rounded-full border border-line-strong p-1.5"
+            >
+              {/* Plăcuța care alunecă sub eticheta deschisă. Stă goală în
+                  marcaj: poziția și lățimea i le dă ComenziFile.tsx, care
+                  măsoară eticheta bifată. Fără JavaScript rămâne ascunsă, iar
+                  fundalul se desenează pe etichetă ca înainte — vezi „PLĂCUȚA
+                  CARE ALUNECĂ" în globals.css. */}
+              <span className="pilula-fila" aria-hidden />
+
               {file.map((f, i) => (
                 <label
                   key={f.eticheta}
@@ -517,7 +293,7 @@ export default function ProduseCuFile({
             </div>
           </div>
 
-            <SagetiFile />
+            <ComenziFile />
           </div>
         </div>
 
@@ -547,7 +323,7 @@ export default function ProduseCuFile({
                 Derularea nativă merge cu degetul, cu trackpad-ul și cu Tab-ul,
                 fără o linie de JavaScript; `data-pista` e cârligul prin care
                 săgețile din capul secțiunii o găsesc pe cea deschisă (vezi
-                SagetiFile.tsx). Așa, cele șase file încarcă un singur control,
+                ComenziFile.tsx). Așa, cele șase file încarcă un singur control,
                 nu șase componente de client. */}
             <div
               data-pista
@@ -572,7 +348,7 @@ export default function ProduseCuFile({
                      trage cu degetul, deci un spațiu la capăt nu deranjează. */
                   className="w-[calc((100vw-var(--coloana-pad))/2.4)] shrink-0 snap-start pr-3 sm:w-[278px] sm:pr-4 sm:last:w-[262px] sm:last:pr-0"
                 >
-                  <Card a={a} />
+                  <CardProdus a={a} />
                 </div>
               ))}
             </div>

@@ -54,67 +54,6 @@ export const BUTON_PLIN =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
 
 /**
- * Butonul dintr-un card — `BUTON_PLIN` de la `sm` în sus, compact pe telefon.
- *
- * PE TELEFON CARDURILE STAU CÂTE DOUĂ PE RÂND, deci au ~170px. Acolo butonul
- * nu mai încape lângă preț: coboară sub el, pe toată lățimea cardului, la 32px
- * înălțime și 12px corp.
- *
- * 32px E SUB PRAGUL DE 44px pentru ținte atinse cu degetul, și e voit: ținta
- * reală nu e butonul, ci tot cardul — linkul are `after:absolute after:inset-0`
- * în ambele carduri care îl folosesc. Butonul spune doar unde duce.
- *
- * E scris separat, nu ca `BUTON_PLIN` plus clase în plus: fără tailwind-merge,
- * `h-8` și `h-11` în aceeași listă nu se anulează după ordinea din șir, ci după
- * ordinea din foaia de stil — adică imprevizibil. De la `sm` fiecare clasă e
- * identică cu cea din `BUTON_PLIN`.
- */
-export const BUTON_CARD =
-  "inline-flex items-center justify-center gap-2 shrink-0 " +
-  "h-8 w-full px-3 rounded-lg sm:h-11 sm:w-auto sm:px-5 " +
-  "bg-avo-600 text-white text-[12px] sm:text-[14px] font-semibold " +
-  "transition-colors duration-200 " +
-  "hover:bg-avo-700 active:bg-avo-800 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-avo-600";
-
-/**
- * Cardul — o singură suprafață, folosită de toate tipurile din site.
- *
- * Erau patru rețete pentru același obiect: cardurile de categorie și de ofertă
- * pe `gray` cu 12px, cele de produs din catalog pe `slate` cu 16px, unele cu
- * `border`, altele cu `ring`, iar hover-ul diferea la fiecare — umbră mică,
- * mare, sau contur mai închis.
- *
- * ─── HOVER-UL NU MAI E AICI ───────────────────────────────────────────────
- *
- * E în app/globals.css, sub clasa `card-produs`, lângă explicația lui. Aici a
- * rămas doar numele clasei.
- *
- * Mutarea are un motiv practic: efectul are trei bucăți (rama, haloul, și linia
- * dinăuntrul cardului) și s-a schimbat de patru ori. Scris ca listă de utilitare
- * Tailwind, trebuia ținut la fel în patru fișiere; scris ca o clasă, se schimbă
- * într-un loc și cardurile de pe toate paginile îl iau odată.
- *
- * Ce face, pe scurt: rama trece în avo-600, în jur apare un halou de 3px la 9%,
- * iar cardul NU se mișcă. Cifrele și de ce anume sunt ele, în globals.css.
- *
- * ERA ALTFEL PÂNĂ ACUM: `hover:border-avo-600 hover:ring-1 hover:ring-avo-600`,
- * adică rama se colora și se îngroșa de la 1px la 2px printr-un `ring`. Ideea
- * era bună — `ring` e desenat ca umbră, deci nu intră în calculul așezării și
- * cardul rămâne nemișcat, spre deosebire de `border-2`. Dar 2px de albastru plin
- * în jurul fiecărui card dintr-o grilă de cinci se citea greu; haloul difuz dă
- * aceeași informație cu mai puțină cerneală.
- *
- * Contrast: avo-600 #004A99 pe alb dă 8,61 — cu mult peste pragul de 3:1 cerut
- * pentru elemente negrafice.
- *
- * ─── CE NU CONȚINE ────────────────────────────────────────────────────────
- *
- * Doar suprafața: colț, chenar, fundal, hover. Așezarea dinăuntru
- * (`flex flex-col`, `overflow-hidden`, padding) rămâne la fiecare card,
- * fiindcă diferă de la un tip la altul.
- */
-/**
  * Suprafața în repaus, fără reacție la mouse.
  *
  * Există separat fiindcă nu orice cutie albă din site e apăsabilă: fișa de
@@ -130,53 +69,6 @@ export const BUTON_CARD =
  */
 export const SUPRAFATA = "rounded-xl border border-line-strong bg-white shadow-sm";
 
-export const CARD = SUPRAFATA + " card-produs";
-
-/**
- * Cadrul fotografiei dintr-un card — proporția, cu un plafon de înălțime.
- *
- * PROBLEMA. Grilele de pe prima pagină au patru coloane la `xl`, două între
- * `sm` și `xl`, una sub. Cardurile sunt fixe ca număr — patru categorii, patru
- * oferte — deci trei coloane n-au ce căuta acolo: ar lăsa un card orfan pe al
- * doilea rând. Numai că un card care la 1280 are 296px lățime ajunge, la 1279,
- * să aibă 581. Cu `aspect-[4/3]` curat, fotografia lui crește odată cu el: de
- * la 222px înălțime la 436. Măsurat pe pagina randată, la 1150 ieșeau două
- * dale de 528×373, cu poza ocupând 400px din ele, iar prețul și butonul de sub
- * ea păreau uitate în colț. Ăsta era cel mai vizibil defect al paginii între
- * 1024 și 1280.
- *
- * SOLUȚIA E UN PLAFON, NU O LISTĂ DE PROPORȚII PE PRAGURI. `max-h` se aplică
- * peste `aspect-ratio`: cât timp cardul e îngust, proporția decide și
- * fotografia e 4:3; de la 347px lățime în sus, înălțimea se oprește la 260px,
- * iar cadrul devine treptat mai panoramic, fără nicio treaptă și fără niciun
- * salt când tragi de marginea ferestrei.
- *
- * DE CE 260px. La `xl`, unde așezarea e cea de referință, fotografia are 222px.
- * Plafonul trebuie să fie peste ea, altfel ar tăia și acolo unde nu e nevoie,
- * dar destul de aproape cât cardul lat să rămână în aceeași familie de înălțimi
- * ca cel îngust. Cu 260, banda de înălțimi a fotografiei pe tot intervalul e
- * 214 → 260, în loc de 214 → 436.
- *
- * Funcționează fiindcă pozele sunt `object-cover` (categorii) sau
- * `object-contain` pe un fundal plin (oferte): și una, și alta suportă un cadru
- * mai lat fără să arate greșit.
- */
-export const CADRU_FOTO_CARD = "aspect-[4/3] max-h-[260px]";
-
-/**
- * Cadrul fotografiei dintr-un card de PRODUS: pătrat pe telefon, apoi exact
- * `CADRU_FOTO_CARD`.
- *
- * Pe telefon cardul de produs are 145–175px lățime. La 4:3, din cei ~110–130px
- * de înălțime rămâneau pentru poză vreo 30px, după badge-uri și banda cu brandul
- * — un produs cât un timbru. Pătrat, poza primește de trei ori mai mult.
- *
- * Constantă separată, nu `aspect-square` adăugat lângă `CADRU_FOTO_CARD`: două
- * clase `aspect-*` în aceeași listă se anulează după ordinea din foaia de stil,
- * nu după cea din șir. Cardul de categorie rămâne pe 4:3, fiindcă fotografia
- * lui umple cadrul (`object-cover`), iar un pătrat l-ar lungi fără câștig.
- */
-export const CADRU_FOTO_PRODUS = "aspect-square sm:aspect-[4/3] max-h-[260px]";
 
 /**
  * Badge-urile unui produs — aceleași pe card și pe fișa produsului.
