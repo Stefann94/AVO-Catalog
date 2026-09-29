@@ -118,42 +118,68 @@ export default function CumComanzi() {
 
             `items-start` e obligatoriu: fără el, grila întinde toate cardurile
             la înălțimea celui mai înalt, iar `mt-10` nu mai decalează nimic —
-            cardul ar crește în jos în loc să coboare. */}
-        <ol className="relative mt-6 grid grid-cols-1 items-start gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-6">
-          {/* Săgețile, desenate peste grilă. `aria-hidden`: ordinea pașilor e
-              deja spusă de `<ol>`, iar un cititor de ecran n-are ce face cu trei
-              curbe. Stau la 25%, 50% și 75% din lățimea rândului, adică exact în
-              golurile dintre cele patru coloane egale. */}
-          {[0, 1, 2].map((n) => (
-            <span
-              key={n}
-              aria-hidden
-              className={`sageata-pas pointer-events-none absolute top-8 hidden -translate-x-1/2 lg:block ${
-                n === 0 ? "left-1/4" : n === 1 ? "left-1/2" : "left-3/4"
-              } ${n === 1 ? "-scale-y-100" : ""}`}
-            >
-              <svg width="56" height="34" viewBox="0 0 56 34" fill="none" aria-hidden>
-                {/* Un singur traseu, cu vârful inclus: curba și vârful sunt
-                    aceeași linie, deci au automat aceeași grosime și aceleași
-                    capete rotunjite, fără să le potrivim de două ori. */}
-                <path
-                  d="M4 8 C 18 8, 24 26, 40 26 M34 20 L41 26 L34 31"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          ))}
+            cardul ar crește în jos în loc să coboare.
 
+            SĂGEATA E MAI LATĂ DECÂT GOLUL, ȘI ASTA E INTENȚIA. Intră cu 16px în
+            cardul din stânga și cu 16px în cel din dreapta, simetric — așa chiar
+            LEAGĂ cele două carduri. O săgeată care ar încăpea fix în gol, fără
+            să atingă nimic, ar fi doar un semn pus între ele. A fost încercat:
+            golul mărit la 40px și săgeata exact cât el; ieșea o curbă înaltă și
+            îngustă, care nu unea nimic. */}
+        <ol className="relative mt-6 grid grid-cols-1 items-start gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-6">
           {PASI.map((p, i) => (
             <li
               key={p.titlu}
-              className={`flex flex-col rounded-card border border-line-strong bg-surface p-5 ${
+              className={`relative flex flex-col rounded-card border border-line-strong bg-surface p-5 ${
                 i % 2 === 1 ? "lg:mt-10" : ""
               }`}
             >
+              {/* ── Săgeata spre pasul următor ──
+
+                  E AGĂȚATĂ DE CARDUL EI, nu de rând. Prima variantă le punea la
+                  25%, 50% și 75% din lățimea rândului, crezând că acolo sunt
+                  golurile. Nu sunt: rândul cuprinde și golurile, deci mijlocul
+                  primului gol cade la 24,6%, al treilea la 75,4%. Câțiva pixeli
+                  greșiți, în direcții opuse — de-aia una intra peste carduri și
+                  alta nu mai ajungea la următorul.
+
+                  Așa, fiecare săgeată pleacă din marginea dreaptă a cardului ei
+                  (`left-full`) și e trasă înapoi cu 16px (`-ml-4`). Cu o săgeată
+                  de 56 și un gol de 24, centrul ei cade fix pe mijlocul golului,
+                  iar cele 16px care ies de fiecare parte intră simetric în
+                  ambele carduri. La orice lățime de ecran, fără nicio socoteală
+                  de procente.
+
+                  `z-10` fiindcă `<li>`-ul e poziționat: fără el, săgeata ar fi
+                  fost acoperită de cardul următor, care vine după ea în marcaj.
+                  Exact asta se vedea ca „ultima săgeată nici nu atinge pasul 4".
+
+                  `aria-hidden`: ordinea pașilor o spune deja `<ol>`, iar un
+                  cititor de ecran n-are ce face cu o curbă.
+
+                  Ultimul pas n-are săgeată — n-are spre ce. */}
+              {i < PASI.length - 1 ? (
+                <span
+                  aria-hidden
+                  className={`sageata-pas pointer-events-none absolute top-8 left-full z-10 -ml-4 hidden lg:block ${
+                    i % 2 === 1 ? "-scale-y-100" : ""
+                  }`}
+                >
+                  <svg width="56" height="34" viewBox="0 0 56 34" fill="none" aria-hidden>
+                    {/* Un singur traseu, cu vârful inclus: curba și vârful sunt
+                        aceeași linie, deci au automat aceeași grosime și
+                        aceleași capete rotunjite. */}
+                    <path
+                      d="M4 8 C 18 8, 24 26, 40 26 M34 20 L41 26 L34 31"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              ) : null}
+
               {/* Cifra pasului. Pătrat cu colț rotunjit, nu cerc: cercul ar fi
                   fost al cincilea fel de colț din pagină, iar `rounded-control`
                   e treapta pe care o poartă deja butoanele. */}
