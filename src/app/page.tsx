@@ -6,6 +6,8 @@ import { incarcaToateProdusele } from "@/lib/produs";
 import { incarcaOferte } from "@/lib/oferte";
 import ProduseCuFile from "@/components/acasa/ProduseCuFile";
 import Marci from "@/components/acasa/Marci";
+import PretVolum from "@/components/acasa/PretVolum";
+import OferteContainer from "@/components/acasa/OferteContainer";
 import CumComanzi from "@/components/acasa/CumComanzi";
 import LichidareStoc from "@/components/LichidareStoc";
 import ConditiiB2B from "@/components/ConditiiB2B";
@@ -105,8 +107,31 @@ export default async function Home() {
       {/* Produsele, pe file: „Oferte" plus cele mai mari categorii. */}
       <ProduseCuFile oferte={oferte} produse={toateProdusele} />
 
-      {/* Lichidare de stoc — banda derulantă cu săgeți. */}
+      {/* Preț mai bun la volum — bandă pe două rânduri.
+
+          STĂ AICI, NU MAI JOS, fiindcă vine imediat după prețurile de catalog
+          și le pune a doua cifră alături: omul tocmai a văzut prețul pe bucată,
+          iar asta îi arată la ce coboară de la prag. E și dovada promisiunii pe
+          care „Condiții B2B" o face abia în josul paginii — până acum,
+          promisiunea aia n-avea niciun produs în spate. */}
+      <PretVolum produse={toateProdusele} />
+
+      {/* Lichidare de stoc — banda derulantă cu săgeți.
+
+          FONDUL A TRECUT PE `canvas`. Era alb, ceea ce era corect cât timp
+          deasupra ei stătea „Produse din catalog" pe `canvas`. Acum între ele
+          s-a intercalat banda de volum, iar alb lângă alb ar fi topit două
+          secțiuni într-una. Alternanța e regula: canvas / alb / canvas / alb. */}
       <LichidareStoc />
+
+      {/* Oferte la container — bandă pe două rânduri.
+
+          ÎNAINTEA LUI „CUM COMANZI", și asta contează: e ultima secțiune de
+          produse și singura care nu se poate cumpăra de pe card. Lăsată mai
+          jos, ar fi venit după explicația drumului spre comandă, adică exact
+          după ce omul a aflat cum se comandă normal. Aici ridică întrebarea,
+          iar „Cum comanzi", imediat dedesubt, îi răspunde. */}
+      <OferteContainer produse={toateProdusele} />
 
       {/* Cum comanzi — cei patru pași.
 

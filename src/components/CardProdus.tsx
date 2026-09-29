@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import { gasesteBrand } from "@/lib/branduri";
 import { formatEconomie } from "@/lib/oferte";
 import { BADGE, BADGE_CARD, BADGE_ECONOMIE, BADGE_LICHIDARE, BADGE_OFERTA } from "./stiluri";
+import type { Produs } from "@/lib/produs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    CARDUL DE PRODUS — unul singur, pentru tot site-ul
@@ -101,6 +102,45 @@ export type ArticolCard = {
    */
   categorie?: string | { slug: string; nume?: string };
 };
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRODUSUL DIN WOOCOMMERCE, ADUS LA FORMA CARDULUI
+   ──────────────────────────────────────────────────────────────────────────
+   `Oferta` (lib/oferte.ts) e deja croită după cardul ăsta: se dă direct ca
+   `a`, fără nicio conversie. `Produs` (lib/produs.ts) nu e — două câmpuri poartă
+   alt nume, fiindcă acolo descriu fișa de produs, nu cardul:
+
+     cifra  → spec      cifra care ține locul fotografiei
+     oferta → laOferta  produsul e pe coperta catalogului
+
+   STRUCTURAL, TypeScript ACCEPTĂ ȘI `Produs` DIRECT — toate câmpurile care
+   lipsesc sunt opționale. De-aia `completeazaRandul` din ProduseCuFile.tsx
+   împinge produse brute în cardurile filei „Oferte" fără nicio eroare, și de-aia
+   cardurile alea n-au nici cifră, nici insigna „Ofertă", deși datele există.
+   Tăcerea compilatorului nu e o confirmare că datele ajung unde trebuie.
+
+   Funcția asta e locul unde cele două nume se întâlnesc, o singură dată.
+   Importul e doar de tip, deci cardul nu capătă nicio legătură de execuție cu
+   `lib/` — regula e că fișierele care vorbesc cu WordPress nu se ating pentru
+   lucrări de aspect, iar un `import type` dispare la compilare.
+   ══════════════════════════════════════════════════════════════════════════ */
+export function caArticol(p: Produs): ArticolCard {
+  return {
+    slug: p.slug,
+    sku: p.sku,
+    nume: p.nume,
+    brand: p.brand,
+    imagine: p.imagine,
+    spec: p.cifra,
+    pret: p.pret,
+    pretVolum: p.pretVolum,
+    prag: p.prag,
+    unitate: p.unitate,
+    disponibilitate: p.disponibilitate,
+    laOferta: p.oferta,
+    categorie: p.categorie,
+  };
+}
 
 const euro = (n: number) =>
   n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
