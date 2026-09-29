@@ -298,30 +298,44 @@ export default function MeniuCategorii({
                   globals.css. */}
               <div
                 data-fereastra
-                className="invisible absolute top-full z-50 hidden pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 min-[53.125rem]:block"
+                className="invisible absolute top-full z-50 hidden pt-3 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 min-[53.125rem]:block"
               >
-                {/* RAMA: 5px avo-600 (a fost 3px, îngroșată la cerere — la 3px
-                    se citea încă drept contur, nu drept ramă), nu conturul de
-                    1px gray-200 al
-                    suprafețelor (`SUPRAFATA`). Cu acela, fereastra albă peste
-                    pagina tot albă se citea ca o bucată de pagină desprinsă, nu
-                    ca un meniu deschis.
+                {/* RAMA: 5px `avo-500`, aceeași culoare cu a dalei APRINSE de
+                    deasupra, ca butonul atins și fereastra deschisă să se
+                    citească drept un singur obiect. A fost 3px și s-a îngroșat
+                    la cerere — la 3 se citea încă drept contur, nu drept ramă.
+                    A fost și `avo-600` cât timp acela era hover-ul dalei; de
+                    când dalele stau în repaus pe avo-600 și se aprind pe avo-500,
+                    rama a urmat hover-ul. Contrast 4,60 pe alb, peste pragul de
+                    3:1 pentru elemente negrafice.
 
-                    Culoarea e aceeași cu a butonului APRINS de deasupra, adică
-                    `avo-500`, deci butonul și fereastra se citesc ca un singur
-                    obiect: ce ai atins și ce s-a deschis. A fost `avo-600` cât
-                    timp acela era hover-ul dalei; de când dalele stau în repaus
-                    pe avo-600 și se aprind pe avo-500, rama a urmat hover-ul —
-                    altfel fereastra s-ar fi potrivit cu dalele pe care NU le-ai
-                    atins. Contrast 4,60 pe alb, peste pragul de 3:1 pentru
-                    elemente negrafice.
+                    Fără conturul de 1px `gray-200` al celorlalte suprafețe
+                    (`SUPRAFATA`): cu acela, fereastra albă peste pagina tot
+                    albă se citea ca o bucată de pagină desprinsă, nu ca un
+                    meniu deschis. Fără umbră mare — conturul face delimitarea,
+                    regula site-ului.
 
-                    Fără umbră mare: conturul face delimitarea, regula site-ului.
+                    ─── FEREASTRA ATÂRNĂ DE BANDĂ, NU PLUTEȘTE SUB EA ─────
+
+                    Nu are latură de sus și n-are colțuri rotunjite sus. Linia
+                    de care începe e chiar muchia de jos a benzii albastre:
+                    fereastra se continuă din ea, ca un sertar tras în jos.
+                    Cu ramă de jur împrejur, arăta ca o cutie pusă peste
+                    pagină, cu o dungă de 5px între ea și banda din care
+                    plecase.
+
+                    `pt-3`, nu `pt-2`, pe înveliș: 12px e exact spațiul de sub
+                    dală (`py-3` pe listă), deci fereastra pleacă fix de pe
+                    muchia benzii. Cu 8 intra 4px peste bandă, iar rama ei se
+                    suprapunea peste albastru. Învelișul acela e și puntea pe
+                    care trece mouse-ul de la dală la fereastră fără ca ea să
+                    se închidă — de-aia spațiul stă ca `padding` pe elementul
+                    care se arată, nu ca `margin`.
+
                     `overflow-hidden` taie fondul coloanei din dreapta pe raza
                     interioară (12 − 5 = 7px), deci rama rămâne întreagă în
-                    colțuri. `w-[560px]` include rama (border-box), deci
-                    fereastra nu s-a lățit; conținutul a cedat 4px. */}
-                <div className="flex w-[560px] max-w-[calc(100vw-2*var(--coloana-pad))] overflow-hidden rounded-xl border-[5px] border-avo-500 bg-white">
+                    colțurile de jos. `w-[560px]` include rama (border-box). */}
+                <div className="flex w-[560px] max-w-[calc(100vw-2*var(--coloana-pad))] overflow-hidden rounded-b-xl border-x-[5px] border-b-[5px] border-avo-500 bg-white">
 
                   {/* ── Stânga: categoria și subcategoriile ── */}
                   <div className="w-[248px] shrink-0 p-2">
