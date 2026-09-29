@@ -232,32 +232,40 @@ export default function MeniuCategorii({
       className="sticky top-(--inaltime-navbar) z-40 bg-avo-800"
     >
       <div className="coloana">
-      {/* BANDA SE MICȘOREAZĂ ODATĂ CU FEREASTRA, nu se taie.
+      {/* UN SINGUR RÂND DE OPT, CÂT SE POATE.
 
-          Cele opt categorii cer toată lățimea coloanei de la 1440. Pe o
-          fereastră strânsă banda trecea pe rând derulabil, iar ultima dală
-          rămânea tăiată la marginea din dreapta — se putea trage cu degetul,
-          dar arăta ca o scăpare.
+          Două ture ratate înainte, și amindouă merită scrise, ca să nu se
+          repete:
 
-          `--scara-compacta` e același raport cu care se micșorează hero-ul
-          și rândul de file, definit o singură dată în globals.css. Grila
-          începe de la 850px (`min-[53.125rem]`), nu de la `lg`, fiindcă aia e
-          lățimea până la care scara ține compozițiile întregi în tot site-ul.
+            `zoom`, ca la hero .... banda e o grilă `fr`, deci se întinde
+                                   oricum pe toată coloana. Singurul lucru
+                                   pe care îl făcea era să micșoreze textul:
+                                   la 860px dalele rămâneau opt, dar scrisul
+                                   cădea la 9,4px. Exact pe dos.
+            două rânduri de patru . respins la cerere: o bară de navigație
+                                   lipicioasă care ocupă două rânduri mănâncă
+                                   prea mult din ecran.
 
-          SCARA STĂ PE LISTĂ, NU PE `<nav>`. Bara e lipicioasă sub antet, iar
-          `zoom` ar fi scălat și `top`-ul ei: s-ar fi oprit cu câțiva pixeli
-          mai sus decât trebuie, peste bara fixă de deasupra. */}
+          Rămas: opt coloane pe un rând, cu textul la corpul lui, care se
+          rupe pe două–trei rânduri în dală. Podeaua e 850px, iar cifra nu e
+          aleasă: cel mai lung cuvânt din etichete e „Monitorizare”, care la
+          12px cere ~80px, plus cei 16 de spațiu interior — deci dala nu
+          poate coborî sub ~96px fără să taie cuvinte. Opt dale de 96 plus
+          șapte spații de 8 cer 824px de coloană, adică o fereastră de ~872.
+
+          Sub 850px rămâne rândul derulabil cu dale de 132px, tiparul de pe
+          telefon, unde eticheta a fost dintotdeauna citibilă. */}
       <ul
-        className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 min-[53.125rem]:grid min-[53.125rem]:auto-cols-fr min-[53.125rem]:grid-flow-col min-[53.125rem]:overflow-x-visible"
-        style={{ zoom: "var(--scara-compacta)" }}
+        data-banda-categorii
+        className="fara-bara-derulare flex gap-2 overflow-x-auto py-3 min-[53.125rem]:grid min-[53.125rem]:grid-cols-8 min-[53.125rem]:overflow-x-visible"
       >
-        {categorii.map((c, i) => {
+        {categorii.map((c) => {
           const promovat = produsPromovat(c.slug, produse);
           const sigla = promovat?.p.brand ? gasesteBrand(promovat.p.brand) : undefined;
           const branduri = c.subcategorii.length === 0 ? branduriDin(c.slug, produse) : [];
 
           return (
-            /* `w-[132px] shrink-0` doar sub 850px: într-un rând care se derulează,
+            /* `w-[132px] shrink-0` doar pe rândul derulabil, sub 850px: într-un rând care se derulează,
                plăcile trebuie să aibă o lățime a lor, altfel flex le strânge
                până intră toate pe ecran și textul se rupe pe patru rânduri.
                De la lg, grila le dă lățimi egale și cele două clase ies. */
@@ -269,10 +277,28 @@ export default function MeniuCategorii({
                 {c.nume}
               </Link>
 
+              {/* SE VEDEA DOAR DE LA 1024px în sus (`lg:block`), deci pe o
+                  fereastră strânsă dispuărea cu totul: rămâneau opt butoane
+                  care duceau direct în categorie, fără subcategorii și fără
+                  mărci. Acum apare oriunde banda e grilă, adică de la 850px.
+                  Fereastra are 560px și încape și acolo: coloana are 802.
+
+                  ÎPRE CE PARTE SE DESCHIDE O HOTĂRĂȘTE CSS-UL, NU MARCAJUL.
+                  Era `i >= categorii.length / 2`, adică primele patru spre
+                  dreapta, ultimele patru spre stânga — socoteală corectă cât
+                  timp exista un singur rând de opt. Pe două rânduri de patru,
+                  a patra dală e în colțul din dreapta al primului rând, dar
+                  are indicele 3, deci s-ar fi deschis spre dreapta și ar fi
+                  ieșit din pagină cu vreo 400px.
+
+                  Coloana în care cade o dală depinde de pragul de lățime, iar
+                  marcajul, randat o singură dată, n-are de unde s-o știe.
+                  CSS-ul are: `nth-child` numără câte patru sau câte opt, după
+                  media query. Vezi „FEREASTRA BENZII DE CATEGORII” în
+                  globals.css. */}
               <div
-                className={`invisible absolute top-full z-50 hidden pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100 lg:block ${
-                  i >= categorii.length / 2 ? "right-0" : "left-0"
-                }`}
+                data-fereastra
+                className="invisible absolute top-full z-50 hidden pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 min-[53.125rem]:block"
               >
                 {/* RAMA: 5px avo-600 (a fost 3px, îngroșată la cerere — la 3px
                     se citea încă drept contur, nu drept ramă), nu conturul de
@@ -295,7 +321,7 @@ export default function MeniuCategorii({
                     interioară (12 − 5 = 7px), deci rama rămâne întreagă în
                     colțuri. `w-[560px]` include rama (border-box), deci
                     fereastra nu s-a lățit; conținutul a cedat 4px. */}
-                <div className="flex w-[560px] overflow-hidden rounded-xl border-[5px] border-avo-500 bg-white">
+                <div className="flex w-[560px] max-w-[calc(100vw-2*var(--coloana-pad))] overflow-hidden rounded-xl border-[5px] border-avo-500 bg-white">
 
                   {/* ── Stânga: categoria și subcategoriile ── */}
                   <div className="w-[248px] shrink-0 p-2">

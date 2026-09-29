@@ -987,3 +987,60 @@ body {
 .sageata-pas {
   color: var(--color-avo-500);
 }
+
+/* ── FEREASTRA BENZII DE CATEGORII ─────────────────────────────
+
+   Fereastra de sub o dală are 560px, iar coloana între 850 și 1180 are
+   800–1120. O fereastră deschisă mereu spre dreapta iese din pagină pentru
+   dalele din partea dreaptă a benzii: rămâne pe ecran doar marginea ei, iar
+   conținutul — subcategoriile și mărcile — nu se vede deloc.
+
+   Deci: dalele din jumătatea stângă deschid spre dreapta, cele din jumătatea
+   dreaptă deschid spre stânga.
+
+   DE CE ÎN CSS ȘI NU ÎN MARCAJ. A stat în marcaj, ca `i >= categorii.length
+   / 2`, și a mers cât timp banda avea o singură formă. Dar numărul de
+   coloane depinde de lățimea ferestrei, iar marcajul e randat o singură
+   dată, la build: n-are de unde ști în ce coloană cade o dală la
+   redimensionare. CSS-ul are — `nth-child` se recalculează singur. */
+
+/* Implicit, și pe rândul derulabil de sub 850px: spre dreapta. */
+[data-banda-categorii] > li > [data-fereastra] {
+  left: 0;
+  right: auto;
+}
+
+/* Opt coloane pe un rând: ultimele patru dale deschid spre stânga. */
+@media (min-width: 53.125rem) {
+  [data-banda-categorii] > li:nth-child(n + 5) > [data-fereastra] {
+    left: auto;
+    right: 0;
+  }
+}
+
+/* CELE DOUĂ DALE DIN MIJLOC, PE FERESTRE STRÂMTE.
+
+   Regula de sus rezolvă capetele, nu mijlocul. A patra dală deschide spre
+   dreapta și pleacă deja de la trei sferturi de coloană; a cincea deschide
+   spre stânga și se lovește de aceeași socoteală oglindită. Cât timp coloana
+   e largă, încap amândouă; sub ~950px nu mai încap. Măsurat: la 880px ies cu
+   19px, la 860px cu 32.
+
+   Aici se lipesc de marginea coloanei, nu de dala lor. Deplasarea se scrie
+   în procente din LĂȚIMEA DALEI, care e chiar unitatea grilei: trei dale
+   plus trei spații înapoi înseamnă exact marginea coloanei, oricare ar fi
+   lățimea ferestrei. `100%` într-un `left` se raportează la lățimea
+   părintelui poziționat, adică la `<li>`, adică la o dală.
+
+   Peste 950px nu se aplică: acolo fereastra ancorată de dală încape, iar a
+   o lipi de marginea coloanei ar depărta-o inutil de butonul atins. */
+@media (min-width: 53.125rem) and (max-width: 59.375rem) {
+  [data-banda-categorii] > li:nth-child(4) > [data-fereastra] {
+    left: calc(-3 * (100% + 0.5rem));
+    right: auto;
+  }
+  [data-banda-categorii] > li:nth-child(5) > [data-fereastra] {
+    left: auto;
+    right: calc(-3 * (100% + 0.5rem));
+  }
+}
