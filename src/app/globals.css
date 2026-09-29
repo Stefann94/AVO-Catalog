@@ -759,10 +759,97 @@ body {
 .file-produse:has(#fila-4:checked) label[for="fila-4"],
 .file-produse:has(#fila-5:checked) label[for="fila-5"] {
   color: var(--color-avo-600);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PLĂCUȚA CARE ALUNECĂ
+   ──────────────────────────────────────────────────────────────────────────
+   Plăcuța albă a filei deschise nu mai e desenată PE etichetă, ci e un singur
+   element care se mută de la una la alta. Așa poate aluneca; un fundal care
+   apare pe o etichetă și dispare de pe alta n-are cum.
+
+   ─── DOUĂ STĂRI, ȘI A DOUA E UN ADAOS ────────────────────────────────────
+
+   FĂRĂ JAVASCRIPT, plăcuța n-are cum să știe cât e de lată eticheta deschisă,
+   deci rămâne ascunsă, iar fundalul se desenează pe etichetă ca până acum
+   (regula de mai jos, sub `:not([data-pilula])`). Aspectul e neschimbat, doar
+   nu alunecă.
+
+   CU JAVASCRIPT, componenta din capul secțiunii (acasa/ComenziFile.tsx) măsoară
+   eticheta bifată, scrie poziția și lățimea ei în două variabile pe bară și
+   pune `data-pilula="on"`. Atunci fundalul de pe etichetă se stinge și apare
+   plăcuța care se mută.
+
+   Nu e o componentă nouă: aceeași care ține săgețile benzii, și care asculta
+   deja `change` pe radio-uri. Costul în JavaScript e sub o sutime de KB.
+
+   ─── DE CE `transform`, ȘI DE CE E OK ȘI `width` ─────────────────────────
+
+   Deplasarea se face din `translate3d`, care rulează pe compozitor: nu costă
+   nici recalcularea așezării, nici repictare.
+
+   `width` se animează și el, fiindcă etichetele au lățimi foarte diferite
+   („Oferte" vs „Monitorizare & Smart Devices") — fără el, plăcuța ar sări la
+   lățimea nouă și ar aluneca doar pe orizontală, ceea ce se vede. `width` e o
+   proprietate de așezare, dar plăcuța e `position: absolute`: recalcularea
+   atinge doar cutia ei, nu mișcă niciun frate. Un singur dreptunghi de ~150×44.
+
+   240 ms: sub 180 pare un salt, peste 300 se simte lenevos. Curba e cea
+   standard de „ieșire rapidă, oprire moale".
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.file-produse:has(#fila-0:checked) [data-file-bara]:not([data-pilula]) label[for="fila-0"],
+.file-produse:has(#fila-1:checked) [data-file-bara]:not([data-pilula]) label[for="fila-1"],
+.file-produse:has(#fila-2:checked) [data-file-bara]:not([data-pilula]) label[for="fila-2"],
+.file-produse:has(#fila-3:checked) [data-file-bara]:not([data-pilula]) label[for="fila-3"],
+.file-produse:has(#fila-4:checked) [data-file-bara]:not([data-pilula]) label[for="fila-4"],
+.file-produse:has(#fila-5:checked) [data-file-bara]:not([data-pilula]) label[for="fila-5"] {
   background: var(--color-surface);
   box-shadow:
     0 0 0 1px var(--color-line-strong),
     0 1px 2px rgb(16 24 40 / 0.08);
+}
+
+.pilula-fila {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  z-index: 0;
+  width: var(--pilula-w, 0);
+  border-radius: 999px;
+  background: var(--color-surface);
+  box-shadow:
+    0 0 0 1px var(--color-line-strong),
+    0 1px 2px rgb(16 24 40 / 0.08);
+  opacity: 0;
+  transform: translate3d(var(--pilula-x, 0), 0, 0);
+  pointer-events: none;
+}
+
+[data-file-bara][data-pilula] .pilula-fila {
+  opacity: 1;
+}
+
+/* Tranziția se pornește abia la a doua așezare (`data-pilula="on"`), nu la
+   prima. Altfel plăcuța ar aluneca din colțul din stânga, de la lățime zero, la
+   fiecare încărcare a paginii — o animație pe care n-a cerut-o nimeni. */
+[data-file-bara][data-pilula="on"] .pilula-fila {
+  transition:
+    transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Eticheta stă peste plăcuță, altfel plăcuța ar acoperi textul. */
+[data-file-bara] label {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-file-bara][data-pilula="on"] .pilula-fila {
+    transition: none;
+  }
 }
 
 /* Conturul de tastatură: radio-ul e ascuns, deci fără regula asta nu s-ar
