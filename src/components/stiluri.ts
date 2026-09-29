@@ -131,8 +131,19 @@ export const BADGE_LICHIDARE = "bg-gray-900 uppercase tracking-wide";
  * PE TELEFON regula nu se aplică. Un titlu de 47 de caractere ar avea nevoie de
  * ~14px ca să încapă pe un rând la 375px lățime — ilizibil pentru un titlu de
  * secțiune. Acolo rămâne dimensiunea fixă și se rupe pe rânduri, cum e normal.
+ *
+ * ─── PLAFONUL E 28px, A FOST 42 ──────────────────────────────────────────
+ *
+ * La 42px, pe o pagină unde textul de bază e 16px și cel din carduri 13,6px,
+ * titlul era de 2,6 ori textul din jur — nu un cap de secțiune, un banner. Tot
+ * conținutul părea umflat din cauza lui, deși nu el crescuse.
+ *
+ * Reperul e prototipul din care e luat restul desenului (Solarone.ro,
+ * `stil-v2.css`): acolo `.sec-h h2` e 25px. 28 și nu 25, fiindcă noi avem
+ * Archivo, un font cu mai multă personalitate, care suportă un corp puțin mai
+ * mare fără să strige. Raportul față de textul de bază ajunge 1,75×.
  */
-export function dimensiuneTitlu(text: string, plafonPx = 42): string {
+export function dimensiuneTitlu(text: string, plafonPx = 28): string {
   const LATIME_CARACTER = 0.55;
   const procenteDinContainer = 100 / (text.length * LATIME_CARACTER);
   return `min(${plafonPx}px, ${procenteDinContainer.toFixed(2)}cqi)`;
@@ -151,6 +162,10 @@ export function dimensiuneTitlu(text: string, plafonPx = 42): string {
  *
  *     Categoriile principale pentru casa și energia ta ... 47 caractere, ~33px
  *     Ofertele lunii Septembrie 2026 .................... 30 caractere,  42px
+ *
+ * (Cifrele sunt de pe vremea plafonului de 42px; de când e 28, amândouă ating
+ * plafonul la 1440 și diferența nu se mai vede acolo — dar reapare la ferestre
+ * înguste, unde `cqi` coboară sub plafon, deci etalonul rămâne necesar.)
  *
  * Adică 9px diferență între două titluri aflate la un ecran distanță. Se citea
  * ca două fonturi diferite, deși e același font, aceeași grosime și aceeași
@@ -178,6 +193,6 @@ const TITLU_ETALON = "Categoriile principale pentru casa și energia ta";
  * să-și calculeze corpul din textul propriu — un titlu de categorie, de pildă,
  * unde numele vine din catalog și poate avea orice lungime.
  */
-export function dimensiuneTitluSectiune(plafonPx = 42): string {
+export function dimensiuneTitluSectiune(plafonPx = 28): string {
   return dimensiuneTitlu(TITLU_ETALON, plafonPx);
 }

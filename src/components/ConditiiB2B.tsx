@@ -172,7 +172,7 @@ export default function ConditiiB2B() {
        40/56/64), nu asimetric cum era (`lg:pt-20 lg:pb-28`). E ultima
        secțiune înainte de subsol și singura pe fond închis: banda are nevoie
        de puțin mai mult aer ca să nu pară o dungă, dar nu de altă regulă. */
-    <section id="conditii-b2b" className="relative overflow-hidden bg-slate-900 py-12 sm:py-16 lg:py-20">
+    <section id="conditii-b2b" className="relative overflow-hidden bg-slate-900 py-12 sm:py-14 lg:py-16">
       {/* Un gradient subtil pe fundal pentru a nu fi doar un albastru plat */}
       <div className="absolute inset-0 bg-gradient-to-br from-avo-900/50 via-slate-900 to-slate-900/90 pointer-events-none" />
 

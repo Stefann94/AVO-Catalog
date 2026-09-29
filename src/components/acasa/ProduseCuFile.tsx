@@ -179,7 +179,7 @@ export default function ProduseCuFile({
 
        Fotografia dinăuntrul cardului rămâne pe alb — acolo contrastul trebuie
        să fie invers, ca produsul să nu pară lipit pe un fond gri. */
-    <section className="bg-canvas py-10 sm:py-14 lg:py-16">
+    <section className="bg-canvas py-10 sm:py-12 lg:py-14">
       {/* `file-produse` cuprinde ACUM ȘI CAPUL SECȚIUNII, nu doar panourile:
           etichetele filelor au urcat lângă titlu, iar `:has()` din globals.css
           le caută înăuntrul aceluiași înveliș ca radio-urile. */}

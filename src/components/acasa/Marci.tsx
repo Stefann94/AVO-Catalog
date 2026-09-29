@@ -43,7 +43,7 @@ export default function Marci() {
   if (marci.length === 0) return null;
 
   return (
-    <section className="bg-canvas py-10 sm:py-14 lg:py-16">
+    <section className="bg-canvas py-10 sm:py-12 lg:py-14">
       {/* ACELAȘI CORP CA LA CELELALTE SECȚIUNI, din etalonul comun. Corpul se
           calculează în `cqi`, deci are nevoie de `@container` — aici pe toată
           coloana, ca și la „Produse din catalog", altfel cele două ies la

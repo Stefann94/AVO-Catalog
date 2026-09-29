@@ -142,7 +142,7 @@ export default async function LichidareStoc({
    * oricum culoarea de fundal, nu golul.
    */
   return (
-    <section className="bg-white py-10 sm:py-14 lg:py-16">
+    <section className="bg-white py-10 sm:py-12 lg:py-14">
       <div className="coloana">
         {/* ── Masthead ───────────────────────────────────────── */}
         <div className="mb-5 sm:mb-10 lg:mb-12">
