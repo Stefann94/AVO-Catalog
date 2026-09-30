@@ -22,19 +22,26 @@
 #                          produs. Site-ul se actualizează în 2–3 minute;
 #   manual ............... butonul „Run workflow", pentru când vrei tu.
 #
-# ─── CONDIȚIE CARE NU E ÎNCĂ ÎNDEPLINITĂ ──────────────────────────────────
+# ─── UNDE AJUNGE, ȘI DE CE ACOLO ──────────────────────────────────────────
 #
-# Acum, `avogrupinvest.ro` și `admin.avogrupinvest.ro` servesc AMÂNDOUĂ din
-# `/public_html` — așa a fost creat subdomeniul, cu „Share document root".
-# WordPress stă acolo.
+# Contul are trei domenii, fiecare cu folderul lui, niciunul peste celălalt:
 #
-# Publicarea în același folder ar suprascrie `.htaccess`-ul WordPress-ului,
-# iar el își ține acolo regulile de adrese: `/graphql` și toate paginile lui ar
-# da 404. Deci ÎNAINTE de prima publicare, cele două trebuie despărțite —
-# WordPress în folderul lui, site-ul static în `public_html`.
+#   avogrupinvest.ro ......... /public_html     site-ul de prezentare
+#                                               (WordPress, clonat pe 30.09)
+#   admin.avogrupinvest.ro ... /wordpress       WordPress-ul care ține
+#                                               produsele — backend-ul
+#   catalog.avogrupinvest.ro . /catalog-static  ← aici publicăm
 #
-# Până atunci, workflow-ul se poate porni manual, dar pasul de urcare trebuie
-# lăsat să eșueze sau ținut pe un server de test.
+# Despărțirea asta a fost făcută pe 30 septembrie. Înainte, `avogrupinvest.ro`
+# și `admin.` serveau amândouă din `/public_html`, iar publicarea acolo ar fi
+# suprascris `.htaccess`-ul WordPress-ului: `/graphql` și toate paginile lui ar
+# fi dat 404. Acum nu mai există riscul — în `/catalog-static` nu stă nimic
+# altceva.
+#
+# CATALOGUL E ÎNCHIS CU PAROLĂ. Regulile sunt în `public/.htaccess`, nu puse
+# din cPanel, tocmai fiindcă publicarea asta trimite fișierul peste cel de pe
+# server. Motivul închiderii: prețurile nu sunt încă verificate. Vezi
+# explicația lungă din capul lui `public/.htaccess`.
 #
 # ─── CE TREBUIE PUS ÎN GITHUB ÎNAINTE SĂ MEARGĂ ───────────────────────────
 #
@@ -154,7 +161,12 @@ jobs:
       # rupte.
       - name: Construiește
         env:
-          NEXT_PUBLIC_SITE_URL: https://www.avogrupinvest.ro
+          # Din ea ies canonical-urile fiecărei pagini, sitemap.xml, robots.txt
+          # și datele structurate (vezi src/lib/site.ts). Lăsată pe
+          # `www.avogrupinvest.ro`, fiecare fișă de produs i-ar spune lui Google
+          # „varianta adevărată a mea e pe domeniul principal" — unde de pe 30
+          # septembrie stă cu totul alt site.
+          NEXT_PUBLIC_SITE_URL: https://catalog.avogrupinvest.ro
         run: npm run build
 
       # Verificare de plasă: o construcție „reușită" care a scos zero pagini
@@ -201,17 +213,21 @@ jobs:
           # Dacă vreodată se reface totul de la zero — alt server, alt cont —
           # se pune la loc `/site-nou/` aici, se lasă urcarea să se termine,
           # și apoi se rulează workflow-ul „Mută site-ul la locul lui".
-          server-dir: /public_html/
-          # Fișierele WordPress-ului rămân neatinse: el stă în același
-          # public_html, iar `admin.avogrupinvest.ro` îl servește de acolo.
-          # Fără lista asta, publicarea ar șterge tot ce nu e în `out`.
+          server-dir: /catalog-static/
+          # A FOST `/public_html/`. Mutat pe 30 septembrie, când catalogul a
+          # primit subdomeniul lui. Fișierele erau deja acolo — au fost mutate
+          # de mână, cu tot cu `.ftp-deploy-sync-state.json`, fișierul în care
+          # acțiunea ține minte ce a urcat. Deci prima publicare în folderul
+          # nou NU retrimite cele ~2200 de fotografii: le recunoaște.
+          #
+          # Lista de mai jos avea și `wp-admin/**`, `wp-content/**`, `wp-*.php`
+          # și celelalte, fiindcă WordPress stătea în același folder și
+          # publicarea șterge tot ce nu e în `out`. Acum nu mai are ce păzi:
+          # în `/catalog-static` nu e decât catalogul.
+          #
+          # `.ftpquota` e al cPanel-ului, nu al nostru. Șters, l-ar reface
+          # serverul, dar n-are rost să-l ștergem la fiecare publicare.
           exclude: |
             **/.git*
             **/.git*/**
-            wp-admin/**
-            wp-content/**
-            wp-includes/**
-            wp-*.php
-            xmlrpc.php
-            cgi-bin/**
-            .well-known/**
+            .ftpquota

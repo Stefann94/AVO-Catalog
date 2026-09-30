@@ -1,4 +1,64 @@
 # ═══════════════════════════════════════════════════════════════════════════
+# ACCES RESTRÂNS — catalogul e închis publicului
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# ─── DE CE E AICI, ȘI NU PUS DIN cPANEL ───────────────────────────────────
+#
+# Directory Privacy scrie exact aceleași patru linii, dar în `.htaccess`-ul de
+# pe server. Ar fi mers — până la prima publicare. Urcarea prin FTP trimite
+# fișierul ăsta PESTE cel de acolo, deci protecția ar fi dispărut în tăcere,
+# la o simplă salvare de produs în WordPress, fără să afle nimeni.
+#
+# Miza nu e teoretică: pe 30 septembrie site-ul principal a fost închis în
+# urgență fiindcă sunau clienți pentru prețuri greșite. Prețurile catalogului
+# nu sunt încă verificate — moneda (RON vs EUR) și cele 81 de produse
+# duplicate sunt nerezolvate. Până atunci, catalogul nu trebuie să fie vizibil
+# nimănui, nici lui Google.
+#
+# Scrisă aici, protecția trece prin fiecare publicare și dispare doar când o
+# scoate cineva din depozit, explicit, într-un commit pe care îl vede.
+#
+# ─── FIȘIERUL DE PAROLE ───────────────────────────────────────────────────
+#
+# Amprentele parolelor stau în afara folderului public, la calea de mai jos,
+# create din cPanel → Directory Privacy. Utilizatorii se adaugă tot de acolo.
+# Fișierul nu e în depozit și nu trebuie să fie.
+#
+# ─── CÂND SE SCOATE ───────────────────────────────────────────────────────
+#
+# Când prețurile sunt verificate și catalogul poate fi public: se șterge tot
+# blocul ăsta, până la linia de final. Atunci se scoate ȘI `X-Robots-Tag` de
+# mai jos — altfel site-ul rămâne invizibil în Google, ceea ce e mai rău decât
+# să nu fi fost publicat deloc.
+# ═══════════════════════════════════════════════════════════════════════════
+
+AuthType Basic
+AuthName "Catalog AVO"
+AuthUserFile "/home/avogrupinvest/.htpasswds/catalog-static/passwd"
+
+# CÂND SE ȘTIE IP-UL FIX AL BIROULUI, linia de mai jos se înlocuiește cu:
+#
+#     <RequireAny>
+#       Require ip 12.34.56.78
+#       Require valid-user
+#     </RequireAny>
+#
+# Așa, de la birou se intră direct, iar de oriunde altundeva cu parolă. Dacă
+# IP-ul se schimbă vreodată, nu blochează pe nimeni — cade înapoi pe parolă.
+# De-aia `RequireAny` și nu `Require ip` singur: eșecul e blând.
+Require valid-user
+
+# A doua barieră, pentru cazul în care parola e scoasă din greșeală înaintea
+# verificării prețurilor. `always`, ca antetul să însoțească și răspunsul 401.
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SFÂRȘIT ACCES RESTRÂNS
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
 # REGULILE SERVERULUI — Apache / LiteSpeed (Hostico)
 # ═══════════════════════════════════════════════════════════════════════════
 #
