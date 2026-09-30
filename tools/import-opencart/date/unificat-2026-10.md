@@ -1,6 +1,6 @@
 # Catalog unificat — 2026-10
 
-Generat 2026-09-30 13:39 din:
+Generat 2026-09-30 14:02 din:
 
 - `Catalog lunar Solar One (17).pdf`
 - `opencart-2026-09-25.json`
@@ -13,22 +13,22 @@ Generat 2026-09-30 13:39 din:
 | | |
 |---|---:|
 | Produse distincte în catalog | 159 |
-| Cu corespondent în OpenCart (poză + descriere) | 114 |
-| **Fără corespondent** — de completat manual | **32** |
+| Cu corespondent în OpenCart (poză + descriere) | 129 |
+| **Fără corespondent** — de completat manual | **23** |
 | Potrivite după cod de model | 72 |
 | Potrivite după cod parțial | 29 |
-| Potrivite doar după denumire (de verificat) | 13 |
-| **Potrivire ambiguă** — lăsate nelegate | **13** |
-| **Același produs OpenCart legat de două ori** | **2** |
+| Potrivite doar după denumire (de verificat) | 3 |
+| **Potrivire ambiguă** — lăsate nelegate | **7** |
+| **Același produs OpenCart legat de două ori** | **3** |
 | Fără preț („la cerere") | 2 |
 | Cu preț la volum | 79 |
 | Ofertele lunii | 4 |
 | Descrieri tăiate de Excel | 1 |
-| Fotografii distincte necesare | 248 |
+| Fotografii distincte necesare | 282 |
 
 ## Cele două niveluri de preț
 
-Raportul dintre prețul public din OpenCart (RON) și cel din catalog (EUR), pe 111 produse comparabile: minim **4.73**, mediană **6.09**, maxim **10.54**.
+Raportul dintre prețul public din OpenCart (RON) și cel din catalog (EUR), pe 127 produse comparabile: minim **4.73**, mediană **6.15**, maxim **18.18**.
 
 Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb valutar.
 
@@ -36,10 +36,10 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 
 | SKU | Produs | Catalog € | Volum € | Public RON | B2B RON | ×EUR | Poză | Descr. | Potrivire |
 |---|---|---:|---:|---:|---:|---:|:-:|---:|---|
-| `CABLU-SOLAR-6MM-TAMBUR-500M-NEGRU` | Cablu solar 6mm² Tambur 500m – Negru <br><sub>Cabluri Solare</sub> | 625 | — | — | — | — | **NU** | **—** | denumire-ambigua |
-| `CABLU-SOLAR-6MM-TAMBUR-500M-ROSU` | Cablu solar 6mm² Tambur 500m – Rosu <br><sub>Cabluri Solare</sub> | 625 | — | — | — | — | **NU** | **—** | denumire-ambigua |
-| `SET-CONECTORI-MC4-EVO2-MAMA` | Set Conectori MC4 EVO2 - mamă <br><sub>Conectori</sub> | 1.3 | — | — | — | — | **NU** | **—** | lipsa |
-| `SET-CONECTORI-MC4-EVO2-TATA` | Set Conectori MC4 EVO2 - tată <br><sub>Conectori</sub> | 1 | — | — | — | — | **NU** | **—** | lipsa |
+| `CABLU-SOLAR-6MM-TAMBUR-500M-NEGRU` | Cablu solar 6mm² Tambur 500m – Negru <br><sub>Cabluri Solare</sub> | 625 | — | 3.471 | — | 5.55 | da | 14.809 | denumire-tare |
+| `CABLU-SOLAR-6MM-TAMBUR-500M-ROSU` | Cablu solar 6mm² Tambur 500m – Rosu <br><sub>Cabluri Solare</sub> | 625 | — | 3.471 | — | 5.55 | da | 14.865 | denumire-tare |
+| `SET-CONECTORI-MC4-EVO2-MAMA` | Set Conectori MC4 EVO2 - mamă <br><sub>Conectori</sub> | 1.3 | — | 18 | — | 13.99 | da | 12.430 | denumire |
+| `SET-CONECTORI-MC4-EVO2-TATA` | Set Conectori MC4 EVO2 - tată <br><sub>Conectori</sub> | 1 | — | 18 | — | 18.18 | da | 12.430 | denumire |
 
 ## Echipamente Conversie & Comutare — 3
 
@@ -124,7 +124,7 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `JINKO-SOLAR-JKM510N-54HL4M-BDV-BIFACIAL` | Jinko Solar JKM510N-54HL4M-BDV, BIFACIAL | 76 | 74 | 438 | — | 5.76 | da | 18.303 | cod-partial |
 | `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL` | Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL | 82 | 80 | 488 | — | 5.95 | da | 18.300 | cod-partial |
 | `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL-PANOURI-FO` | Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL Panouri fotovoltaice TONGWEI Solar | 82 | 80 | 488 | — | 5.95 | da | 18.300 | cod-partial |
-| `JMK475N-48QL6-DV` | Jinko Solar JMK475N-48QL6-DV, Tiger Neo III | 69 | 68 | 388 | — | 5.62 | da | 18.163 | denumire |
+| `JMK475N-48QL6-DV` | Jinko Solar JMK475N-48QL6-DV, Tiger Neo III | 69 | 68 | 388 | — | 5.62 | da | 18.163 | denumire-tare |
 | `LR7-60HVH-545M` | LONGi Solar LR7-60HVH-545M Panouri fotovoltaice OSDA Solar | 88 | 86 | 489 | 469 | 5.56 | da | 17.239 | cod |
 | `ODA590-36V-MHD` | OSDA SOLAR ODA590-36V-MHD STOC SOLAR ONE PIATRA NEAMT | 82 | 80 | — | — | — | **NU** | **—** | lipsa |
 | `TWMND-72HD575W` | TONGWEI Solar TWMND-72HD575W, BIFACIAL Panouri fotovoltaice LONGi Solar | 80 | 78 | 471 | — | 5.89 | da | 18.780 | cod-partial |
@@ -133,12 +133,12 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 
 | SKU | Produs | Catalog € | Volum € | Public RON | B2B RON | ×EUR | Poză | Descr. | Potrivire |
 |---|---|---:|---:|---:|---:|---:|:-:|---:|---|
-| `CLEMA-DE-CAPAT` | Clemă de capăt <br><sub>Cleme și Accesorii</sub> | 1.46 | 1.28 | — | — | — | **NU** | **—** | lipsa |
-| `CLEMA-DE-MIJLOC` | Clemă de mijloc <br><sub>Cleme și Accesorii</sub> | 1.46 | 1.28 | — | — | — | **NU** | **—** | lipsa |
-| `CONECTOR-PENTRU-SINA` | Conector pentru șină <br><sub>Cleme și Accesorii</sub> | 2.96 | 2.61 | — | — | — | **NU** | **—** | lipsa |
-| `L2200` | Paravant L2200 (2200x304x0,5) <br><sub>Cleme și Accesorii</sub> | 17.03 | 15.25 | 97 | 80 | 5.68 | da | 9.239 | denumire |
-| `L2350` | Paravant L2350 (2350x304x0,5) <br><sub>Cleme și Accesorii</sub> | 21.5 | 16.02 | 102 | 83 | 4.73 | da | 9.309 | denumire |
-| `SURUB-ISO-CU-DUBLU-FILET-HANGERBOARD-PLACA-MONTAJ` | Surub ISO cu dublu filet Hangerboard + placa montaj <br><sub>Cleme și Accesorii</sub> | 3.99 | 3.79 | — | — | — | **NU** | **—** | denumire-ambigua |
+| `CLEMA-DE-CAPAT` | Clemă de capăt <br><sub>Cleme și Accesorii</sub> | 1.46 | 1.28 | 9 | 7 | 6.23 | da | 10.117 | denumire-tare |
+| `CLEMA-DE-MIJLOC` | Clemă de mijloc <br><sub>Cleme și Accesorii</sub> | 1.46 | 1.28 | 9 | 7 | 6.23 | da | 10.297 | denumire-tare |
+| `CONECTOR-PENTRU-SINA` | Conector pentru șină <br><sub>Cleme și Accesorii</sub> | 2.96 | 2.61 | 20 | — | 6.70 | da | 10.086 | denumire-tare |
+| `L2200` | Paravant L2200 (2200x304x0,5) <br><sub>Cleme și Accesorii</sub> | 17.03 | 15.25 | 97 | 80 | 5.68 | da | 9.239 | denumire-tare |
+| `L2350` | Paravant L2350 (2350x304x0,5) <br><sub>Cleme și Accesorii</sub> | 21.5 | 16.02 | 102 | 83 | 4.73 | da | 9.309 | denumire-tare |
+| `SURUB-ISO-CU-DUBLU-FILET-HANGERBOARD-PLACA-MONTAJ` | Surub ISO cu dublu filet Hangerboard + placa montaj <br><sub>Cleme și Accesorii</sub> | 3.99 | 3.79 | 25 | 20 | 6.21 | da | 9.814 | denumire-tare |
 | `2003191` | Basic Rail Înălțător Șină - 2003191 <br><sub>K2 Systems</sub> | 4.19 | — | 26 | 22 | 6.31 | da | 17.825 | cod |
 | `1003558` | Basic Rail-Blocator șină trapezidală - 1003558 <br><sub>K2 Systems</sub> | 1.98 | — | 13 | 11 | 6.68 | da | 15.911 | cod |
 | `1001164` | Basic Rail-Suport fixare pe tablă trapezidală - 1001164 <br><sub>K2 Systems</sub> | 0.54 | — | 4 | 2 | 7.65 | da | 17.428 | cod |
@@ -148,7 +148,7 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `2003243` | Dome 6.10 suport inferior pentru terasă (10 grade înclinație) - 2003243 <br><sub>K2 Systems</sub> | 1.4 | — | 9 | 7 | 6.49 | da | 18.614 | cod |
 | `2004175` | Dome 6.15 suport inferior pentru terasă (15 grade înclinație) - 2004175 <br><sub>K2 Systems</sub> | 1.63 | — | 10 | 8 | 6.08 | da | 16.515 | cod |
 | `2003250` | Dome Paravânt Lung 1779-2150 mm - 2003250 <br><sub>K2 Systems</sub> | 10.36 | — | 77 | 55 | 7.42 | da | 15.438 | cod |
-| `2004179` | Dome Paravânt Scurt 1448 - 1779 mm - 2004179 <br><sub>K2 Systems</sub> | 13.22 | — | 65 | 55 | 4.94 | da | 15.440 | denumire |
+| `2004179` | Dome Paravânt Scurt 1448 - 1779 mm - 2004179 <br><sub>K2 Systems</sub> | 13.22 | — | 65 | 55 | 4.94 | da | 15.440 | denumire-tare |
 | `2004103` | Dome Pravânt Extralung 2045 - 2398 mm - 2004103 <br><sub>K2 Systems</sub> | 14.16 | — | 84 | 74 | 5.95 | da | 15.526 | cod |
 | `2003126` | Dome Suport protecție - 2003126 <br><sub>K2 Systems</sub> | 2.58 | — | 16 | 69 | 6.09 | da | 18.322 | cod |
 | `1001643` | Dome-Piuliță Nut MK2 cu clip - 1001643 <br><sub>K2 Systems</sub> | 0.58 | — | 4 | 3 | 7.12 | da | 22.331 | cod |
@@ -159,23 +159,23 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `1005193` | Șurub autofiletant pentru tablă 6x38 mm - 1005193 <br><sub>K2 Systems</sub> | 0.36 | — | 3 | 2 | 9.18 | da | 10.461 | cod |
 | `2004112` | Șurub autoforant pentru lemn 8 x 100 mm (pt cârlig țiglă) - 2004112 <br><sub>K2 Systems</sub> | 0.44 | — | 3 | 2 | 7.51 | da | 10.113 | cod |
 | `2003274` | Șurub cu dublu filet Single Rail - 2003274 <br><sub>K2 Systems</sub> | 3.86 | — | 24 | 20 | 6.21 | da | 15.242 | cod |
-| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-2-4-M` | Șină aluminiu ISO cu prindere laterală la 2,4 m <br><sub>Șine și Profile</sub> | 12.93 | 11.99 | — | — | — | **NU** | **—** | denumire-ambigua |
-| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-3-5-M` | Șină aluminiu ISO cu prindere laterală la 3.5 m <br><sub>Șine și Profile</sub> | 18 | 17 | — | — | — | **NU** | **—** | denumire-ambigua |
-| `SINA-PROFIL-ALUMINIU-MINI-RAIL-380MM` | Șină profil aluminiu Mini Rail 380mm <br><sub>Șine și Profile</sub> | 3.42 | 3.02 | 21 | 16 | 6.28 | da | 14.716 | denumire |
-| `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA` | Șină aluminiu ISO 4300 mm – trapezoidală <br><sub>Structuri Acoperiș Metalic</sub> | 20.63 | 19.9 | 138 | 104 | 6.69 | da | 9.384 | denumire |
+| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-2-4-M` | Șină aluminiu ISO cu prindere laterală la 2,4 m <br><sub>Șine și Profile</sub> | 12.93 | 11.99 | 87 | 63 | 6.71 | da | 9.508 | denumire-tare |
+| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-3-5-M` | Șină aluminiu ISO cu prindere laterală la 3.5 m <br><sub>Șine și Profile</sub> | 18 | 17 | 129 | 89 | 7.16 | da | 9.495 | denumire-tare |
+| `SINA-PROFIL-ALUMINIU-MINI-RAIL-380MM` | Șină profil aluminiu Mini Rail 380mm <br><sub>Șine și Profile</sub> | 3.42 | 3.02 | 21 | 16 | 6.28 | da | 14.716 | denumire-tare |
+| `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA` | Șină aluminiu ISO 4300 mm – trapezoidală <br><sub>Structuri Acoperiș Metalic</sub> | 20.63 | 19.9 | 138 | 104 | 6.69 | da | 9.384 | denumire-tare |
 | `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA-INALTA-LA-60MM` | Șină aluminiu ISO 4300 mm – trapezoidală, înaltă la 60mm <br><sub>Structuri Acoperiș Metalic</sub> | 36.6 | — | — | — | — | **NU** | **—** | lipsa |
-| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-290MM` | Șină de montare trapezoidală ISO 290mm <br><sub>Structuri Acoperiș Metalic</sub> | 2.8 | 2.7 | 20 | 14 | 7.08 | da | 9.587 | denumire |
-| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-540MM` | Șină de montare trapezoidală ISO 540mm <br><sub>Structuri Acoperiș Metalic</sub> | 4.3 | 4.2 | 29 | 22 | 6.73 | da | 9.481 | denumire |
+| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-290MM` | Șină de montare trapezoidală ISO 290mm <br><sub>Structuri Acoperiș Metalic</sub> | 2.8 | 2.7 | 20 | 14 | 7.08 | da | 9.587 | denumire-tare |
+| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-540MM` | Șină de montare trapezoidală ISO 540mm <br><sub>Structuri Acoperiș Metalic</sub> | 4.3 | 4.2 | 29 | 22 | 6.73 | da | 9.481 | denumire-tare |
 | `SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-CA` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt <br><sub>Structuri Acoperiș Metalic</sub> | 4.36 | 3.85 | — | — | — | **NU** | **—** | denumire-ambigua |
-| `SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc <br><sub>Structuri Acoperiș Metalic</sub> | 4.36 | 3.85 | 28 | — | 6.45 | da | 2.370 | denumire |
-| `SUPORT-U-PENTRU-ACOPERIS-METALIC` | Suport U pentru acoperiș metalic <br><sub>Structuri Acoperiș Metalic</sub> | 1.87 | 1.65 | — | — | — | **NU** | **—** | denumire-ambigua |
+| `SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc <br><sub>Structuri Acoperiș Metalic</sub> | 4.36 | 3.85 | 28 | — | 6.45 | da | 2.370 | denumire-tare |
+| `SUPORT-U-PENTRU-ACOPERIS-METALIC` | Suport U pentru acoperiș metalic <br><sub>Structuri Acoperiș Metalic</sub> | 1.87 | 1.65 | 12 | — | 6.19 | da | 2.370 | denumire-tare |
 | `PB-092.2` | Sistem de montaj panouri fotovoltaice click-in, PB-092.2 1 SET L2818 25DGE Orizontal <br><sub>Structuri Acoperiș Plat</sub> | 129.15 | 115.56 | 731 | 605 | 5.66 | da | 16.882 | cod-partial |
-| `PB-094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal <br><sub>Structuri Acoperiș Plat</sub> | 129.15 | 115.56 | 731 | 605 | 5.66 | da | 16.711 | denumire |
+| `PB-094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal <br><sub>Structuri Acoperiș Plat</sub> | 129.15 | 115.56 | 731 | 605 | 5.66 | da | 16.711 | denumire-tare |
 | `PB-062.1` | Sistem de montaj panouri fotovoltaice PB-062.1, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | la cerere | — | — | — | — | da | 16.629 | cod-partial |
 | `PB-068.1` | Sistem de montaj panouri fotovoltaice PB-068.1, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | la cerere | — | — | — | — | da | 16.045 | cod-partial |
-| `PB-096` | Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | 117.32 | 104.98 | — | — | — | **NU** | **—** | denumire-ambigua |
-| `PB-098` | Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | 54.76 | 48.99 | — | — | — | **NU** | **—** | denumire-ambigua |
-| `CARLIG-MONTAJ-TIGLA-AJUSTABIL-3-POZITII-ALUMINIU-IOS` | Cârlig montaj țiglă ajustabil, 3 poziții, aluminiu IOS <br><sub>Structuri Țiglă</sub> | 7.94 | 6.99 | 43 | 36 | 5.41 | da | 10.535 | denumire |
+| `PB-096` | Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | 117.32 | 104.98 | 664 | 550 | 5.66 | da | 16.085 | denumire-tare |
+| `PB-098` | Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat <br><sub>Structuri Acoperiș Plat</sub> | 54.76 | 48.99 | 310 | 256 | 5.66 | da | 16.428 | denumire-tare |
+| `CARLIG-MONTAJ-TIGLA-AJUSTABIL-3-POZITII-ALUMINIU-IOS` | Cârlig montaj țiglă ajustabil, 3 poziții, aluminiu IOS <br><sub>Structuri Țiglă</sub> | 7.94 | 6.99 | — | — | — | **NU** | **—** | lipsa |
 
 ## Stații de Încărcare Auto — 3
 
@@ -194,7 +194,7 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `CONTROL-BOX-GB-L-BASE` | Control Box GB-L + BASE <br><sub>Accesorii Stocare</sub> | 530 | — | 3.213 | 3.055 | 6.06 | da | 22.410 | cod-partial |
 | `DEYE-BOS-A-7-68-KWH` | Deye BOS-A, 7.68 kWh <br><sub>Acumulatori High-Voltage</sub> | 970 | 950 | — | — | — | **NU** | **—** | lipsa |
 | `PRO-A3` | Deye BOS-B PRO-A3, 16,08 kWh <br><sub>Acumulatori High-Voltage</sub> | 1600 | — | — | — | — | **NU** | **—** | lipsa |
-| `DEYE-BOS-G-PRO-5-12-KWH` | Deye BOS-G PRO, 5.12 kWh <br><sub>Acumulatori High-Voltage</sub> | 680 | 670 | — | — | — | **NU** | **—** | lipsa |
+| `DEYE-BOS-G-PRO-5-12-KWH` | Deye BOS-G PRO, 5.12 kWh <br><sub>Acumulatori High-Voltage</sub> | 680 | 670 | — | — | — | **NU** | **—** | denumire-ambigua |
 | `GB-LM4.0` | Deye GB-LM4.0, 4 kWh <br><sub>Acumulatori High-Voltage</sub> | 792 | 772 | 5.142 | 4.040 | 6.49 | da | 22.428 | cod |
 | `DEYE-SE-F12-C` | Deye SE-F12 C <br><sub>Acumulatori Low-Voltage</sub> | 1280 | 1260 | 7.831 | — | 6.12 | da | 20.509 | cod-partial |
 | `DEYE-SE-F12-MAX-FARA-INCALZIRE-IP65` | Deye SE-F12 MAX, FĂRĂ încălzire, IP65 <br><sub>Acumulatori Low-Voltage</sub> | 1350 | 1330 | 7.437 | — | 5.51 | da | 22.787 | cod-partial |
@@ -217,12 +217,12 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `LICHIDARE-STOC-PYTES-V16-16KWH-CU-INCALZIRE-IP66` | LICHIDARE STOC - PYTES V16 - 16kWh, cu încălzire, IP66 <br><sub>Acumulatori Low-Voltage</sub> | 1720 | 1690 | — | — | — | **NU** | **—** | lipsa |
 | `M16S200BL-V1` | PCENERSYS M16S200BL-V1, 10.24kWh <br><sub>Acumulatori Low-Voltage</sub> | 1150 | — | 6.461 | — | 5.62 | da | 15.075 | cod |
 | `E-BOX-48100R` | PYTES E-BOX-48100R, 5.12kWh <br><sub>Acumulatori Low-Voltage</sub> | 675 | 665 | 3.673 | 4.081 | 5.44 | da | 18.685 | cod |
-| `PYTES-V12-11-776KWH-CU-INCALZIRE-IP66` | PYTES V12 - 11.776kWh, cu încălzire, IP66 <br><sub>Acumulatori Low-Voltage</sub> | 1400 | — | — | — | — | **NU** | **—** | lipsa |
-| `PYTES-V15-14-34KWH` | PYTES V15, 14.34kWh <br><sub>Acumulatori Low-Voltage</sub> | 1500 | — | — | — | — | **NU** | **—** | lipsa |
-| `PYTES-V5-5-12KWH` | PYTES V5, 5.12kWh <br><sub>Acumulatori Low-Voltage</sub> | 705 | 695 | — | — | — | **NU** | **—** | lipsa |
-| `PYTES-V5A-5-12-KWH` | PYTES V5a, 5.12 kWh <br><sub>Acumulatori Low-Voltage</sub> | 715 | 705 | — | — | — | **NU** | **—** | lipsa |
+| `PYTES-V12-11-776KWH-CU-INCALZIRE-IP66` | PYTES V12 - 11.776kWh, cu încălzire, IP66 <br><sub>Acumulatori Low-Voltage</sub> | 1400 | — | 8.446 | — | 6.03 | da | 17.560 | model-jeton |
+| `PYTES-V15-14-34KWH` | PYTES V15, 14.34kWh <br><sub>Acumulatori Low-Voltage</sub> | 1500 | — | 9.785 | 8.504 | 6.52 | da | 17.605 | model-jeton |
+| `PYTES-V5-5-12KWH` | PYTES V5, 5.12kWh <br><sub>Acumulatori Low-Voltage</sub> | 705 | 695 | 4.248 | 4.029 | 6.03 | da | 18.104 | model-jeton |
+| `PYTES-V5A-5-12-KWH` | PYTES V5a, 5.12 kWh <br><sub>Acumulatori Low-Voltage</sub> | 715 | 705 | 4.248 | 4.029 | 5.94 | da | 16.602 | model-jeton |
 | `AE-F2.0` | Deye AE-F2.0 – Acumulator suplimentar Micro ESS <br><sub>Micro ESS / Balcon</sub> | 395 | — | — | — | — | **NU** | **—** | lipsa |
-| `AE-FS2.0-2H2` | Deye AE-FS2.0-2H2 – Sistem Micro ESS All-in-One <br><sub>Micro ESS / Balcon</sub> | 628 | — | — | — | — | da | 19.434 | denumire |
+| `AE-FS2.0-2H2` | Deye AE-FS2.0-2H2 – Sistem Micro ESS All-in-One <br><sub>Micro ESS / Balcon</sub> | 628 | — | — | — | — | **NU** | **—** | denumire-ambigua |
 | `BOS-G60` | Deye BOS-G60, 61.44 kWh IP20 - STOCARE INDOOR <br><sub>Sisteme Stocare Complete</sub> | 8500 | — | — | — | — | **NU** | **—** | lipsa |
 | `GE-F256` | Deye GE-F256 <br><sub>Sisteme Stocare Complete</sub> | 33500 | — | 195.000 | — | 5.82 | da | 27.176 | cod-partial |
 | `GE-F60-EU` | Deye GE-F60-EU, 61.4 kWh IP65 - STOCARE OUTDOOR <br><sub>Sisteme Stocare Complete</sub> | 13500 | — | — | — | — | **NU** | **—** | lipsa |
@@ -231,7 +231,7 @@ Cursul real e în jur de 5,0–5,1. Tot ce e peste înseamnă adaos, nu schimb v
 | `PACHET-STOCARE-DEYE-BOS-B-PRO-128-KWH` | Pachet Stocare Deye BOS-B PRO, 128 kWh <br><sub>Sisteme Stocare Complete</sub> | 14300 | — | — | — | — | **NU** | **—** | denumire-ambigua |
 | `PACHET-STOCARE-DEYE-BOS-B-PRO-241-5-KWH` | Pachet Stocare Deye BOS-B PRO, 241.5 kWh <br><sub>Sisteme Stocare Complete</sub> | 24000 | — | — | — | — | **NU** | **—** | denumire-ambigua |
 
-## Fără corespondent în OpenCart — 32
+## Fără corespondent în OpenCart — 23
 
 Pentru astea avem doar denumirea și prețul din catalog. Nu au fotografie, descriere, slug SEO sau categorie moștenită.
 
@@ -244,7 +244,6 @@ Pentru astea avem doar denumirea și prețul din catalog. Nu au fotografie, desc
 | `SUN-5K-SG04LP3-EU` | SUN-5K-SG04LP3-EU | Invertoare › Hibride Trifazate | 1181 |
 | `SUN-60K-G03` | SUN-60K-G03 | Invertoare › On-Grid | 2380 |
 | `SUN-125K-G01P03-EU-AM8` | SUN-125K-G01P03-EU-AM8 | Invertoare › On-Grid | 3500 |
-| `DEYE-BOS-G-PRO-5-12-KWH` | Deye BOS-G PRO, 5.12 kWh | Stocare Energie › Acumulatori High-Voltage | 680 |
 | `DEYE-BOS-A-7-68-KWH` | Deye BOS-A, 7.68 kWh | Stocare Energie › Acumulatori High-Voltage | 970 |
 | `PRO-A3` | Deye BOS-B PRO-A3, 16,08 kWh | Stocare Energie › Acumulatori High-Voltage | 1600 |
 | `BOS-G60` | Deye BOS-G60, 61.44 kWh IP20 - STOCARE INDOOR | Stocare Energie › Sisteme Stocare Complete | 8500 |
@@ -255,50 +254,50 @@ Pentru astea avem doar denumirea și prețul din catalog. Nu au fotografie, desc
 | `SUN-SMART-SWITCH` | SUN Smart-Switch | Monitorizare & Smart Devices › Dispozitive Smart | 75 |
 | `DL100B-WiFi` | Datalogger DL100B-WiFi | Monitorizare & Smart Devices › Dispozitive Smart | 36 |
 | `SDM630` | EASTRON SDM630, trifazat cu citire directa | Monitorizare & Smart Devices › Smart Meters | 119 |
-| `PYTES-V5-5-12KWH` | PYTES V5, 5.12kWh | Stocare Energie › Acumulatori Low-Voltage | 705 |
-| `PYTES-V5A-5-12-KWH` | PYTES V5a, 5.12 kWh | Stocare Energie › Acumulatori Low-Voltage | 715 |
-| `PYTES-V12-11-776KWH-CU-INCALZIRE-IP66` | PYTES V12 - 11.776kWh, cu încălzire, IP66 | Stocare Energie › Acumulatori Low-Voltage | 1400 |
-| `PYTES-V15-14-34KWH` | PYTES V15, 14.34kWh | Stocare Energie › Acumulatori Low-Voltage | 1500 |
 | `LICHIDARE-STOC-PYTES-V16-16KWH-CU-INCALZIRE-IP66` | LICHIDARE STOC - PYTES V16 - 16kWh, cu încălzire, IP66 | Stocare Energie › Acumulatori Low-Voltage | 1720 |
 | `FLA48460TG2-EU` | FELICITY FLA48460TG2-EU, 23.5kWh | Stocare Energie › Acumulatori Low-Voltage | 2399 |
 | `GROWATT-SPM-C-MONOFAZAT` | GROWATT SPM-C, monofazat | Monitorizare & Smart Devices › Smart Meters | 70 |
 | `GROWATT-TPM-C-TRIFAZAT` | GROWATT TPM-C, trifazat | Monitorizare & Smart Devices › Smart Meters | 110 |
 | `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA-INALTA-LA-60MM` | Șină aluminiu ISO 4300 mm – trapezoidală, înaltă la 60mm | Sisteme de Montaj › Structuri Acoperiș Metalic | 36.6 |
-| `CONECTOR-PENTRU-SINA` | Conector pentru șină | Sisteme de Montaj › Cleme și Accesorii | 2.96 |
-| `CLEMA-DE-CAPAT` | Clemă de capăt | Sisteme de Montaj › Cleme și Accesorii | 1.46 |
-| `CLEMA-DE-MIJLOC` | Clemă de mijloc | Sisteme de Montaj › Cleme și Accesorii | 1.46 |
-| `SET-CONECTORI-MC4-EVO2-MAMA` | Set Conectori MC4 EVO2 - mamă | Accesorii › Conectori | 1.3 |
-| `SET-CONECTORI-MC4-EVO2-TATA` | Set Conectori MC4 EVO2 - tată | Accesorii › Conectori | 1 |
+| `CARLIG-MONTAJ-TIGLA-AJUSTABIL-3-POZITII-ALUMINIU-IOS` | Cârlig montaj țiglă ajustabil, 3 poziții, aluminiu IOS | Sisteme de Montaj › Structuri Țiglă | 7.94 |
 
-## Același produs OpenCart legat de două poziții din catalog — 2
+## Același produs OpenCart legat de două poziții din catalog — 3
 
 Două poziții diferite din catalog nu pot fi același produs în magazin. Una dintre ele are conținut greșit.
 
 **JKM475N-48QL6-DV** (id 1409) e legat de:
 
 - `JKM475N-48QL6-DV` — Jinko Solar JKM475N-48QL6-DV, Tiger Neo III *(cod)*
-- `JMK475N-48QL6-DV` — Jinko Solar JMK475N-48QL6-DV, Tiger Neo III *(denumire)*
+- `JMK475N-48QL6-DV` — Jinko Solar JMK475N-48QL6-DV, Tiger Neo III *(denumire-tare)*
 
 ** JKM620N-66HL4M-BDV** (id 1408) e legat de:
 
 - `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL` — Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL *(cod-partial)*
 - `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL-PANOURI-FO` — Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL Panouri fotovoltaice TONGWEI Solar *(cod-partial)*
 
-## Potrivire ambiguă — 13
+**PV-KBT4-EVO 2A/PV-KST4-EVO 2A** (id 614) e legat de:
+
+- `SET-CONECTORI-MC4-EVO2-MAMA` — Set Conectori MC4 EVO2 - mamă *(denumire)*
+- `SET-CONECTORI-MC4-EVO2-TATA` — Set Conectori MC4 EVO2 - tată *(denumire)*
+
+## Potrivire ambiguă — 7
 
 Mai mulți candidați cu același punctaj. Nu le-am legat de nimic: mai bine fără fotografie decât cu fotografia altui produs. Alege tu, sau le tratăm ca produse noi.
+
+**`DEYE-BOS-G-PRO-5-12-KWH`** — Deye BOS-G PRO, 5.12 kWh · 680 €
+
+- id 946, `BOS-G-PACK5.1` — Acumulator Deye BOS-G (PACK5.1), 5.12 kWh high-voltage
+- id 1236, `BOS-GM5.1` — Acumulator Deye BOS-G (GM5.1), 5.12 kWh high-voltage
 
 **`PACHET-STOCARE-DEYE-BOS-A-99-84-KWH`** — Pachet Stocare Deye BOS-A 99.84 kWh · 13880 €
 
 - id 1122, `Stocare-Deye-61.44Kwh` — Pachet stocare Deye 61.44 Kwh LiFePo4, Bos-G
 - id 1123, `Stocare-Deye-40.96Kwh` — Pachet stocare Deye 40.96 Kwh LiFePo4, Bos-G
-- id 1294, `Pachet-Stocare-Industriala-Deye-241.15kwh` — Pachet sistem stocare industrială Deye – 241,15 kWh + PCS 125 kW + MPPT 200 kWp
 
 **`PACHET-STOCARE-DEYE-BOS-A-161-98-KWH`** — Pachet Stocare Deye BOS-A 161.98 kWh · 22020 €
 
 - id 1122, `Stocare-Deye-61.44Kwh` — Pachet stocare Deye 61.44 Kwh LiFePo4, Bos-G
 - id 1123, `Stocare-Deye-40.96Kwh` — Pachet stocare Deye 40.96 Kwh LiFePo4, Bos-G
-- id 1294, `Pachet-Stocare-Industriala-Deye-241.15kwh` — Pachet sistem stocare industrială Deye – 241,15 kWh + PCS 125 kW + MPPT 200 kWp
 
 **`PACHET-STOCARE-DEYE-BOS-B-PRO-128-KWH`** — Pachet Stocare Deye BOS-B PRO, 128 kWh · 14300 €
 
@@ -312,63 +311,17 @@ Mai mulți candidați cu același punctaj. Nu le-am legat de nimic: mai bine fă
 - id 1123, `Stocare-Deye-40.96Kwh` — Pachet stocare Deye 40.96 Kwh LiFePo4, Bos-G
 - id 1294, `Pachet-Stocare-Industriala-Deye-241.15kwh` — Pachet sistem stocare industrială Deye – 241,15 kWh + PCS 125 kW + MPPT 200 kWp
 
-**`PB-098`** — Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat · 54.76 €
+**`AE-FS2.0-2H2`** — Deye AE-FS2.0-2H2 – Sistem Micro ESS All-in-One · 628 €
 
-- id 708, `XFS_PB068.1` — Sistem de montaj panouri fotovoltaice PB-068.1, montare acoperis plat
-- id 709, `XFS_PB062.1` — Sistem de montaj panouri fotovoltaice PB-062.1, montare acoperis plat
-- id 711, `XFS_PB098` — Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat
-- id 735, `XFS_PB096` — Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat
-
-**`PB-096`** — Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat · 117.32 €
-
-- id 708, `XFS_PB068.1` — Sistem de montaj panouri fotovoltaice PB-068.1, montare acoperis plat
-- id 709, `XFS_PB062.1` — Sistem de montaj panouri fotovoltaice PB-062.1, montare acoperis plat
-- id 711, `XFS_PB098` — Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat
-- id 735, `XFS_PB096` — Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat
+- id 1402, `AE-FS2.0-2H2/7` — Sistem Deye ALL-IN-ONE AE-FS2.0-2H2/7 cu baterie LiFePO4 2kWh, sistem solar balcon cu invertor integrat
+- id 1403, `2 x AE-FS2.0-2H2/7` — Sistem Deye ALL-IN-ONE 2 x AE-FS2.0-2H2/7 cu baterie LiFePO4, 4kWh, sistem solar balcon cu invertor integrat
 
 **`SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-CA`** — Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt · 4.36 €
 
 - id 797, `sis_u_capat` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt
-- id 798, `sis_u_mijloc` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc
 - id 888, `sis_u_mijloc-1` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt
 
-**`SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-2-4-M`** — Șină aluminiu ISO cu prindere laterală la 2,4 m · 12.93 €
-
-- id 949, `sina_ISO_2.4` — Șină aluminiu ISO cu prindere laterală la 2,4 m
-- id 1082, `sina_ISO_3.5` — Șină aluminiu ISO cu prindere laterală la 3.5 m
-
-**`SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-3-5-M`** — Șină aluminiu ISO cu prindere laterală la 3.5 m · 18 €
-
-- id 949, `sina_ISO_2.4` — Șină aluminiu ISO cu prindere laterală la 2,4 m
-- id 1082, `sina_ISO_3.5` — Șină aluminiu ISO cu prindere laterală la 3.5 m
-
-**`SUPORT-U-PENTRU-ACOPERIS-METALIC`** — Suport U pentru acoperiș metalic · 1.87 €
-
-- id 893, `ER-S-U/120-1` — Suport U ISO pentru acoperiș metalic
-- id 796, `ER-S-U/120` — Suport U pentru acoperiș metalic
-- id 797, `sis_u_capat` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt
-- id 798, `sis_u_mijloc` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc
-- id 888, `sis_u_mijloc-1` — Sistem de montaj pentru acoperiș metalic cu suport U și clemă capăt
-- id 889, `sis_u_capat-1` — Sistem de montaj pentru acoperiș metalic cu suport U
-
-**`SURUB-ISO-CU-DUBLU-FILET-HANGERBOARD-PLACA-MONTAJ`** — Surub ISO cu dublu filet Hangerboard + placa montaj · 3.99 €
-
-- id 497, `XFS_B018.1` — Surub cu dublu filet Hangerboard 250x10 + placa montaj
-- id 958, `ISO_hangerboard` — Surub ISO cu dublu filet Hangerboard + placa montaj
-- id 1406, `ISO_hangerboard_x1` — Surub ISO cu dublu filet Hangerboard fara placa montaj
-- id 974, `ISO_hangerboard-1` — Surub Hangerboard cu dublu filet + placa montaj
-
-**`CABLU-SOLAR-6MM-TAMBUR-500M-ROSU`** — Cablu solar 6mm² Tambur 500m – Rosu · 625 €
-
-- id 671, `H1ZR0106H500` — Cablu solar 6mm² Tambur 500m - Rosu
-- id 674, `H1ZR0104H500` — Cablu solar 4mm² Tambur 500m - Rosu
-
-**`CABLU-SOLAR-6MM-TAMBUR-500M-NEGRU`** — Cablu solar 6mm² Tambur 500m – Negru · 625 €
-
-- id 672, `H1ZB0106H500` — Cablu solar 6mm² Tambur 500m - Negru
-- id 673, `H1ZB0104H500` — Cablu solar 4mm² Tambur 500m - Negru
-
-## De verificat cu ochiul — 42
+## De verificat cu ochiul — 57
 
 Potrivite fără cod de model exact. O potrivire greșită pune fotografia altui produs lângă prețul ăstuia.
 
@@ -377,7 +330,7 @@ Potrivite fără cod de model exact. O potrivire greșită pune fotografia altui
 | `CS6.2-66TB-625W` | Canadian Solar CS6.2-66TB-625W, N-type TOPCon BIFACIAL | `CS6.2-66TB-625` | Panou fotovoltaic 625W Canadian Solar CS6.2-66TB-625, Bifacial, N-type TOPCon | cod-partial |
 | `JINKO-SOLAR-JKM510N-54HL4M-BDV-BIFACIAL` | Jinko Solar JKM510N-54HL4M-BDV, BIFACIAL | `JKM510N-54HL4M-BDV` | Panou fotovoltaic 510W Jinko Solar JKM510N-54HL4M-BDV, 30mm, Tiger Neo,Bifacial, N-Type | cod-partial |
 | `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL` | Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL | ` JKM620N-66HL4M-BDV` | Panou fotovoltaic 620W Jinko Solar JKM620N-66HL4M-BDV, 30mm, Tiger Neo,Bifacial, N-Type | cod-partial |
-| `JMK475N-48QL6-DV` | Jinko Solar JMK475N-48QL6-DV, Tiger Neo III | `JKM475N-48QL6-DV` | Panou fotovoltaic 475W Jinko Solar JKM475N-48QL6-DV, 30mm, Tiger Neo III, Monofacial | denumire |
+| `JMK475N-48QL6-DV` | Jinko Solar JMK475N-48QL6-DV, Tiger Neo III | `JKM475N-48QL6-DV` | Panou fotovoltaic 475W Jinko Solar JKM475N-48QL6-DV, 30mm, Tiger Neo III, Monofacial | denumire-tare |
 | `JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL-PANOURI-FO` | Jinko Solar JKM620N-66HL4M-BDV, Tiger Neo III, BIFACIAL Panouri fotovoltaice TONGWEI Solar | ` JKM620N-66HL4M-BDV` | Panou fotovoltaic 620W Jinko Solar JKM620N-66HL4M-BDV, 30mm, Tiger Neo,Bifacial, N-Type | cod-partial |
 | `TWMND-72HD575W` | TONGWEI Solar TWMND-72HD575W, BIFACIAL Panouri fotovoltaice LONGi Solar | `TWMND-72HD575` | Panou fotovoltaic 575W Tongwei TWMND-72HD575, N-type, Bifacial | cod-partial |
 | `SUN-8K-SG05LP1-EU` | SUN-8K-SG05LP1-EU | `SUN-8K-SG05 LP1-EU-AM2` | Invertor hibrid monofazat DEYE SUN-8K-SG05 LP1-EU-AM2, 8kW | cod-partial |
@@ -390,11 +343,14 @@ Potrivite fără cod de model exact. O potrivire greșită pune fotografia altui
 | `DEYE-SE-F12-C` | Deye SE-F12 C | `SE-F12 C` | Acumulator Deye SE-F12 C, 11.8 kWh, LiFePo4 | cod-partial |
 | `DEYE-SE-F16-C` | Deye SE-F16 C | `SE-F16 C` | Acumulator Deye SE-F16 C, 16 kWh, LiFePo4 | cod-partial |
 | `DEYE-SE-F16-MAX-H-CU-INCALZIRE-IP65` | Deye SE-F16 MAX-H, cu încălzire, IP65 | `SE-F16 Max` | Acumulator Deye SE-F16 Max, 16 kWh, LiFePo4, cu incalzire | cod-partial |
-| `AE-FS2.0-2H2` | Deye AE-FS2.0-2H2 – Sistem Micro ESS All-in-One | `WS-PCS1125-2-A` | PCS industrial Deye WS-PCS1125-2-A, 1125kW (9×125kW), 400V, IP54 – pentru sisteme BESS / microgrid | denumire |
 | `Smart-TX01` | DEYE SUN Smart-TX01 Lora | `SUN-Smart-TX01` | Transmițător DEYE SUN Smart-TX01 – LoRa pentru monitorizare energie | cod-partial |
 | `SUN-EVSE22K01-EU-AC` | DEYE SUN-EVSE22K01-EU-AC | `SUN-EVSE22K01` | Încărcător auto electric DEYE SUN-EVSE22K01 – 22 kW, trifazat | cod-partial |
 | `SDM230` | EASTRON SDM230, monofazat | `SDM230-Modbus-MID V2` | Smart Meter Eastron SDM230-Modbus-MID V2, Monofazat | cod-partial |
 | `SDM630MCT` | EASTRON SDM630MCT, trifazat cu citire prin CT-uri (nu include CT-uri) | `SDM630MCT-MOD-MID` | Smart Meter Eastron SDM630MCT-MOD-MID, Trifazat | cod-partial |
+| `PYTES-V5-5-12KWH` | PYTES V5, 5.12kWh | `V5` | Acumulator Pytes V5, 5.12kWh low-voltage, cu incalzire | model-jeton |
+| `PYTES-V5A-5-12-KWH` | PYTES V5a, 5.12 kWh | `V5a` | Acumulator Pytes Litiu LifePo4 V5a, 48V 5.12kWh, cu incalzire | model-jeton |
+| `PYTES-V12-11-776KWH-CU-INCALZIRE-IP66` | PYTES V12 - 11.776kWh, cu încălzire, IP66 | `V12` | Acumulator Pytes V12, 11.776 KWH, 51.2V, LifePo4, cu incalzire | model-jeton |
+| `PYTES-V15-14-34KWH` | PYTES V15, 14.34kWh | `V15` | Acumulator Pytes V15, 48V, 14.34 KWH, LifePo4  | model-jeton |
 | `DYNESS-POWERBOX-G2-10-24KWH` | DYNESS POWERBOX G2, 10.24kWh | `Powerbox G2` | Acumulator Dyness Powerbox G2, 10.24 kWh, 51.2V, LiFePO4 | cod-partial |
 | `DYNESS-POWERBRICK-PLUS-16-07KWH-CU-INCALZIRE-IP65` | DYNESS PowerBrick Plus - 16.07kWh, cu încălzire, IP65 | `PowerBrick Plus` | Acumulator Dyness PowerBrick Plus 16.07 kWh, 51.2V, Cu incalzire, LiFePO4 | denumire |
 | `SPF6000` | GROWATT SPF6000 ES PLUS | `SPF6000 ES PLUS` | Invertor Growatt SPF6000 ES PLUS Monofazat Off Grid, 6KW + Growatt Shine WiFi-X Dongle WLan | cod-partial |
@@ -405,15 +361,27 @@ Potrivite fără cod de model exact. O potrivire greșită pune fotografia altui
 | `GROWATT-WIT-15K-X-HU` | GROWATT WIT 15K-X-HU | `WIT 15K-X-HU` | Invertor Growatt 15KW WIT 15K-X-HU,hibrid, trifazat | cod-partial |
 | `PB-068.1` | Sistem de montaj panouri fotovoltaice PB-068.1, montare acoperis plat | `XFS_PB068.1` | Sistem de montaj panouri fotovoltaice PB-068.1, montare acoperis plat | cod-partial |
 | `PB-062.1` | Sistem de montaj panouri fotovoltaice PB-062.1, montare acoperis plat | `XFS_PB062.1` | Sistem de montaj panouri fotovoltaice PB-062.1, montare acoperis plat | cod-partial |
+| `PB-098` | Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat | `XFS_PB098` | Sistem de montaj panouri fotovoltaice PB-098, montare acoperis plat | denumire-tare |
+| `PB-096` | Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat | `XFS_PB096` | Sistem de montaj panouri fotovoltaice PB-096, montare acoperis plat | denumire-tare |
 | `PB-092.2` | Sistem de montaj panouri fotovoltaice click-in, PB-092.2 1 SET L2818 25DGE Orizontal | `XFS_PB092.2` | Sistem de montaj panouri fotovoltaice click-in, PB-092.2 1 SET L2818 25DGE Orizontal | cod-partial |
-| `PB-094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal | `XFS_PB094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal | denumire |
-| `L2200` | Paravant L2200 (2200x304x0,5) | `XPF_PB068.5.004A` | Paravant L2200 (2200x304x0,5) | denumire |
-| `L2350` | Paravant L2350 (2350x304x0,5) | `XPF_PB068.5.005A` | Paravant L2350 (2350x304x0,5) | denumire |
-| `SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc | `sis_u_mijloc` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc | denumire |
-| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-290MM` | Șină de montare trapezoidală ISO 290mm | `Model` | Șină de montare trapezoidală ISO 290mm | denumire |
-| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-540MM` | Șină de montare trapezoidală ISO 540mm | `sina_ISO_540` | Șină de montare trapezoidală ISO 540mm | denumire |
-| `SINA-PROFIL-ALUMINIU-MINI-RAIL-380MM` | Șină profil aluminiu Mini Rail 380mm | `mini_rail_380-1` | Șină profil aluminiu Mini Rail 380mm | denumire |
-| `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA` | Șină aluminiu ISO 4300 mm – trapezoidală | `Model` | Șină aluminiu ISO 4300 mm - trapezoidală | denumire |
-| `CARLIG-MONTAJ-TIGLA-AJUSTABIL-3-POZITII-ALUMINIU-IOS` | Cârlig montaj țiglă ajustabil, 3 poziții, aluminiu IOS | `XPF_UR007_1KPM` | Cârlig montaj țiglă ajustabil, 3 poziții | denumire |
-| `2004179` | Dome Paravânt Scurt 1448 - 1779 mm - 2004179 | `2003249` | Dome Paravant K2 Scurt  1448 - 1779 mm | denumire |
+| `PB-094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal | `XFS_PB094` | Sistem de montaj panouri fotovoltaice click-in, PB-094 1 SET L2818 15DGE Orizontal | denumire-tare |
+| `L2200` | Paravant L2200 (2200x304x0,5) | `XPF_PB068.5.004A` | Paravant L2200 (2200x304x0,5) | denumire-tare |
+| `L2350` | Paravant L2350 (2350x304x0,5) | `XPF_PB068.5.005A` | Paravant L2350 (2350x304x0,5) | denumire-tare |
+| `SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc | `sis_u_mijloc` | Sistem de montaj pentru acoperiș metalic cu suport U și clemă mijloc | denumire-tare |
+| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-290MM` | Șină de montare trapezoidală ISO 290mm | `Model` | Șină de montare trapezoidală ISO 290mm | denumire-tare |
+| `SINA-DE-MONTARE-TRAPEZOIDALA-ISO-540MM` | Șină de montare trapezoidală ISO 540mm | `sina_ISO_540` | Șină de montare trapezoidală ISO 540mm | denumire-tare |
+| `SINA-PROFIL-ALUMINIU-MINI-RAIL-380MM` | Șină profil aluminiu Mini Rail 380mm | `mini_rail_380-1` | Șină profil aluminiu Mini Rail 380mm | denumire-tare |
+| `SINA-ALUMINIU-ISO-4300-MM-TRAPEZOIDALA` | Șină aluminiu ISO 4300 mm – trapezoidală | `Model` | Șină aluminiu ISO 4300 mm - trapezoidală | denumire-tare |
+| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-2-4-M` | Șină aluminiu ISO cu prindere laterală la 2,4 m | `sina_ISO_2.4` | Șină aluminiu ISO cu prindere laterală la 2,4 m | denumire-tare |
+| `SINA-ALUMINIU-ISO-CU-PRINDERE-LATERALA-LA-3-5-M` | Șină aluminiu ISO cu prindere laterală la 3.5 m | `sina_ISO_3.5` | Șină aluminiu ISO cu prindere laterală la 3.5 m | denumire-tare |
+| `SUPORT-U-PENTRU-ACOPERIS-METALIC` | Suport U pentru acoperiș metalic | `ER-S-U/120` | Suport U pentru acoperiș metalic | denumire-tare |
+| `SURUB-ISO-CU-DUBLU-FILET-HANGERBOARD-PLACA-MONTAJ` | Surub ISO cu dublu filet Hangerboard + placa montaj | `ISO_hangerboard` | Surub ISO cu dublu filet Hangerboard + placa montaj | denumire-tare |
+| `CONECTOR-PENTRU-SINA` | Conector pentru șină | `Y_L0001` | Conector lateral pentru sina de acoperis | denumire-tare |
+| `CLEMA-DE-CAPAT` | Clemă de capăt | `XFS_K002.15-1` | Clemă de prindere ISO capăt | denumire-tare |
+| `CLEMA-DE-MIJLOC` | Clemă de mijloc | `clema_mijloc_CE-1` | Clemă de prindere ISO mijloc | denumire-tare |
+| `2004179` | Dome Paravânt Scurt 1448 - 1779 mm - 2004179 | `2003249` | Dome Paravant K2 Scurt  1448 - 1779 mm | denumire-tare |
+| `CABLU-SOLAR-6MM-TAMBUR-500M-ROSU` | Cablu solar 6mm² Tambur 500m – Rosu | `H1ZR0106H500` | Cablu solar 6mm² Tambur 500m - Rosu | denumire-tare |
+| `CABLU-SOLAR-6MM-TAMBUR-500M-NEGRU` | Cablu solar 6mm² Tambur 500m – Negru | `H1ZB0106H500` | Cablu solar 6mm² Tambur 500m - Negru | denumire-tare |
+| `SET-CONECTORI-MC4-EVO2-MAMA` | Set Conectori MC4 EVO2 - mamă | `PV-KBT4-EVO 2A/PV-KST4-EVO 2A` | Set Conectori MC4 EVO2 pentru cablu solar 4/6 mm² mama si tata | denumire |
+| `SET-CONECTORI-MC4-EVO2-TATA` | Set Conectori MC4 EVO2 - tată | `PV-KBT4-EVO 2A/PV-KST4-EVO 2A` | Set Conectori MC4 EVO2 pentru cablu solar 4/6 mm² mama si tata | denumire |
 

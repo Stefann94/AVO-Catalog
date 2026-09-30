@@ -3,3 +3,8 @@ date/opencart-*.json
 # Arhiva de imagini de pe solarone.ro, 105 MB: se descarcă din găzduire,
 # nu se ține în git. Vezi din-xlsx.mjs pentru de unde vin.
 imagini/
+
+# Cache de la solarone.ro: harta site-ului și prețurile citite din ea.
+# Se refac dintr-o cerere; ținute în git ar îmbătrâni tăcut.
+date/solarone-harta.xml
+date/preturi-solarone-*.json

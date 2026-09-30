@@ -158,8 +158,14 @@ if (opt.labeluri) {
    rezultat. Un produs potrivit după denumire nu e același lucru cu unul
    potrivit după cod de model, iar raportul trebuie să arate diferența — o
    potrivire greșită pune fotografia altui produs lângă prețul ăstuia. */
-const cheie = (s) => (s ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-const cuvinte = (s) => (s ?? "").toUpperCase().replace(/[^A-Z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3);
+/* Diacriticele se scot pe ambele părți.
+   Catalogul scrie „Sina aluminiu", OpenCart scrie „Șină aluminiu". Fără
+   normalizare, „Ș" și „ă" cad la filtrul de caractere și cele două cuvinte
+   devin „SIN" și „SIN" — sau, mai rău, se scurtează diferit. */
+const cheie = (s) =>
+  (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const cuvinte = (s) =>
+  (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3);
 
 const dupaCod = new Map();
 for (const p of oc.produse) {
@@ -169,6 +175,24 @@ for (const p of oc.produse) {
       if (!dupaCod.has(k)) dupaCod.set(k, []);
       dupaCod.get(k).push(p);
     }
+  }
+}
+
+/* Al doilea index: modelul OpenCart ca JETON, oricât de scurt.
+   AICI A FOST DEFECTUL CARE A COSTAT CEL MAI MULT. Indexul de mai sus cere
+   modele de peste trei caractere, ca să nu se potrivească orice. Dar
+   acumulatorii Pytes au modelele „V5a", „V12", „V15" — exact trei sau mai
+   puțin. Rezultatul: PYTES V15 apărea ca „produs fără corespondent", deși
+   stătea în export cu 9.785 lei, iar eu mă pregăteam să-i caut prețul pe
+   solarone.ro. Un cod scurt nu e un cod mai puțin adevărat.
+   Aici modelul scurt e admis, dar potrivirea trece doar dacă se confirmă și
+   din denumire — vezi `potriveste`. */
+const dupaJeton = new Map();
+for (const p of oc.produse) {
+  const k = cheie(p.model);
+  if (k.length >= 2) {
+    if (!dupaJeton.has(k)) dupaJeton.set(k, []);
+    dupaJeton.get(k).push(p);
   }
 }
 
@@ -182,6 +206,76 @@ function potriveste(r) {
   if (k.length > 5) {
     const candidati = [...dupaCod.entries()].filter(([kk]) => kk.length > 5 && (kk.includes(k) || k.includes(kk)));
     if (candidati.length === 1) return [candidati[0][1], "cod-partial"];
+  }
+
+  // Modelul OpenCart, căutat ca jeton în SKU-ul și denumirea din catalog.
+  //
+  // „PYTES-V15-14-34KWH" se desface în [pytes, v15, 14, 34kwh]; modelul
+  // OpenCart „V15" e printre ele. Un jeton scurt singur n-ar dovedi nimic —
+  // „V5" s-ar potrivi la orice — deci se cere ȘI ca denumirile să se
+  // suprapună pe jumătate. Câștigă modelul cel mai lung dintre cele care trec.
+  const jetoane = new Set(
+    [...(r.SKU ?? "").split(/[^A-Za-z0-9.]+/), ...(r.Name ?? "").split(/[^A-Za-z0-9.]+/)]
+      .map(cheie)
+      .filter((x) => x.length >= 2),
+  );
+  const cuv = cuvinte(r.Name);
+  if (jetoane.size && cuv.length) {
+    const gasite = [];
+    for (const [k, lista] of dupaJeton) {
+      if (!jetoane.has(k)) continue;
+      for (const p of lista) {
+        const n = cuvinte(p.name);
+        const comune = cuv.filter((x) => n.includes(x)).length;
+        const acoperire = comune / cuv.length;
+        if (acoperire >= 0.5) gasite.push([k.length, acoperire, p]);
+      }
+    }
+    if (gasite.length) {
+      gasite.sort((a, b) => b[0] - a[0] || b[1] - a[1] || (b[2].status === 1) - (a[2].status === 1));
+      return [[gasite[0][2]], "model-jeton"];
+    }
+  }
+
+  // Denumirea aproape identică.
+  //
+  // Jumătate din SKU-urile catalogului sunt inventate de parser din denumire,
+  // fiindcă produsul n-are cod tipărit în PDF. Pentru ele niciun index pe cod
+  // n-are ce potrivi — dar DENUMIREA e aceeași în ambele surse, adesea literă
+  // cu literă: „Sistem de montaj panouri fotovoltaice PB-098, montare acoperis
+  // plat" apare la fel în catalog și în OpenCart, unde modelul e „XFS_PB098".
+  //
+  // Am ratat asta la prima variantă și era să caut prețurile pe solarone.ro
+  // pentru produse care stăteau în export. PB-098: 310 lei, acolo, tot timpul.
+  //
+  // Acoperirea se cere în AMBELE sensuri. Doar dinspre catalog, „Clemă de
+  // capăt" s-ar potrivi la „Clemă de capăt universală Single Rail pentru
+  // panouri 35mm" și la încă cinci; cerând ca și denumirea OpenCart să fie
+  // acoperită pe jumătate, rămâne cea scurtă, adică cea bună.
+  const jetNume = (s) =>
+    new Set(
+      (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+        .split(/[^a-z0-9.]+/).filter((x) => x.length >= 2),
+    );
+  const A = jetNume(r.Name);
+  if (A.size >= 2) {
+    const scoruri = [];
+    for (const p of oc.produse) {
+      const B = jetNume(p.name);
+      if (!B.size) continue;
+      let comune = 0;
+      for (const x of A) if (B.has(x)) comune++;
+      const acopA = comune / A.size;
+      const acopB = comune / B.size;
+      if (acopA >= 0.8 && acopB >= 0.5) scoruri.push([acopA + acopB, acopA, p]);
+    }
+    if (scoruri.length) {
+      scoruri.sort((a, b) => b[0] - a[0] || (b[2].status === 1) - (a[2].status === 1));
+      const capi = scoruri.filter(([s]) => Math.abs(s - scoruri[0][0]) < 1e-9);
+      const idUnic = new Set(capi.map(([, , p]) => p.product_id)).size === 1;
+      if (capi.length === 1 || idUnic) return [[scoruri[0][2]], "denumire-tare"];
+      return [capi.map(([, , p]) => p), "denumire-ambigua"];
+    }
   }
 
   // Potrivirea după denumire se punctează, nu se filtrează.
@@ -408,7 +502,7 @@ if (ambigue.length) {
   }
 }
 
-const deVerificat = produse.filter((p) => p.potrivire === "denumire" || p.potrivire === "cod-partial");
+const deVerificat = produse.filter((p) => p.potrivire === "denumire" || p.potrivire === "cod-partial" || p.potrivire === "model-jeton" || p.potrivire === "denumire-tare");
 if (deVerificat.length) {
   md += `## De verificat cu ochiul — ${deVerificat.length}\n\n`;
   md += `Potrivite fără cod de model exact. O potrivire greșită pune fotografia altui produs lângă prețul ăstuia.\n\n`;
@@ -430,6 +524,8 @@ Scris:
   FARA corespondent ............ ${fara.length}
   potrivire dupa cod ........... ${produse.filter((p) => p.potrivire === "cod").length}
   potrivire dupa cod partial ... ${produse.filter((p) => p.potrivire === "cod-partial").length}
+  potrivire model ca jeton ..... ${produse.filter((p) => p.potrivire === "model-jeton").length}
+  potrivire denumire tare ...... ${produse.filter((p) => p.potrivire === "denumire-tare").length}
   potrivire dupa denumire ...... ${produse.filter((p) => p.potrivire === "denumire").length}
   potrivire AMBIGUA (nelegate) . ${ambigue.length}
   acelasi produs legat de 2 ori  ${suprapuse.length}
