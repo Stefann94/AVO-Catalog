@@ -218,8 +218,19 @@ for (const p of faraPret) {
       const confirmat = prinCod ? "cod" : prinNume ? "nume" : null;
       incercari.push({ url, model, nume, pret, confirmat, potriviteInNume, dinCuvinte: cuvinteCatalog.length });
 
+      // Fotografiile se iau în ACEEAȘI trecere. Sunt în același bloc de date
+      // structurate, deci nu costă nicio cerere în plus — iar produsele care
+      // n-au preț sunt, aproape fără excepție, aceleași care n-au nici poză.
+      // A doua parcurgere a site-ului pentru ele ar fi fost cereri degeaba.
+      const poze = (() => {
+        const im = produs?.image;
+        if (!im) return [];
+        const lista = (Array.isArray(im) ? im : [im]).map((x) => (typeof x === "string" ? x : x?.url ?? x?.contentUrl)).filter(Boolean);
+        return [...new Set(lista)];
+      })();
+
       if (confirmat && pret) {
-        stare.gasite[p.sku] = { url, model, nume, pretRon: pret, confirmat, luatLa: new Date().toISOString() };
+        stare.gasite[p.sku] = { url, model, nume, pretRon: pret, poze, confirmat, luatLa: new Date().toISOString() };
         console.error(`  ${p.sku.padEnd(32).slice(0, 32)} ${String(pret).padStart(10)} lei  [${confirmat}]  ${url.replace("https://www.solarone.ro/", "")}`);
         rezolvat = true;
         await asteapta(PAUZA);

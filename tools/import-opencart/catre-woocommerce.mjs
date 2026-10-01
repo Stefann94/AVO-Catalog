@@ -63,7 +63,7 @@
  * ═════════════════════════════════════════════════════════════════════════
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -97,10 +97,67 @@ const CAP = [
   "Meta: _pret_volum", "Meta: _prag_volum", "Meta: _unitate_pret", "Meta: _moneda",
   "Meta: _pret_container", "Meta: _capacitate_kwh",
   "Meta: _pret_b2b_eur", "Meta: _pret_volum_b2b_eur",
-  "Meta: _sursa_catalog", "Meta: _perioada_eticheta", "Meta: _valabil_de", "Meta: _valabil_pana",
+  "Meta: _sursa_pret", "Meta: _sursa_catalog", "Meta: _perioada_eticheta", "Meta: _valabil_de", "Meta: _valabil_pana",
 ];
 for (let i = 1; i <= 6; i++) {
   CAP.push(`Attribute ${i} name`, `Attribute ${i} value(s)`, `Attribute ${i} visible`, `Attribute ${i} global`);
+}
+
+/* ─── Prețurile citite de pe solarone.ro, trecute prin două site ─────────
+   Pentru produsele care nu-s în exportul OpenCart, prețul s-a citit de pe
+   site-ul public. Potrivirea de acolo e aproximativă, deci rezultatul NU se
+   ia pe încredere. Două verificări, amândouă ieftine, amândouă necesare:
+
+   RAPORTUL FAȚĂ DE CATALOG. Prețul în lei împărțit la cel în euro trebuie să
+   cadă între 4,8 și 7,0 — curs plauzibil plus adaos. „Deye BOS-B PRO-A3,
+   16,08 kWh" (1.600 €) a primit 133.067 lei, de la pagina unui sistem de
+   161 kWh: raport 83. Cele patru pachete de stocare, de 13.880 până la
+   24.000 €, au primit toate același 35.746 — pagina unui pachet de 40 kWh.
+
+   O PAGINĂ, UN PRODUS. „Deye BOS-G PRO" și „Deye SE-F5 PRO" au nimerit
+   amândouă pe pagina lui SE-F5 PRO, iar raportul trece la amândouă fiindcă
+   prețurile lor de catalog sunt apropiate. Două poziții din catalog nu pot fi
+   același produs în magazin; ambele se resping.
+
+   Din 16 preluate rămân 8. Restul intră „la cerere" — vizibil în raport. */
+const RAPORT_MIN = 4.8;
+const RAPORT_MAX = 7.0;
+const caleSolarone = join(aici, "date", `preturi-solarone-${LUNA}.json`);
+const pretSolarone = new Map();
+const respinse = [];
+if (existsSync(caleSolarone)) {
+  const st = JSON.parse(readFileSync(caleSolarone, "utf8"));
+  // La conflict pe aceeași pagină, codul bate denumirea.
+  // „Deye SE-F5 PRO" a fost confirmat prin cod — codul din pagină se regăsea
+  // în SKU. „Deye BOS-G PRO" a nimerit pe aceeași pagină doar prin asemănarea
+  // denumirii. Respinse amândouă, am fi pierdut un preț corect ca să evităm
+  // unul greșit. Dovada tare câștigă; cealaltă se respinge.
+  const dupaUrl = new Map();
+  for (const [sku, g] of Object.entries(st.gasite ?? {})) {
+    if (!dupaUrl.has(g.url)) dupaUrl.set(g.url, []);
+    dupaUrl.get(g.url).push(sku);
+  }
+  for (const [url, lista] of dupaUrl) {
+    if (lista.length < 2) continue;
+    const prinCod = lista.filter((s) => st.gasite[s].confirmat === "cod");
+    if (prinCod.length === 1) dupaUrl.set(url, prinCod);
+  }
+  const catalogDupaSku = new Map(u.produse.map((p) => [p.sku, p]));
+  for (const [sku, g] of Object.entries(st.gasite ?? {})) {
+    const eur = catalogDupaSku.get(sku)?.pret.catalogEur;
+    const raport = eur ? g.pretRon / eur : null;
+    const peUrl = dupaUrl.get(g.url);
+    const unic = peUrl.length === 1 && peUrl[0] === sku;
+    const motiv = !eur
+      ? "produsul n-are preț în catalog, raportul nu se poate verifica"
+      : raport < RAPORT_MIN || raport > RAPORT_MAX
+        ? `raport ${raport.toFixed(2)} față de catalog — în afara intervalului ${RAPORT_MIN}–${RAPORT_MAX}`
+        : !unic
+          ? `aceeași pagină ca ${Object.keys(st.gasite).filter((x) => x !== sku && st.gasite[x].url === g.url).join(", ")}, confirmare mai slabă`
+          : null;
+    if (motiv) respinse.push({ sku, ...g, raport, motiv });
+    else pretSolarone.set(sku, g);
+  }
 }
 
 /* ─── Produsele din catalog ───────────────────────────────────────────── */
@@ -110,7 +167,9 @@ const faraDescriere = [];
 
 for (const p of u.produse) {
   const o = p.opencart;
-  const pretRon = o?.publicRon ?? null;
+  const deLaSolarone = pretSolarone.get(p.sku);
+  const pretRon = o?.publicRon ?? deLaSolarone?.pretRon ?? null;
+  const sursaPret = o?.publicRon ? "OpenCart 25.09.2026" : deLaSolarone ? `solarone.ro ${deLaSolarone.luatLa.slice(0, 10)}` : "";
 
   // Reducerea la volum, luată ca procent din catalog și aplicată prețului în lei.
   let volumRon = "";
@@ -146,6 +205,7 @@ for (const p of u.produse) {
     "Meta: _capacitate_kwh": p.capacitateKwh ?? "",
     "Meta: _pret_b2b_eur": p.pret.catalogEur ?? "",
     "Meta: _pret_volum_b2b_eur": p.pret.volumEur ?? "",
+    "Meta: _sursa_pret": sursaPret,
     "Meta: _sursa_catalog": `Catalog Solar One ${lunaNr}.${an}`,
     "Meta: _perioada_eticheta": eticheta,
     "Meta: _valabil_de": valabilDe,
@@ -199,6 +259,16 @@ md += `| Fără descriere | ${randuri.length - cuDescriere} |\n`;
 md += `| Cu preț la volum | ${cuVolum} |\n`;
 md += `| Cu preț de partener (B2B, €) | ${cuB2b} |\n`;
 md += `| Cu fotografie | 0 — se leagă separat |\n\n`;
+
+if (respinse.length) {
+  md += `## Prețuri citite de pe solarone.ro și RESPINSE — ${respinse.length}\n\n`;
+  md += `Potrivirea pe site-ul public e aproximativă, deci rezultatul trece prin două verificări: raportul față de prețul din catalog (între ${RAPORT_MIN} și ${RAPORT_MAX}) și regula „o pagină, un produs". Astea n-au trecut, deci produsele rămân „la cerere".\n\n`;
+  md += `| SKU | Preț citit | Raport | Motivul respingerii |\n|---|---:|---:|---|\n`;
+  for (const r of respinse) {
+    md += `| \`${r.sku}\` | ${r.pretRon.toFixed(2)} | ${r.raport ? r.raport.toFixed(2) : "—"} | ${r.motiv} |\n`;
+  }
+  md += `\n`;
+}
 
 md += `## Produse fără preț — ${faraPret.length}\n\n`;
 md += `Intră pe site cu „preț la cerere". Prețul de partener din catalog e salvat în \`_pret_b2b_eur\`, dar nu se afișează.\n\n`;
