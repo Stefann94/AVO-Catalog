@@ -226,6 +226,21 @@ for (const p of u.produse) {
 const caleCsv = join(aici, "date", `woocommerce-${LUNA}.csv`);
 writeFileSync(caleCsv, [CAP.map(ghil).join(","), ...randuri.map((r) => randCsv(CAP, r))].join("\n") + "\n", "utf8");
 
+/* ─── Produsele care nu există încă în magazin ─────────────────────────
+   Importatorul WooCommerce nu poate face și una și alta într-o trecere.
+   Scrie negru pe alb în ecranul lui: „Existing products that match by ID or
+   SKU will be updated. Products that do not exist will be skipped."
+
+   Deci cu bifa „Update existing products" pusă, cele 18 produse noi ar fi
+   sărite în tăcere; fără ea, cele 141 existente ar da fiecare o eroare de
+   SKU duplicat — 141 de rânduri roșii în care s-ar pierde o eroare adevărată.
+
+   Două fișiere, două treceri, fiecare cu treaba ei. */
+const skuInMagazin = new Set(inMagazin.map((w) => w.sku));
+const noi = randuri.filter((r) => !skuInMagazin.has(r.SKU));
+const caleNoi = join(aici, "date", `woocommerce-${LUNA}-noi.csv`);
+writeFileSync(caleNoi, [CAP.map(ghil).join(","), ...noi.map((r) => randCsv(CAP, r))].join("\n") + "\n", "utf8");
+
 /* ─── Cele care ies din catalog ───────────────────────────────────────── */
 const inCatalog = new Set(u.produse.map((p) => p.sku));
 const deCiornit = inMagazin.filter((w) => !inCatalog.has(w.sku));
@@ -297,5 +312,6 @@ Scris:
   cu descriere .............. ${cuDescriere}
   cu pret la volum .......... ${cuVolum}
   cu pret de partener (EUR) . ${cuB2b}
+  de creat (fisier separat) . ${noi.length}
   de trecut pe ciorna ....... ${deCiornit.length}
 `);
