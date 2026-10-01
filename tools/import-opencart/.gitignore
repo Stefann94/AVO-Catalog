@@ -8,3 +8,6 @@ imagini/
 # Se refac dintr-o cerere; ținute în git ar îmbătrâni tăcut.
 date/solarone-harta.xml
 date/preturi-solarone-*.json
+
+# Inventarul magazinului, luat prin API. Se reface din doua cereri.
+date/woocommerce-acum.json
