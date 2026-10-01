@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AVO — Documente și date de catalog
  * Description: Face editabile din WordPress lucrurile pe care până acum le scria doar importul CSV. (1) O casetă pe fiecare produs cu prețul la volum, pragul, unitatea, capacitatea. (2) O listă de documente — fișe tehnice, manuale, declarații — cu alegere din biblioteca media. (3) Un buton care aduce o dată cele 877 de documente din descrierile importate, le pune în bibliotecă și curăță descrierile de CSS și de marca furnizorului. Se găsește la Produse → Documente AVO.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Avo Grup Invest
  * Requires PHP: 7.4
  *
@@ -34,7 +34,7 @@ if (!defined('ABSPATH')) {
 if (defined('AVO_DOCUMENTE_VERSIUNE')) {
     return;
 }
-define('AVO_DOCUMENTE_VERSIUNE', '1.0.0');
+define('AVO_DOCUMENTE_VERSIUNE', '1.0.1');
 
 /** Cheia sub care stau documentele pe produs. */
 const AVO_META_DOCUMENTE = '_avo_documente';
@@ -510,6 +510,21 @@ function avo_curata_descrierea($html) {
 
     $h = preg_replace('#<style\b[^>]*>.*?</style>#is', '', $h);
     $h = preg_replace('#<script\b[^>]*>.*?</script>#is', '', $h);
+
+    // CSS rămas FĂRĂ eticheta lui.
+    //
+    // Excel nu ține mai mult de 32.767 de caractere într-o celulă. Trei
+    // descrieri din export sunt tăiate fix la limită, în mijlocul foii de
+    // stil — iar tăietura a înghițit și `<style>`-ul de deschidere. Ce
+    // rămâne e CSS gol-goluț, uneori împachetat de WordPress într-un `<p>`.
+    // Regula de mai sus nu-l vede, fiindcă nu mai există etichetă.
+    //
+    // Se taie de la prima regulă CSS până la capăt: tot ce urmează acolo e
+    // foaie de stil trunchiată, iar conținutul produsului s-a terminat deja
+    // cu `</section>`.
+    if (preg_match('#(<p>\s*)?\.so-[a-z-]+\s*\{#i', $h, $m, PREG_OFFSET_CAPTURE)) {
+        $h = substr($h, 0, $m[0][1]);
+    }
     $h = preg_replace('#<a[^>]*class="[^"]*so-badge2[^"]*"[^>]*>.*?</a>#is', '', $h);
     $h = preg_replace('#<p[^>]*class="[^"]*so-eyebrow[^"]*"[^>]*>.*?</p>#is', '', $h);
 
