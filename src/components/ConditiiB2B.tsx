@@ -195,7 +195,7 @@ export default function ConditiiB2B() {
               </span>
               <span aria-hidden className="h-4 w-px bg-white/20" />
               <span className="text-xs sm:text-[13px] font-semibold text-white whitespace-nowrap">
-                EUR, fără TVA
+                lei, TVA inclus
               </span>
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function ConditiiB2B() {
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
             Reducerea de statut și prețul la volum sunt condiții distincte; cum
             se aplică pe o comandă anume se confirmă în ofertă. Prețurile sunt în
-            EUR, fără TVA. Taxa verde DEEE nu este inclusă (0,7 RON / kg).
+            lei, cu TVA inclus. Taxa verde DEEE nu este inclusă (0,7 lei / kg).
             Disponibilitatea se confirmă la plasarea comenzii.
           </p>
 

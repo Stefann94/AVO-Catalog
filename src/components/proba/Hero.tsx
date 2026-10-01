@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Produs } from "@/lib/produs";
 import { BRANDURI, gasesteBrand } from "@/lib/branduri";
+import { bani, incarcaMoneda, type Moneda } from "@/lib/moneda";
 
 /* ══════════════════════════════════════════════════════════════════════════
    HERO — carusel + trei casete + cinci reclame de categorie
@@ -40,9 +41,6 @@ const IN_HERO = [
   { slug: "sisteme-de-montaj", tema: "pb-d-montaj", inchis: false },
   { slug: "statii-de-incarcare-auto", tema: "pb-d-incarcare", inchis: true },
 ] as const;
-
-const euro = (n: number) =>
-  n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 /** Numele mărcii → slug-ul siglei din public/branduri/color/. */
 
@@ -94,7 +92,7 @@ function strange(produse: Produs[], slug: string): Strans | null {
   };
 }
 
-export default function Hero({
+export default async function Hero({
   produse,
   lichidare,
 }: {
@@ -102,6 +100,7 @@ export default function Hero({
   /** Câte produse sunt în lichidare. Vine din bara de filtre. */
   lichidare: number;
 }) {
+  const m = await incarcaMoneda();
   const cat = new Map<string, Strans>();
   for (const { slug } of IN_HERO) {
     const s = strange(produse, slug);
@@ -124,7 +123,7 @@ export default function Hero({
      alese dintre cele cu fotografie. */
   const duo = [inv?.poza, sto?.poza].filter((x): x is NonNullable<typeof x> => Boolean(x));
 
-  const diapozitive = construieste({ inv, pan, sto, mon });
+  const diapozitive = construieste({ inv, pan, sto, mon }, m);
 
   return (
     <section className="pb-promo">
@@ -270,8 +269,8 @@ export default function Hero({
                   <span className="pb-caseta-k">Preț la volum</span>
                   <b>Prețul tău de la {laVolum.prag}</b>
                   <span className="pb-pret">
-                    <s>{euro(laVolum.pret!)} €</s>
-                    <strong>{euro(laVolum.pretVolum!)} €</strong>
+                    <s>{bani(laVolum.pret!, m)}</s>
+                    <strong>{bani(laVolum.pretVolum!, m)}</strong>
                   </span>
                 </span>
                 <span className="pb-caseta-r">
@@ -335,7 +334,7 @@ export default function Hero({
 
                 {c.minPret ? (
                   <span className="pb-dala-pret">
-                    de la <b>{euro(c.minPret)} €</b>
+                    de la <b>{bani(c.minPret, m)}</b>
                   </span>
                 ) : null}
               </Link>
@@ -372,7 +371,7 @@ function construieste(c: {
   pan?: Strans;
   sto?: Strans;
   mon?: Strans;
-}): Diapo[] {
+}, m: Moneda): Diapo[] {
   const d: Diapo[] = [];
 
   if (c.inv) {
@@ -383,7 +382,7 @@ function construieste(c: {
       text: `${c.inv.cate} de modele în catalogul lunii, hibride, on-grid și off-grid.`,
       buton: "Vezi invertoarele",
       adresa: "/catalog/invertoare",
-      nota: c.inv.minPret ? `De la ${euro(c.inv.minPret)} € bucata, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.inv.minPret ? `De la ${bani(c.inv.minPret, m)} bucata, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.inv.poza,
     });
   }
@@ -397,7 +396,7 @@ function construieste(c: {
     text: "Trimite-ne ce echipamente îți trebuie și primești oferta pe catalogul lunii.",
     buton: "Cere ofertă",
     adresa: "/cerere-oferta",
-    nota: "Prețurile din catalog sunt în euro, fără TVA.",
+    nota: "Prețurile din catalog sunt în lei, cu TVA inclus.",
     poza: c.sto?.poza,
     chihlimbar: true,
   });
@@ -410,7 +409,7 @@ function construieste(c: {
       text: `${c.sto.cate} de produse de stocare: acumulatori, sisteme complete și accesorii.`,
       buton: "Vezi stocarea",
       adresa: "/catalog/stocare-energie",
-      nota: c.sto.minPret ? `De la ${euro(c.sto.minPret)} €, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.sto.minPret ? `De la ${bani(c.sto.minPret, m)}, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.sto.poza,
     });
   }
@@ -423,7 +422,7 @@ function construieste(c: {
       text: `${c.pan.cate} de modele în catalog, cu preț separat peste pragul de cantitate.`,
       buton: "Vezi panourile",
       adresa: "/catalog/panouri-fotovoltaice",
-      nota: c.pan.minPret ? `De la ${euro(c.pan.minPret)} € bucata, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.pan.minPret ? `De la ${bani(c.pan.minPret, m)} bucata, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.pan.poza,
     });
   }
@@ -436,7 +435,7 @@ function construieste(c: {
       text: `${c.mon.cate} de repere: țiglă, tablă, acoperiș plat, șine, cleme și accesorii.`,
       buton: "Vezi montajul",
       adresa: "/catalog/sisteme-de-montaj",
-      nota: c.mon.minPret ? `De la ${euro(c.mon.minPret)} €, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.mon.minPret ? `De la ${bani(c.mon.minPret, m)}, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.mon.poza,
     });
   }

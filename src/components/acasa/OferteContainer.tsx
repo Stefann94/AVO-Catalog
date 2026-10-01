@@ -80,7 +80,7 @@ export default function OferteContainer({ produse = [] }: { produse?: Produs[] }
       }
       nota={
         <>
-          Prețurile de pe carduri sunt cele de catalog, în EUR, fără TVA, pe
+          Prețurile de pe carduri sunt cele de catalog, în lei, cu TVA inclus, pe
           bucată. Cantitatea dintr-un container, prețul și termenul se
           stabilesc prin ofertă.
         </>

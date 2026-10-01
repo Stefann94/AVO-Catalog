@@ -51,7 +51,7 @@ const PASI: Pas[] = [
   {
     titlu: "Alegi din catalog",
     text:
-      "Fiecare produs are prețul de catalog pe fișa lui, în euro, fără TVA. " +
+      "Fiecare produs are prețul de catalog pe fișa lui, în lei, cu TVA inclus. " +
       "A doua coloană de preț arată cât costă de la pragul de cantitate.",
     link: { text: "Deschide catalogul", adresa: "/catalog" },
   },

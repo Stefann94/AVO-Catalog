@@ -229,7 +229,7 @@ export default function ProduseCuFile({
               Produse din catalog
             </h2>
             <p className="mt-2 max-w-xl text-[14px] text-muted">
-              Ofertele lunii și cele mai mari categorii. Prețurile sunt în euro, fără TVA.
+              Ofertele lunii și cele mai mari categorii. Prețurile sunt în lei, cu TVA inclus.
             </p>
           </div>
 

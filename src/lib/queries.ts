@@ -408,6 +408,31 @@ export const GET_PERIOADA_CATALOG_QUERY = `
 `;
 
 /**
+ * Moneda magazinului și cota de TVA.
+ *
+ * Vine din aceeași extensie ca perioada. WooGraphQL nu expune setările de
+ * monedă — verificat în schemă, nu există niciun tip cu „currency" în nume —
+ * deși întoarce prețul deja formatat. Pentru prețul principal ne e de ajuns;
+ * pentru cifrele pe care le compunem noi (prețul la volum, economia, „de la
+ * X") avem nevoie de simbol și separatori.
+ *
+ * Vezi lib/moneda.ts pentru de ce nu le ținem scrise în cod.
+ */
+export const GET_SETARI_MAGAZIN_QUERY = `
+  query GetSetariMagazin {
+    setariMagazinAvo {
+      moneda
+      simbol
+      pozitie
+      separatorMii
+      separatorZecimale
+      zecimale
+      cotaTva
+    }
+  }
+`;
+
+/**
  * Fișa unui produs.
  *
  * `featured` e ce alimentează badge-ul roșu „Ofertă" de pe fișă: importatorul îl pune

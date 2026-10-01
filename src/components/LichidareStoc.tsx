@@ -261,7 +261,7 @@ export default async function LichidareStoc({
 
         {/* ── Subsol ─────────────────────────────────────────── */}
         <p className="mt-5 sm:mt-10 max-w-2xl text-[11px] sm:text-xs text-gray-500 leading-relaxed">
-          Prețuri în EUR, fără TVA, valabile pentru perioada catalogului curent.
+          Prețuri în lei, cu TVA inclus, valabile pentru perioada catalogului curent.
           Pragul de volum se aplică pe cantitatea comandată per produs.
           Disponibilitatea se confirmă la plasarea comenzii.
         </p>

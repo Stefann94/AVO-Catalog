@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { gasesteBrand } from "@/lib/branduri";
-import { formatEconomie } from "@/lib/oferte";
+import { bani, incarcaMoneda } from "@/lib/moneda";
 import { BADGE, BADGE_CARD, BADGE_ECONOMIE, BADGE_LICHIDARE, BADGE_OFERTA } from "./stiluri";
 import type { Produs } from "@/lib/produs";
 
@@ -142,8 +142,6 @@ export function caArticol(p: Produs): ArticolCard {
   };
 }
 
-const euro = (n: number) =>
-  n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 /* ══════════════════════════════════════════════════════════════════════════
    CORPUL DENUMIRII, ALES DUPĂ LUNGIME
@@ -185,7 +183,7 @@ function corpDenumire(nume: string): string {
   return "10.8px";
 }
 
-export default function CardProdus({
+export default async function CardProdus({
   a,
   /**
    * Primele carduri dintr-o grilă își încarcă fotografia imediat, nu leneș:
@@ -197,6 +195,11 @@ export default function CardProdus({
   a: ArticolCard;
   prioritate?: boolean;
 }) {
+  /* Moneda vine din magazin, nu din cod.
+     `incarcaMoneda` e memoizată cu `cache`, deci o grilă de 215 carduri face o
+     singură cerere, nu 215. Componenta devine async doar pentru asta — e un
+     server component, randat la construcție, deci nu costă nimic la rulare. */
+  const m = await incarcaMoneda();
   const slugCategorie = typeof a.categorie === "string" ? a.categorie : a.categorie?.slug;
   const adresa = a.slug
     ? `/catalog/produs/${a.slug}`
@@ -239,7 +242,7 @@ export default function CardProdus({
             {a.laOferta && <span className={`${BADGE} ${BADGE_CARD} ${BADGE_OFERTA}`}>Ofertă</span>}
             {economie > 0 && (
               <span className={`${BADGE} ${BADGE_CARD} ${BADGE_ECONOMIE}`}>
-                −{formatEconomie(economie)} € / {a.unitate ?? "buc"}
+                −{bani(economie, m)} / {a.unitate ?? "buc"}
               </span>
             )}
             {laLichidare && (
@@ -355,16 +358,16 @@ export default function CardProdus({
         <div className="mt-auto border-t border-line pt-2.5 transition-colors duration-150 group-hover:border-avo-600/25">
           {arePret ? (
             <div className="truncate text-[21px] leading-none font-extrabold tracking-[-0.03em] text-fg">
-              {euro(a.pret as number)}
-              <span className="ml-1 text-[13px] font-semibold text-muted">
-                €{a.unitate ? ` / ${a.unitate}` : ""}
-              </span>
+              {bani(a.pret as number, m)}
+              {a.unitate ? (
+                <span className="ml-1 text-[13px] font-semibold text-muted">{` / ${a.unitate}`}</span>
+              ) : null}
             </div>
           ) : (
             <div className="text-[16px] leading-none font-bold text-muted">Preț la cerere</div>
           )}
           <div className="mt-1.5 h-[17px] truncate text-[11.8px] text-faint">
-            {arePret && a.pretVolum && a.prag ? `${euro(a.pretVolum)} € de la ${a.prag}` : null}
+            {arePret && a.pretVolum && a.prag ? `${bani(a.pretVolum, m)} de la ${a.prag}` : null}
           </div>
         </div>
 

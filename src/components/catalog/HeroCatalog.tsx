@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Oferta } from "@/lib/oferte";
 import { gasesteBrand } from "@/lib/branduri";
 import { BADGE, BADGE_CARD, BADGE_OFERTA } from "@/components/stiluri";
+import { bani, incarcaMoneda } from "@/lib/moneda";
 
 /**
  * Bannerul din capul paginii /catalog — ofertele lunii, ca reclamă.
@@ -79,9 +80,8 @@ function sigla(brand: string, varianta: "alb" | "color"): string | null {
   return varianta === "alb" ? `/branduri/${b.slug}.webp` : `/branduri/color/${b.slug}.webp`;
 }
 
-const eur = (n: number) => n.toLocaleString("ro-RO");
 
-export default function HeroCatalog({
+export default async function HeroCatalog({
   eticheta,
   oferte = [],
 }: {
@@ -89,6 +89,9 @@ export default function HeroCatalog({
   oferte?: Oferta[];
 }) {
   if (oferte.length === 0) return null;
+
+  // Moneda magazinului, nu una scrisa in cod. Vezi lib/moneda.ts.
+  const m = await incarcaMoneda();
 
   // Produsul mare: prețul cel mai mare. Restul, în ordinea din catalog.
   const principal = [...oferte].sort((a, b) => b.pret - a.pret)[0];
@@ -235,8 +238,7 @@ export default function HeroCatalog({
                     ~150px și „/ buc" cădea sub „1.580 €", de-aia acolo cifra
                     scade la 26px. */}
                 <p className="mt-2 flex items-baseline gap-1 leading-none whitespace-nowrap text-gray-900">
-                  <span className="text-[30px] font-extrabold lg:text-[26px] xl:text-[30px]">{eur(principal.pret)}</span>
-                  <span className="text-[18px] font-bold">€</span>
+                  <span className="text-[30px] font-extrabold lg:text-[26px] xl:text-[30px]">{bani(principal.pret, m)}</span>
                   <span className="text-[12px] font-medium text-gray-600">/ {principal.unitate}</span>
                 </p>
 
@@ -244,7 +246,7 @@ export default function HeroCatalog({
                 <ul className="mt-3 flex flex-wrap gap-1.5">
                   {principal.pretVolum && principal.prag ? (
                     <li className="rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-600">
-                      {eur(principal.pretVolum)} € de la {principal.prag}
+                      {bani(principal.pretVolum, m)} de la {principal.prag}
                     </li>
                   ) : null}
                   <li className="rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-600">
@@ -284,7 +286,7 @@ export default function HeroCatalog({
                         )}
                         <p className="mt-1 truncate font-mono text-[11px] text-gray-600">{o.sku}</p>
                         <p className="mt-0.5 text-[15px] leading-none font-extrabold text-gray-900">
-                          {eur(o.pret)} €
+                          {bani(o.pret, m)}
                           <span className="ml-1 text-[11px] font-medium text-gray-600">/ {o.unitate}</span>
                         </p>
                       </div>

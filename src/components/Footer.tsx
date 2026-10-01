@@ -339,7 +339,7 @@ export default function Footer() {
             {FIRMA.cui ? <> · CUI {FIRMA.cui}</> : null}
             {FIRMA.regCom ? <> · Reg. Com. {FIRMA.regCom}</> : null}
             <span className="block sm:inline sm:before:content-['_·_']">
-              Prețurile din catalog sunt în EUR, fără TVA.
+              Prețurile din catalog sunt în lei, cu TVA inclus.
             </span>
           </p>
 

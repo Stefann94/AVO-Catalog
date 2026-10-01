@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { bani, incarcaMoneda, type Moneda } from "@/lib/moneda";
 import type { Produs } from "@/lib/produs";
 import { pozaHero } from "./poze-fara-fundal";
 import { BRANDURI, gasesteBrand } from "@/lib/branduri";
@@ -99,9 +100,9 @@ type Reclama = {
 
    ─── CE NU CORESPUNDE CATALOGULUI AVO, CA SĂ SE ȘTIE ─────────────────────
 
-     prețurile în lei ..... 1.387,00 / 381,00 / 623,00 sunt ale prototipului.
-                            Ale noastre sunt în euro, fără TVA, iar cel mai
-                            ieftin invertor e 355 €, nu 1.387 lei.
+     prețurile în lei ..... 1.387,00 / 381,00 / 623,00 sunt ale prototipului,
+                            nu ale catalogului nostru. Ale noastre vin din
+                            WooCommerce, în lei, cu TVA inclus.
      „93 produse" ......... la montaj avem 51.
      „Distribuitor platinum" statut neconfirmat de nimeni în scris.
      Huawei ............... marcă pe care n-o distribuim; apare sigla și
@@ -172,9 +173,6 @@ const RECLAME: Reclama[] = [
     pret: "623,00 lei",
   },
 ];
-
-const euro = (n: number) =>
-  n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 /** Numele mărcii → slug-ul siglei din public/branduri/color/. */
 
@@ -254,7 +252,7 @@ function strange(produse: Produs[], slug: string): Strans | null {
   };
 }
 
-export default function HeroReclame({
+export default async function HeroReclame({
   produse,
   lichidare,
 }: {
@@ -262,6 +260,9 @@ export default function HeroReclame({
   /** Câte produse sunt în lichidare. Vine din bara de filtre. */
   lichidare: number;
 }) {
+  /* Moneda vine din magazin. Vezi lib/moneda.ts: site-ul avea € scris in cod
+     in cincisprezece locuri, iar la trecerea pe lei toate au ramas in urma. */
+  const m = await incarcaMoneda();
   const cat = new Map<string, Strans>();
   for (const { slug } of RECLAME) {
     const s = strange(produse, slug);
@@ -287,7 +288,7 @@ export default function HeroReclame({
   // Aceeași regulă ca la diapozitive: decupajul local, dacă s-a făcut.
   const pozaVolum = pozaHero(laVolum);
 
-  const diapozitive = construieste({ inv, pan, sto, mon });
+  const diapozitive = construieste({ inv, pan, sto, mon }, m);
 
   return (
     /* `rc` poartă variabilele de culoare (vezi hero-reclame.css). Stă pe
@@ -436,8 +437,8 @@ export default function HeroReclame({
                   <span className="rc-caseta-k">Preț la volum</span>
                   <b>Prețul tău de la {laVolum.prag}</b>
                   <span className="rc-pret">
-                    <s>{euro(laVolum.pret!)} €</s>
-                    <strong>{euro(laVolum.pretVolum!)} €</strong>
+                    <s>{bani(laVolum.pret!, m)}</s>
+                    <strong>{bani(laVolum.pretVolum!, m)}</strong>
                   </span>
                 </span>
                 <span className="rc-caseta-r">
@@ -546,7 +547,7 @@ function construieste(c: {
   pan?: Strans;
   sto?: Strans;
   mon?: Strans;
-}): Diapo[] {
+}, m: Moneda): Diapo[] {
   const d: Diapo[] = [];
 
   if (c.inv) {
@@ -557,7 +558,7 @@ function construieste(c: {
       text: `${c.inv.cate} de modele în catalogul lunii, hibride, on-grid și off-grid.`,
       buton: "Vezi invertoarele",
       adresa: "/catalog/invertoare",
-      nota: c.inv.minPret ? `De la ${euro(c.inv.minPret)} € bucata, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.inv.minPret ? `De la ${bani(c.inv.minPret, m)} bucata, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.inv.poza,
     });
   }
@@ -575,7 +576,7 @@ function construieste(c: {
     text: "Trimite-ne ce echipamente îți trebuie și primești oferta pe catalogul lunii.",
     buton: "Cere ofertă",
     adresa: "/cerere-oferta",
-    nota: "Prețurile din catalog sunt în euro, fără TVA.",
+    nota: "Prețurile din catalog sunt în lei, cu TVA inclus.",
     poza: c.sto?.poza,
   });
 
@@ -587,7 +588,7 @@ function construieste(c: {
       text: `${c.sto.cate} de produse de stocare: acumulatori, sisteme complete și accesorii.`,
       buton: "Vezi stocarea",
       adresa: "/catalog/stocare-energie",
-      nota: c.sto.minPret ? `De la ${euro(c.sto.minPret)} €, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.sto.minPret ? `De la ${bani(c.sto.minPret, m)}, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.sto.poza,
     });
   }
@@ -600,7 +601,7 @@ function construieste(c: {
       text: `${c.pan.cate} de modele în catalog, cu preț separat peste pragul de cantitate.`,
       buton: "Vezi panourile",
       adresa: "/catalog/panouri-fotovoltaice",
-      nota: c.pan.minPret ? `De la ${euro(c.pan.minPret)} € bucata, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.pan.minPret ? `De la ${bani(c.pan.minPret, m)} bucata, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.pan.poza,
     });
   }
@@ -613,7 +614,7 @@ function construieste(c: {
       text: `${c.mon.cate} de repere: țiglă, tablă, acoperiș plat, șine, cleme și accesorii.`,
       buton: "Vezi montajul",
       adresa: "/catalog/sisteme-de-montaj",
-      nota: c.mon.minPret ? `De la ${euro(c.mon.minPret)} €, fără TVA.` : "Prețuri fără TVA.",
+      nota: c.mon.minPret ? `De la ${bani(c.mon.minPret, m)}, TVA inclus.` : "Prețuri cu TVA inclus.",
       poza: c.mon.poza,
     });
   }

@@ -71,7 +71,7 @@ export default function PretVolum({ produse = [] }: { produse?: Produs[] }) {
       link={{ text: "Vezi toate produsele", adresa: "/catalog" }}
       nota={
         <>
-          Prețuri în EUR, fără TVA, valabile pentru perioada catalogului curent.
+          Prețuri în lei, cu TVA inclus, valabile pentru perioada catalogului curent.
           Pragul de volum se aplică pe cantitatea comandată per produs.
           Disponibilitatea se confirmă la plasarea comenzii.
         </>

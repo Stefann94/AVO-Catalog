@@ -5,7 +5,7 @@ import IconCategorie from "./IconCategorie";
 import type { CategorieFiltru } from "@/lib/panou";
 import type { Produs } from "@/lib/produs";
 import { gasesteBrand } from "@/lib/branduri";
-import { formatEconomie } from "@/lib/oferte";
+import { bani, incarcaMoneda } from "@/lib/moneda";
 import {
   BADGE,
   BADGE_CARD,
@@ -166,7 +166,6 @@ const SAGEATA_RAND =
  * 6px (etichete).
  */
 
-const eur = (n: number) => n.toLocaleString("ro-RO");
 
 type Promovat = { p: Produs; motiv: string; economie: number };
 
@@ -224,7 +223,7 @@ function branduriDin(
     .sort((a, b) => b.produse - a.produse || a.nume.localeCompare(b.nume, "ro"));
 }
 
-export default function MeniuCategorii({
+export default async function MeniuCategorii({
   categorii,
   produse = [],
 }: {
@@ -232,6 +231,9 @@ export default function MeniuCategorii({
   produse?: Produs[];
 }) {
   if (categorii.length === 0) return null;
+
+  // Moneda magazinului, nu una scrisa in cod. Vezi lib/moneda.ts.
+  const m = await incarcaMoneda();
 
   return (
     /* ── ERA ASCUNS PE TELEFON ────────────────────────────────────────────
@@ -628,7 +630,7 @@ export default function MeniuCategorii({
                           ) : null}
                           {promovat.economie > 0 ? (
                             <span className={`${BADGE} ${BADGE_CARD} ${BADGE_ECONOMIE}`}>
-                              −{formatEconomie(promovat.economie)} € / {promovat.p.unitate}
+                              −{bani(promovat.economie, m)} / {promovat.p.unitate}
                             </span>
                           ) : null}
                         </div>
@@ -651,13 +653,13 @@ export default function MeniuCategorii({
                       </p>
 
                       <p className="mt-2 flex items-baseline gap-1 leading-none whitespace-nowrap text-gray-900">
-                        <span className="text-[24px] font-extrabold">{eur(promovat.p.pret ?? 0)}</span>
-                        <span className="text-[15px] font-bold">€</span>
+                        <span className="text-[24px] font-extrabold">{bani(promovat.p.pret ?? 0, m)}</span>
+                        
                         <span className="text-[12px] font-medium text-gray-600">/ {promovat.p.unitate}</span>
                       </p>
                       {promovat.p.pretVolum && promovat.p.prag ? (
                         <p className="mt-1 text-[12px] text-faint">
-                          {eur(promovat.p.pretVolum)} € de la {promovat.p.prag}
+                          {bani(promovat.p.pretVolum, m)} de la {promovat.p.prag}
                         </p>
                       ) : null}
 
