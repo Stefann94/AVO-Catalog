@@ -4,8 +4,8 @@ import { Package, Truck, FileText } from "lucide-react";
 import type { Produs } from "@/lib/produs";
 import { gasesteBrand } from "@/lib/branduri";
 import { BADGE, BADGE_ECONOMIE, BADGE_LICHIDARE, BADGE_OFERTA } from "@/components/stiluri";
-import { formatEconomie } from "@/lib/oferte";
 import CantitateProdus from "./CantitateProdus";
+import { bani, incarcaMoneda } from "@/lib/moneda";
 
 /**
  * Fișa de produs — versiunea fără chenare.
@@ -114,7 +114,6 @@ import CantitateProdus from "./CantitateProdus";
  * ══════════════════════════════════════════════════════════════════════════
  */
 
-const eur = (n: number) => n.toLocaleString("ro-RO");
 
 /**
  * Mărimea badge-urilor pe fișă: 32px, 12px. Cu o treaptă peste card (28px,
@@ -153,13 +152,15 @@ function Rand({
   );
 }
 
-export default function FisaProdus({
+export default async function FisaProdus({
   p,
   perioada,
 }: {
   p: Produs;
   perioada?: { pana?: string | null };
 }) {
+  // Moneda magazinului, nu una scrisa in cod. Vezi lib/moneda.ts.
+  const m = await incarcaMoneda();
   const caleCategorie = p.categorie ? `/catalog/${p.categorie.slug}` : "/catalog";
   const sigla = gasesteBrand(p.brand);
 
@@ -247,7 +248,7 @@ export default function FisaProdus({
             ) : null}
             {economie > 0 ? (
               <span className={`${BADGE} ${BADGE_FISA} ${BADGE_ECONOMIE}`}>
-                −{formatEconomie(economie)} € / {p.unitate}
+                −{bani(economie, m)} / {p.unitate}
               </span>
             ) : null}
             {lichidare ? (
@@ -419,21 +420,18 @@ export default function FisaProdus({
                 {p.pret ? (
                   /* Cifra și unitățile ei.
 
-                     „fără TVA" și „/ unitate" stau stivuite la dreapta cifrei,
+                     „TVA inclus" și „/ unitate" stau stivuite la dreapta cifrei,
                      nu sub ea: sunt calificatori ai prețului, iar pe un rând
                      separat ar citi ca o a doua informație. `items-end` le
                      aliniază la baza cifrei. */
                   <div className="flex items-end gap-2.5">
                     <span className="flex items-baseline text-gray-900">
                       <span className="text-[44px] sm:text-[52px] font-extrabold leading-none tracking-tight">
-                        {eur(p.pret)}
-                      </span>
-                      <span className="ml-1.5 text-[22px] sm:text-[26px] font-bold leading-none">
-                        €
+                        {bani(p.pret, m)}
                       </span>
                     </span>
                     <span className="pb-1 text-[13px] font-medium leading-4 text-gray-500">
-                      fără TVA
+                      TVA inclus
                       <br />/ {p.unitate}
                     </span>
                   </div>
@@ -507,7 +505,7 @@ export default function FisaProdus({
                 {p.pretVolum && p.prag ? (
                   <p className="order-1 mt-2 sm:mt-2.5 text-[15px] leading-snug">
                     <span className="font-extrabold text-avo-700">
-                      {eur(p.pretVolum)} €
+                      {bani(p.pretVolum, m)}
                     </span>
                     <span className="text-gray-600">
                       {" "}/ {p.unitate} de la {p.prag}
@@ -593,7 +591,7 @@ export default function FisaProdus({
             </p>
 
             <p className="order-4 mt-6 text-xs text-gray-500 leading-relaxed">
-              Preț în EUR, fără TVA. Taxa verde DEEE nu este inclusă (0,7 RON / kg).
+              Preț în lei, cu TVA inclus. Taxa verde DEEE nu este inclusă (0,7 lei / kg).
               Reducerea de partener (Gold −10%, Platinum −15%) se aplică separat,
               prețului de catalog.
             </p>
