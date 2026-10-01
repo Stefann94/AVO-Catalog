@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: AVO — Documente și date de catalog
- * Description: Face editabile din WordPress lucrurile pe care până acum le scria doar importul CSV. (1) O casetă pe fiecare produs cu prețul la volum, pragul, unitatea, capacitatea. (2) O listă de documente — fișe tehnice, manuale, declarații — cu alegere din biblioteca media. (3) Un buton care aduce o dată cele 877 de documente din descrierile importate, le pune în bibliotecă și curăță descrierile de CSS și de marca furnizorului. Se găsește la Produse → Documente AVO.
- * Version:     1.0.1
+ * Description: Face editabile din WordPress lucrurile pe care până acum le scria doar importul CSV. (1) O casetă pe fiecare produs cu prețul la volum, pragul, unitatea, capacitatea. (2) O listă de documente — fișe tehnice, manuale, declarații — cu alegere din biblioteca media. (3) Un buton care aduce o dată cele 877 de documente din descrierile importate, le pune în bibliotecă și curăță descrierile de CSS și de marca furnizorului. Expune și moneda magazinului, ca site-ul să nu o aibă scrisă în cod. Se găsește la Produse → Documente AVO.
+ * Version:     1.0.2
  * Author:      Avo Grup Invest
  * Requires PHP: 7.4
  *
@@ -34,7 +34,7 @@ if (!defined('ABSPATH')) {
 if (defined('AVO_DOCUMENTE_VERSIUNE')) {
     return;
 }
-define('AVO_DOCUMENTE_VERSIUNE', '1.0.1');
+define('AVO_DOCUMENTE_VERSIUNE', '1.0.2');
 
 /** Cheia sub care stau documentele pe produs. */
 const AVO_META_DOCUMENTE = '_avo_documente';
@@ -259,6 +259,87 @@ add_action('graphql_register_types', function () {
                 ];
             }
             return $iesire;
+        },
+    ]);
+});
+
+/* =========================================================================
+ * 2b. SETĂRILE DE MONEDĂ
+ * ====================================================================== */
+
+/**
+ * Moneda magazinului, expusă site-ului.
+ *
+ * ─── DE CE E NEVOIE ──────────────────────────────────────────────────────
+ *
+ * WooCommerce întoarce prin GraphQL prețul deja formatat — „570,00 lei" — și
+ * atâta vreme cât site-ul îl afișează ca atare, totul e în regulă. Dar unele
+ * cifre se calculează la noi: prețul la volum vine ca număr brut din meta,
+ * economia e o scădere, iar „de la X" e un minim peste o listă. Pe acelea
+ * trebuie să le formatăm singuri.
+ *
+ * Până acum site-ul avea „€" scris în cod, în cincisprezece locuri. Când
+ * magazinul a trecut pe lei, toate au rămas în urmă — fiecare card ar fi
+ * afișat „445 €" pentru un panou de 445 de lei.
+ *
+ * Cu valorile de mai jos, formatarea noastră o urmează pe cea a magazinului.
+ * Se schimbă moneda din WooCommerce → Setări, iar site-ul o ia la următoarea
+ * construcție. Nicio modificare de cod.
+ *
+ * ─── DE CE ȘI COTA DE TVA ────────────────────────────────────────────────
+ *
+ * Taxele sunt oprite în WooCommerce: prețurile sunt introduse direct cu TVA
+ * inclus, iar cota trăiește în `_cota_tva`, scrisă de import pe fiecare
+ * produs. Site-ul are nevoie de ea ca să scrie corect „TVA inclus" și, la
+ * nevoie, să arate baza. Scrisă în cod, ar fi rămas 21 și după o schimbare de
+ * cotă — exact greșeala pe care tocmai am făcut-o cu moneda.
+ */
+add_action('graphql_register_types', function () {
+    register_graphql_object_type('SetariMagazinAvo', [
+        'description' => 'Moneda și cota de TVA, citite din setările magazinului.',
+        'fields'      => [
+            'moneda'            => ['type' => 'String', 'description' => 'Codul monedei, ex. "RON".'],
+            'simbol'            => ['type' => 'String', 'description' => 'Simbolul afișat, ex. "lei".'],
+            'pozitie'           => ['type' => 'String', 'description' => 'left, right, left_space sau right_space.'],
+            'separatorMii'      => ['type' => 'String', 'description' => 'Separatorul miilor, ex. ".".'],
+            'separatorZecimale' => ['type' => 'String', 'description' => 'Separatorul zecimalelor, ex. ",".'],
+            'zecimale'          => ['type' => 'Int',    'description' => 'Câte zecimale se afișează.'],
+            'cotaTva'           => ['type' => 'Float',  'description' => 'Cota de TVA inclusă în preț, în procente. null dacă nu se știe.'],
+        ],
+    ]);
+
+    register_graphql_field('RootQuery', 'setariMagazinAvo', [
+        'type'        => 'SetariMagazinAvo',
+        'description' => 'Moneda și TVA-ul, ca site-ul să nu le aibă scrise în cod.',
+        'resolve'     => function () {
+            // Cota se ia de pe cel mai recent produs modificat, ca și perioada
+            // catalogului: importul o scrie identic pe toate.
+            $cota = null;
+            $p = get_posts([
+                'post_type'      => 'product',
+                'post_status'    => 'publish',
+                'posts_per_page' => 1,
+                'orderby'        => 'modified',
+                'order'          => 'DESC',
+                'fields'         => 'ids',
+                'meta_key'       => '_cota_tva',
+            ]);
+            if ($p) {
+                $v = trim((string) get_post_meta($p[0], '_cota_tva', true));
+                if ($v !== '' && is_numeric($v)) {
+                    $cota = (float) $v;
+                }
+            }
+
+            return [
+                'moneda'            => function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : null,
+                'simbol'            => function_exists('get_woocommerce_currency_symbol') ? html_entity_decode(get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8') : null,
+                'pozitie'           => (string) get_option('woocommerce_currency_pos', 'right_space'),
+                'separatorMii'      => (string) get_option('woocommerce_price_thousand_sep', '.'),
+                'separatorZecimale' => (string) get_option('woocommerce_price_decimal_sep', ','),
+                'zecimale'          => (int) get_option('woocommerce_price_num_decimals', 2),
+                'cotaTva'           => $cota,
+            ];
         },
     ]);
 });
