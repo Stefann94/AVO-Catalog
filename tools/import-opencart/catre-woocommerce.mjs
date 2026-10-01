@@ -72,6 +72,30 @@ const opt = {};
 for (let i = 2; i < process.argv.length; i += 2) opt[process.argv[i].replace(/^--/, "")] = process.argv[i + 1];
 const LUNA = opt.luna ?? "2026-10";
 
+/* ─── TVA-ul se adaugă, fiindcă prețul de raft îl conține ────────────────
+   Prețurile din OpenCart și cele citite din datele structurate ale
+   solarone.ro sunt FĂRĂ TVA. Prețul pe care îl vede un cumpărător pe
+   solarone.ro îl conține.
+
+   Dovada, pe pagina SDM630: sumele apar în perechi — 268,60 / 325,00,
+   373,55 / 452,00, 493,39 / 597,00. Fiecare pereche e exact ×1,21. Iar
+   înmulțind prețul brut al celor 127 de produse cu 1,21, ies 127 de numere
+   întregi din 127: 367,7685 → 445,00, 495,0413 → 599,00, 587,6033 → 711,00.
+   Cineva a scris prețul de raft cu TVA, iar OpenCart a stocat baza.
+
+   PRIMA IMPORTARE A PUS BAZA, deci tot catalogul era cu 21% sub prețul real.
+   La un acumulator de 9.785 lei, o diferență de peste 2.000.
+
+   Codul fiscal cere ca prețul afișat consumatorului să includă TVA, iar
+   solarone.ro așa îl afișează. Site-ul trebuie să arate aceeași cifră.
+
+   Prețul fără TVA rămâne în `_pret_fara_tva`, pentru contabilitate și pentru
+   zona B2B — partenerii oricum cumpără fără TVA. */
+const COTA_TVA = Number(opt.tva ?? 21);
+const CU_TVA = 1 + COTA_TVA / 100;
+/** Prețul de raft: baza, plus TVA, rotunjit la bani. */
+const cuTva = (fara) => Math.round(fara * CU_TVA * 100) / 100;
+
 const u = JSON.parse(readFileSync(join(aici, "date", `unificat-${LUNA}.json`), "utf8"));
 const inMagazin = JSON.parse(readFileSync(join(aici, "date", "woocommerce-acum.json"), "utf8"));
 
@@ -96,6 +120,7 @@ const CAP = [
   "Categories", "Images",
   "Meta: _pret_volum", "Meta: _prag_volum", "Meta: _unitate_pret", "Meta: _moneda",
   "Meta: _pret_container", "Meta: _capacitate_kwh",
+  "Meta: _pret_fara_tva", "Meta: _cota_tva",
   "Meta: _pret_b2b_eur", "Meta: _pret_volum_b2b_eur",
   "Meta: _sursa_pret", "Meta: _sursa_catalog", "Meta: _perioada_eticheta", "Meta: _valabil_de", "Meta: _valabil_pana",
 ];
@@ -168,7 +193,8 @@ const faraDescriere = [];
 for (const p of u.produse) {
   const o = p.opencart;
   const deLaSolarone = pretSolarone.get(p.sku);
-  const pretRon = o?.publicRon ?? deLaSolarone?.pretRon ?? null;
+  const faraTva = o?.publicRon ?? deLaSolarone?.pretRon ?? null;
+  const pretRon = faraTva === null ? null : cuTva(faraTva);
   const sursaPret = o?.publicRon ? "OpenCart 25.09.2026" : deLaSolarone ? `solarone.ro ${deLaSolarone.luatLa.slice(0, 10)}` : "";
 
   // Reducerea la volum, luată ca procent din catalog și aplicată prețului în lei.
@@ -203,6 +229,8 @@ for (const p of u.produse) {
     "Meta: _moneda": "RON",
     "Meta: _pret_container": p.pret.container ?? "",
     "Meta: _capacitate_kwh": p.capacitateKwh ?? "",
+    "Meta: _pret_fara_tva": faraTva === null ? "" : faraTva.toFixed(2),
+    "Meta: _cota_tva": COTA_TVA,
     "Meta: _pret_b2b_eur": p.pret.catalogEur ?? "",
     "Meta: _pret_volum_b2b_eur": p.pret.volumEur ?? "",
     "Meta: _sursa_pret": sursaPret,
