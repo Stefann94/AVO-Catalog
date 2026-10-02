@@ -1,0 +1,155 @@
+{
+ "urcate": {
+  "2004179": {
+   "media": 8689,
+   "produs": 8664,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/dome-paravant-k2-lung-1448-1779-mm-optimizat.jpg",
+   "la": "2026-10-01T09:13:40.390Z"
+  },
+  "CS6.2-54TB-525": {
+   "media": 8667,
+   "produs": 8647,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-525W-Canadian-Solar-CS6-2-54TB-525-TOPHiKu6-New-N-type-Bifacial-optimizate-main.png",
+   "la": "2026-10-01T09:00:28.332Z"
+  },
+  "CS6.2-66TB-625W": {
+   "media": 8668,
+   "produs": 8648,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/panou-fotovoltaic-625w-canadian-solar-cs6-2-66tb-625-bifacial-n-type-topcon-main.png",
+   "la": "2026-10-01T09:00:36.331Z"
+  },
+  "JKM475N-48QL6-DV": {
+   "media": 8669,
+   "produs": 8649,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-475W-Jinko-Solar-JKM475N-48QL6-DV-30mm-Tiger-Neo-III-Monofacial-optimizate-main.png",
+   "la": "2026-10-01T09:12:06.187Z"
+  },
+  "JINKO-SOLAR-JKM510N-54HL4M-BDV-BIFACIAL": {
+   "media": 8670,
+   "produs": 8650,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-510W-Jinko-Solar-JKM510N-54HL4M-BDV-30mm-Tiger-Neo-Bifacial-N-Type-optimizate-main.png",
+   "la": "2026-10-01T09:12:12.796Z"
+  },
+  "JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL": {
+   "media": 8671,
+   "produs": 8651,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-620W-Jinko-Solar-JKM620N-66HL4M-BDV-30mm-Tiger-Neo-Bifacial-N-Type-optimizate-main.png",
+   "la": "2026-10-01T09:12:19.132Z"
+  },
+  "JMK475N-48QL6-DV": {
+   "media": 8672,
+   "produs": 8344,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-475W-Jinko-Solar-JKM475N-48QL6-DV-30mm-Tiger-Neo-III-Monofacial-optimizate-main.png",
+   "la": "2026-10-01T09:12:25.499Z"
+  },
+  "JINKO-SOLAR-JKM620N-66HL4M-BDV-TIGER-NEO-III-BIFACIAL-PANOURI-FO": {
+   "media": 8673,
+   "produs": 8652,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-620W-Jinko-Solar-JKM620N-66HL4M-BDV-30mm-Tiger-Neo-Bifacial-N-Type-optimizate-main.png",
+   "la": "2026-10-01T09:12:32.365Z"
+  },
+  "TWMND-72HD575W": {
+   "media": 8674,
+   "produs": 8653,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-575W-Tongwei-TWMND-72HD575-N-type-Bifacial-optimizate-main.png",
+   "la": "2026-10-01T09:12:38.634Z"
+  },
+  "LR7-60HVH-545M": {
+   "media": 8675,
+   "produs": 8654,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Panou-fotovoltaic-545W-Longi-LR7-60HVH-545M-HI-MO-X10-1-optimizate-main.png",
+   "la": "2026-10-01T09:12:46.372Z"
+  },
+  "SUN-8K-SG05LP1-EU": {
+   "media": 8676,
+   "produs": 8656,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Invertor-hibrid-monofazat-DEYE-SUN-8K-SG05-LP1-EU-SM2-8kW-u1-optimizat.jpg",
+   "la": "2026-10-01T09:12:50.357Z"
+  },
+  "SUN-100K-SG02HP3-EU": {
+   "media": 8677,
+   "produs": 8657,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/invertor-hibrid-trifazat-deye-100kw-sun-100k-sg02hp3-eu-gm10-ip6-optimizat.jpg",
+   "la": "2026-10-01T09:12:54.046Z"
+  },
+  "DEYE-SE-F12-MAX-FARA-INCALZIRE-IP65": {
+   "media": 8678,
+   "produs": 8658,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Acumulator-Deye-SE-F12-Max-12-kWh-LiFePo4-optimizat.jpg",
+   "la": "2026-10-01T09:12:58.728Z"
+  },
+  "DEYE-SE-F12-C": {
+   "media": 8679,
+   "produs": 8659,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Acumulator-Deye-SE-F12-C-12-kWh-LiFePo4-optimizat.jpg",
+   "la": "2026-10-01T09:13:02.608Z"
+  },
+  "DEYE-SE-F16-C": {
+   "media": 8680,
+   "produs": 8660,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Acumulator-Deye-SE-F16-C-16-kWh-LiFePo4-optimizat.jpg",
+   "la": "2026-10-01T09:13:06.507Z"
+  },
+  "DEYE-SE-F16-MAX-H-CU-INCALZIRE-IP65": {
+   "media": 8681,
+   "produs": 8661,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/acumulator-deye-se-f16-max-16-kwh-cu-incalzire-badge-premium-optimizat.jpg",
+   "la": "2026-10-01T09:13:10.077Z"
+  },
+  "SUN-EVSE22K01-EU-AC": {
+   "media": 8682,
+   "produs": 8399,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/incarcator-auto-electric-deye-sun-evse22k01-22kw-trifazat-01-optimizat.jpg",
+   "la": "2026-10-01T09:13:13.904Z"
+  },
+  "PYTES-V5A-5-12-KWH": {
+   "media": 8683,
+   "produs": 8408,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/acumulator-pytes-litiu-lifepo4-v5a-48v-5-12kwh-cu-incalzire-optimizat.jpg",
+   "la": "2026-10-01T09:13:17.591Z"
+  },
+  "PYTES-V15-14-34KWH": {
+   "media": 8684,
+   "produs": 8410,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/acumulator-pytes-v15-48v-15-kwh-lifepo4-optimizat.jpg",
+   "la": "2026-10-01T09:13:21.190Z"
+  },
+  "DYNESS-POWERBRICK-PLUS-16-07KWH-CU-INCALZIRE-IP65": {
+   "media": 8685,
+   "produs": 8418,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/Acumulator-Dyness-PowerBrick-Plus-16-07-kWh-51-2V-LiFePO4-cu-incalzire-optimizat.jpg",
+   "la": "2026-10-01T09:13:24.965Z"
+  },
+  "LUNA2000-5KW-E0": {
+   "media": 8686,
+   "produs": 8662,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/acumulator-huawei-luna2000-5kw-e0-lifepo4-5-0-kwh-optimizat.jpg",
+   "la": "2026-10-01T09:13:29.525Z"
+  },
+  "LUNA2000-5KW-C0": {
+   "media": 8687,
+   "produs": 8663,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/modul-gestiune-baterie-huawei-luna2000-5kw-c0-optimizat.jpg",
+   "la": "2026-10-01T09:13:33.161Z"
+  },
+  "SISTEM-DE-MONTAJ-PENTRU-ACOPERIS-METALIC-CU-SUPORT-U-SI-CLEMA-MI": {
+   "media": 8688,
+   "produs": 8446,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images/sistem-de-montaj-pentru-acoperis-metalic-cu-suport-u-si-clema-mijloc.jpg",
+   "la": "2026-10-01T09:13:36.731Z"
+  },
+  "SET-CONECTORI-MC4-EVO2-MAMA": {
+   "media": 8690,
+   "produs": 8490,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/set-conectori-mc4-evo2-pentru-cablu-solar-4-6-mm2-mama-si-tata-optimizat.jpg",
+   "la": "2026-10-01T09:13:44.339Z"
+  },
+  "SET-CONECTORI-MC4-EVO2-TATA": {
+   "media": 8691,
+   "produs": 8491,
+   "adresa": "https://www.solarone.ro/image/catalog/output_images_optimized/set-conectori-mc4-evo2-pentru-cablu-solar-4-6-mm2-mama-si-tata-optimizat.jpg",
+   "la": "2026-10-01T09:13:48.041Z"
+  }
+ },
+ "esuate": {}
+}

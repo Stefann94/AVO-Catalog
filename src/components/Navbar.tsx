@@ -321,7 +321,7 @@ export default function Navbar() {
         <form
           action="/catalog"
           role="search"
-          className="hidden lg:flex relative grow items-center max-w-[620px]"
+          className="hidden lg:flex relative grow items-center max-w-[480px]"
         >
           <label htmlFor="cauta-bara" className="sr-only">
             Caută în catalog
